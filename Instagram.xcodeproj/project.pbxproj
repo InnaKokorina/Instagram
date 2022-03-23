@@ -11,6 +11,10 @@
 		C3E4EA3527EB5DDE003815D2 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4EA3427EB5DDE003815D2 /* MainViewController.swift */; };
 		C3E4EA3A27EB5DE3003815D2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C3E4EA3927EB5DE3003815D2 /* Assets.xcassets */; };
 		C3E4EA3D27EB5DE3003815D2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C3E4EA3B27EB5DE3003815D2 /* LaunchScreen.storyboard */; };
+		C3E4EA4827EB5FA7003815D2 /* DataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4EA4727EB5FA7003815D2 /* DataModel.swift */; };
+		C3E4EA4A27EB5FB4003815D2 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4EA4927EB5FB4003815D2 /* DataManager.swift */; };
+		C3E4EA4C27EB5FD9003815D2 /* MainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4EA4B27EB5FD9003815D2 /* MainTableViewCell.swift */; };
+		C3E4EA4E27EB5FF9003815D2 /* StackViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4EA4D27EB5FF9003815D2 /* StackViewExtensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +24,10 @@
 		C3E4EA3927EB5DE3003815D2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C3E4EA3C27EB5DE3003815D2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C3E4EA3E27EB5DE3003815D2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C3E4EA4727EB5FA7003815D2 /* DataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
+		C3E4EA4927EB5FB4003815D2 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
+		C3E4EA4B27EB5FD9003815D2 /* MainTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTableViewCell.swift; sourceTree = "<group>"; };
+		C3E4EA4D27EB5FF9003815D2 /* StackViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackViewExtensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,13 +60,41 @@
 		C3E4EA2F27EB5DDE003815D2 /* Instagram */ = {
 			isa = PBXGroup;
 			children = (
+				C3E4EA4627EB5F93003815D2 /* Controller */,
+				C3E4EA4527EB5F8D003815D2 /* View */,
+				C3E4EA4427EB5F80003815D2 /* Model */,
 				C3E4EA3027EB5DDE003815D2 /* AppDelegate.swift */,
-				C3E4EA3427EB5DDE003815D2 /* MainViewController.swift */,
 				C3E4EA3927EB5DE3003815D2 /* Assets.xcassets */,
 				C3E4EA3B27EB5DE3003815D2 /* LaunchScreen.storyboard */,
 				C3E4EA3E27EB5DE3003815D2 /* Info.plist */,
 			);
 			path = Instagram;
+			sourceTree = "<group>";
+		};
+		C3E4EA4427EB5F80003815D2 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				C3E4EA4727EB5FA7003815D2 /* DataModel.swift */,
+				C3E4EA4927EB5FB4003815D2 /* DataManager.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		C3E4EA4527EB5F8D003815D2 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				C3E4EA4D27EB5FF9003815D2 /* StackViewExtensions.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		C3E4EA4627EB5F93003815D2 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				C3E4EA3427EB5DDE003815D2 /* MainViewController.swift */,
+				C3E4EA4B27EB5FD9003815D2 /* MainTableViewCell.swift */,
+			);
+			path = Controller;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -132,7 +168,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				C3E4EA3527EB5DDE003815D2 /* MainViewController.swift in Sources */,
+				C3E4EA4E27EB5FF9003815D2 /* StackViewExtensions.swift in Sources */,
+				C3E4EA4A27EB5FB4003815D2 /* DataManager.swift in Sources */,
 				C3E4EA3127EB5DDE003815D2 /* AppDelegate.swift in Sources */,
+				C3E4EA4827EB5FA7003815D2 /* DataModel.swift in Sources */,
+				C3E4EA4C27EB5FD9003815D2 /* MainTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
