@@ -10,30 +10,16 @@ import Foundation
 import UIKit
 
 struct DataManager {
+    var images = (0...9).map{UIImage(named: String($0))!}
+    var author: [String] = ["Inna Kokorina", "Ben Aflek", "Leo Di Caprio", "Jeniffer Aniston", "Madonna", "Julia Roberts", "Alla Pugacheva", "Cameron Diaz", " The Beatles", "Queen"]
+    var photoImageName = (0...9).map{String($0)}
+    var likesCount = (0...9).map{_ in arc4random_uniform(100)}
+    var descript:[String] = Array(repeating: ": Интересный факт о фруктах. в Японии фрукт преподносят в качестве подарка членам семьи, друзьям, коллегам и партнерам по бизнесу.", count: 10)
     
- 
     func likeLabelConvert(counter: Int) -> String {
-        var textLabel = ""
-        var reCounter = counter % 100
-        if counter > 100 {
-            reCounter = counter % 100
-        }
-        if reCounter >= 10 && reCounter <= 20 {
-            textLabel = "\(counter) лайков"
-        } else {
-            reCounter = reCounter % 10
-            switch reCounter {
-            case 1 : textLabel = "\(counter) лайк"
-            case 2,3,4 : textLabel = "\(counter) лайка"
-            default: textLabel = "\(counter) лайков"
-   
-            }
-        }
-
-        return textLabel
-    }
-    
-    func makeList(_ n: Int) -> [Int] {
-        return (0..<n).map { _ in .random(in: 1...20) }
+        let formatString: String = NSLocalizedString("likes count", comment: "likes count string format to be found in Localized.stringsdict")
+        let likesCount : String = String.localizedStringWithFormat(formatString, counter)
+        let likesTextLabel = ("\(counter) \(likesCount)")
+        return likesTextLabel
     }
 }
