@@ -29,7 +29,7 @@ class MainViewController: UIViewController {
         tableView.separatorColor = .clear
         
         for i in 0..<10 {
-            self.dataModel.append(DataModel(author: dataManager.author[i], photoImageName: dataManager.photoImageName[i], likesCount: Int(dataManager.likesCount[i]), description: dataManager.descript[i]))
+            self.dataModel.append(DataModel(author: dataManager.author[i], photoImageName: dataManager.photoImageName[i], likesCount: Int(dataManager.likesCount[i]), description: dataManager.descript[i], isLiked: dataManager.isLiked[i]))
             self.tableView.reloadData()
         }
     }
@@ -44,7 +44,9 @@ extension MainViewController: UITableViewDataSource {
         cell.configure(with: dataModel[indexPath.row].photoImageName, dataModel: dataModel, indexPath: indexPath)
         
         cell.likeButtomTap = {
-            self.dataModel[indexPath.row].likesCount += 1
+            self.dataModel[indexPath.row].isLiked.toggle()
+            cell.likeButton.imageView?.alpha = 0.3
+            cell.likeButton.setImage(UIImage(systemName: self.dataModel[indexPath.row].isLiked ? "heart.fill" : "heart"), for: .normal)
             cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: self.dataModel[indexPath.row].likesCount)
             cell.heartImage.alpha = 0.5
             let seconds = 0.3

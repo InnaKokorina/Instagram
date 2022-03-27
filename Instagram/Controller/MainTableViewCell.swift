@@ -13,12 +13,22 @@ class MainTableViewCell: UITableViewCell {
     var shareButtonTap: (() -> Void)?
     static var identifier = "MainTableViewCell"
     private var dataManager = DataManager()
+   
+ 
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup()
         setConstraints()
         likeButton.addTarget(self, action: #selector(likePressed), for: .touchUpInside)
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didDoubleTapImage))
+        tapGesture.numberOfTapsRequired = 2
+        bandImage.isUserInteractionEnabled = true
+        bandImage.addGestureRecognizer(tapGesture)
+        tapGesture.delegate = self
+        
+        
         //   shareButton.addTarget(self, action: #selector(sharePressed), for: .touchUpInside)
     }
     
@@ -29,7 +39,7 @@ class MainTableViewCell: UITableViewCell {
     // MARK: - UIView
     private var authorNameLabel: UILabel = {
         let authorNameLabel = UILabel()
-        authorNameLabel.font = UIFont(name: "Rockwell", size: 17)
+        authorNameLabel.font = UIFont(name: "Times New Roman", size: 17)
         authorNameLabel.textAlignment = .left
         return authorNameLabel
     }()
@@ -41,8 +51,7 @@ class MainTableViewCell: UITableViewCell {
     }()
     let likeButton: UIButton = {
         let likeButton = UIButton()
-        likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-        likeButton.imageView?.tintColor = .systemPink
+       
         return likeButton
     }()
     private let shareButton: UIButton = {
@@ -53,14 +62,14 @@ class MainTableViewCell: UITableViewCell {
     }()
     var likesCountLabel: UILabel = {
         var likesCountLabel = UILabel()
-        likesCountLabel.font = UIFont(name: "Rockwell", size: 15)
+        likesCountLabel.font = UIFont(name: "Times New Roman", size: 15)
         return likesCountLabel
     }()
     private  lazy var horStackView = UIStackView(arrangedSubviews: [likeButton, shareButton], axis: .horizontal, spacing: 20)
     private let descriptionLabel: UILabel = {
         let descriptionLabel = UILabel()
         descriptionLabel.numberOfLines = 0
-        descriptionLabel.font = UIFont(name: "Verdana", size: 12)
+        descriptionLabel.font = UIFont(name: "Times New Roman", size: 12)
         return descriptionLabel
     }()
     let heartImage: UIImageView = {
@@ -83,15 +92,24 @@ class MainTableViewCell: UITableViewCell {
         authorNameLabel.text = dataModel[indexPath.row].author
         descriptionLabel.text = dataModel[indexPath.row].author + dataModel[indexPath.row].description
         likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel[indexPath.row].likesCount)
+        likeButton.setImage(UIImage(systemName: dataModel[indexPath.row].isLiked ? "heart.fill" : "heart"), for: .normal)
+        likeButton.imageView?.tintColor = .systemPink
         horStackView.distribution = .fillProportionally
         bandImage.image = UIImage(named:image)
         selectionStyle = .none
+        bandImage.clipsToBounds = true
+        bandImage.layer.cornerRadius = 15
     }
     
     // MARK: - likeButtonPressed
     @objc  func likePressed() {
         likeButtomTap?()
     }
+    @objc func didDoubleTapImage(sender: UITapGestureRecognizer)
+    {
+        likePressed()
+    }
+    
     // MARK: - shareButtonPressed
     //    @objc  func  sharePressed () {
     //        shareButtonTap?()
@@ -101,9 +119,9 @@ class MainTableViewCell: UITableViewCell {
     // MARK: - constraints
     private func setConstraints() {
         NSLayoutConstraint.activate([
-            verStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
+            verStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
             verStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
-            contentView.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 0),
+            contentView.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 8),
             contentView.bottomAnchor.constraint(equalTo: verStackView.bottomAnchor, constant: 10),
             bandImage.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
             descriptionLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 6),

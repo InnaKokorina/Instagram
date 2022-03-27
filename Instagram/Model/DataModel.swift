@@ -13,4 +13,13 @@ struct DataModel {
     var photoImageName: String
     var likesCount: Int
     var description: String
+    var isLiked: Bool {
+        didSet {
+            if isLiked {
+                likesCount += 1
+            } else {
+                likesCount -= 1
+            }
+        }
+    }
 }
