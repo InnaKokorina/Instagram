@@ -13,23 +13,20 @@ class MainTableViewCell: UITableViewCell {
     var shareButtonTap: (() -> Void)?
     static var identifier = "MainTableViewCell"
     private var dataManager = DataManager()
-   
- 
+    private var networkManager = NetworkManager()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup()
         setConstraints()
         likeButton.addTarget(self, action: #selector(likePressed), for: .touchUpInside)
-
+        
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didDoubleTapImage))
         tapGesture.numberOfTapsRequired = 2
         bandImage.isUserInteractionEnabled = true
         bandImage.addGestureRecognizer(tapGesture)
         tapGesture.delegate = self
-        
-        
-        //   shareButton.addTarget(self, action: #selector(sharePressed), for: .touchUpInside)
+        //shareButton.addTarget(self, action: #selector(sharePressed), for: .touchUpInside)
     }
     
     required init?(coder: NSCoder) {
@@ -51,7 +48,7 @@ class MainTableViewCell: UITableViewCell {
     }()
     let likeButton: UIButton = {
         let likeButton = UIButton()
-       
+        
         return likeButton
     }()
     private let shareButton: UIButton = {
@@ -65,7 +62,7 @@ class MainTableViewCell: UITableViewCell {
         likesCountLabel.font = UIFont(name: "Times New Roman", size: 15)
         return likesCountLabel
     }()
-    private  lazy var horStackView = UIStackView(arrangedSubviews: [likeButton, shareButton], axis: .horizontal, spacing: 20)
+    private  lazy var horStackView = UIStackView(arrangedSubviews: [likeButton,shareButton], axis: .horizontal, spacing: 20)
     private let descriptionLabel: UILabel = {
         let descriptionLabel = UILabel()
         descriptionLabel.numberOfLines = 0
@@ -88,19 +85,28 @@ class MainTableViewCell: UITableViewCell {
         contentView.addSubview(verStackView)
         contentView.addSubview(heartImage)
     }
-    func configure (with image : String, dataModel:[DataModel], indexPath: IndexPath) {
+    func configure (dataModel:[DataModel], indexPath: IndexPath) {
         authorNameLabel.text = dataModel[indexPath.row].author
-        descriptionLabel.text = dataModel[indexPath.row].author + dataModel[indexPath.row].description
+        descriptionLabel.text = "\(dataModel[indexPath.row].author ):  \(dataModel[indexPath.row].description)"
         likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel[indexPath.row].likesCount)
         likeButton.setImage(UIImage(systemName: dataModel[indexPath.row].isLiked ? "heart.fill" : "heart"), for: .normal)
         likeButton.imageView?.tintColor = .systemPink
         horStackView.distribution = .fillProportionally
-        bandImage.image = UIImage(named:image)
+        downloadImage(from: URL(string: dataModel[indexPath.row].photoImageUrl)!)
         selectionStyle = .none
         bandImage.clipsToBounds = true
         bandImage.layer.cornerRadius = 15
     }
     
+    func downloadImage(from url: URL) {
+        networkManager.getData(from: url) { data, response, error in
+            guard let data = data, error == nil else { return }
+            print(response?.suggestedFilename ?? url.lastPathComponent)
+            DispatchQueue.main.async() { [weak self] in
+                self?.bandImage.image =  UIImage(data: data)
+            }
+        }
+    }
     // MARK: - likeButtonPressed
     @objc  func likePressed() {
         likeButtomTap?()
@@ -113,8 +119,6 @@ class MainTableViewCell: UITableViewCell {
     // MARK: - shareButtonPressed
     //    @objc  func  sharePressed () {
     //        shareButtonTap?()
-    //
-    //
     //  }
     // MARK: - constraints
     private func setConstraints() {

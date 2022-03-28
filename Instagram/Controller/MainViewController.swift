@@ -11,6 +11,7 @@ class MainViewController: UIViewController {
     
     private var dataManager = DataManager()
     private var dataModel = [DataModel]()
+    private var networkManager = NetworkManager()
     //  private var activityController: UIActivityViewController? = nil
     private let tableView: UITableView = {
         let tableView = UITableView()
@@ -27,11 +28,8 @@ class MainViewController: UIViewController {
         tableView.separatorStyle = .none
         tableView.allowsSelection = false
         tableView.separatorColor = .clear
-        
-        for i in 0..<10 {
-            self.dataModel.append(DataModel(author: dataManager.author[i], photoImageName: dataManager.photoImageName[i], likesCount: Int(dataManager.likesCount[i]), description: dataManager.descript[i], isLiked: dataManager.isLiked[i]))
-            self.tableView.reloadData()
-        }
+        networkManager.delegate = self
+        networkManager.fetchImages()
     }
 }
 
@@ -41,7 +39,8 @@ extension MainViewController: UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "MainTableViewCell", for: indexPath) as? MainTableViewCell else { return UITableViewCell() }
-        cell.configure(with: dataModel[indexPath.row].photoImageName, dataModel: dataModel, indexPath: indexPath)
+        print("cell")
+        cell.configure(dataModel: dataModel, indexPath: indexPath)
         
         cell.likeButtomTap = {
             self.dataModel[indexPath.row].isLiked.toggle()
@@ -62,5 +61,21 @@ extension MainViewController: UITableViewDataSource {
         //            }
         return cell
     }
+}
+
+
+extension MainViewController : NetworkManagerDelegate {
+    
+    func didUpdateImages(_ networkManager:NetworkManager, image: [DataModel]) {
+        DispatchQueue.main.async  {
+            self.dataModel = image
+            self.tableView.reloadData()
+        }
+    }
+    
+    func didFailWithError(error:Error) {
+        print(error)
+    }
+    
 }
 
