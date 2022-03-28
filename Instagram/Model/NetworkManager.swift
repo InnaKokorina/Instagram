@@ -14,11 +14,10 @@ protocol NetworkManagerDelegate {
 struct NetworkManager {
     
     var delegate: NetworkManagerDelegate?
-    private let apiKey = "26357557-9da21e542a629f8ca8cf5dafb"
     var dataModel = [DataModel]()
     
     func fetchImages() {
-        let url = "https://pixabay.com/api/?key=\(apiKey)&q=fruits=photo"
+        let url = "https://zoo-animal-api.herokuapp.com/animals/rand/10"
         performRequest(with: url)
     }
     
@@ -29,14 +28,14 @@ struct NetworkManager {
                     let decoder = JSONDecoder()
                     if let safeData = data {
                         do {
-                            let result = try decoder.decode(ImagesModelAPI.self, from: safeData)
+                            let result = try decoder.decode([ImagesModelAPI].self, from: safeData)
                             var dbmodel = DataModel()
                             var dataModel = [DataModel]()
-                            for model in result.hits {
-                                dbmodel.photoImageUrl = model.webformatURL
-                                dbmodel.description = model.tags
-                                dbmodel.likesCount = model.likes
-                                dbmodel.author = model.user
+                            for model in result {
+                                dbmodel.photoImageUrl = model.image_link
+                                dbmodel.description = "anymal_type: \(model.animal_type), lifespan: \(model.lifespan), diet: \(model.diet)"
+                                dbmodel.likesCount = Int.random(in: 0...100)
+                                dbmodel.author = model.name
                                 dataModel.append(dbmodel)
                             }
                             delegate?.didUpdateImages(self, image: dataModel)

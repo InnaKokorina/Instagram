@@ -7,15 +7,11 @@
 
 import Foundation
 import UIKit
-
 struct ImagesModelAPI: Codable {
-    var hits: [Hits]
-}
-
-struct Hits: Codable {
-    var id: Int
-    var webformatURL: String
-    var likes: Int
-    var tags: String
-    var user: String
+    var name: String
+    var animal_type: String
+    var lifespan: String
+    var habitat: String
+    var diet: String
+    var image_link: String  
 }
