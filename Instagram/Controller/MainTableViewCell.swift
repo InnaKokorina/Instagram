@@ -8,7 +8,7 @@
 import UIKit
 
 
-class MainTableViewCell: UITableViewCell {
+class MainTableViewCell: UITableViewCell, UIScrollViewDelegate {
     var likeButtomTap: (() -> Void)?
     var shareButtonTap: (() -> Void)?
     static var identifier = "MainTableViewCell"
@@ -27,6 +27,15 @@ class MainTableViewCell: UITableViewCell {
         bandImage.addGestureRecognizer(tapGesture)
         tapGesture.delegate = self
         //shareButton.addTarget(self, action: #selector(sharePressed), for: .touchUpInside)
+        scrollView.delegate = self
+        scrollView.backgroundColor = UIColor(red: 90, green: 90, blue: 90, alpha: 0.90)
+        scrollView.alwaysBounceVertical = false
+        scrollView.alwaysBounceHorizontal = false
+        scrollView.showsVerticalScrollIndicator = true
+        scrollView.flashScrollIndicators()
+        scrollView.minimumZoomScale = 1.0
+        scrollView.maximumZoomScale = 10.0
+        scrollView.zoomScale = 1.0
     }
     
     required init?(coder: NSCoder) {
@@ -34,6 +43,9 @@ class MainTableViewCell: UITableViewCell {
     }
     
     // MARK: - UIView
+    private var scrollView = UIScrollView()
+    
+    
     private var authorNameLabel: UILabel = {
         let authorNameLabel = UILabel()
         authorNameLabel.font = UIFont(name: "Times New Roman", size: 17)
@@ -42,7 +54,7 @@ class MainTableViewCell: UITableViewCell {
     }()
     private var bandImage: UIImageView = {
         let bandImage = UIImageView()
-        bandImage.contentMode = .scaleToFill
+        bandImage.contentMode = .scaleAspectFill
         bandImage.translatesAutoresizingMaskIntoConstraints = false
         return bandImage
     }()
@@ -77,13 +89,15 @@ class MainTableViewCell: UITableViewCell {
         heartImage.alpha = 0
         return heartImage
     }()
-    private lazy var verStackView = UIStackView(arrangedSubviews: [authorNameLabel, bandImage, horStackView, likesCountLabel, descriptionLabel ], axis: .vertical, spacing: 4)
+    private lazy var verStackView = UIStackView(arrangedSubviews: [authorNameLabel, scrollView, horStackView, likesCountLabel, descriptionLabel ], axis: .vertical, spacing: 4)
     
     // MARK: - cell setup and configure
     private func setup() {
         contentView.addSubview(horStackView)
         contentView.addSubview(verStackView)
         contentView.addSubview(heartImage)
+        contentView.addSubview(scrollView)
+        scrollView.addSubview(bandImage)
     }
     func configure (dataModel:[DataModel], indexPath: IndexPath) {
         authorNameLabel.text = dataModel[indexPath.row].author
@@ -96,6 +110,8 @@ class MainTableViewCell: UITableViewCell {
         selectionStyle = .none
         bandImage.clipsToBounds = true
         bandImage.layer.cornerRadius = 15
+        bandImage.isUserInteractionEnabled = true
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
     }
     
     func downloadImage(from url: URL) {
@@ -107,6 +123,9 @@ class MainTableViewCell: UITableViewCell {
             }
         }
     }
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+            return bandImage
+        }
     // MARK: - likeButtonPressed
     @objc  func likePressed() {
         likeButtomTap?()
@@ -115,6 +134,7 @@ class MainTableViewCell: UITableViewCell {
     {
         likePressed()
     }
+    
     
     // MARK: - shareButtonPressed
     //    @objc  func  sharePressed () {
@@ -127,13 +147,31 @@ class MainTableViewCell: UITableViewCell {
             verStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
             contentView.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 8),
             contentView.bottomAnchor.constraint(equalTo: verStackView.bottomAnchor, constant: 10),
-            bandImage.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
+            
             descriptionLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 6),
             authorNameLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 6),
-            likesCountLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 6)
+            likesCountLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 6),
+            
+            scrollView.topAnchor.constraint(equalTo: authorNameLabel.bottomAnchor, constant: 4),
+            scrollView.bottomAnchor.constraint(equalTo: horStackView.bottomAnchor, constant: 4),
+            scrollView.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
+            scrollView.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 0)
+            
+            
+            
         ])
+        
         NSLayoutConstraint.activate([
-            bandImage.heightAnchor.constraint(equalToConstant: 400)
+            bandImage.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 0),
+            bandImage.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 0),
+            scrollView.trailingAnchor.constraint(equalTo: bandImage.trailingAnchor, constant: 0),
+            scrollView.bottomAnchor.constraint(equalTo: bandImage.bottomAnchor, constant: 0),
+            ])
+        
+        NSLayoutConstraint.activate([
+            scrollView.heightAnchor.constraint(equalToConstant: 400),
+            bandImage.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            bandImage.heightAnchor.constraint(equalTo: scrollView.heightAnchor)
         ])
         NSLayoutConstraint.activate([
             heartImage.leadingAnchor.constraint(equalTo: bandImage.leadingAnchor, constant: 40),
