@@ -91,15 +91,6 @@ class MainTableViewCell: UITableViewCell {
         selectionStyle = .none
     }
     
-    func downloadImage(from url: URL) {
-        networkManager.getData(from: url) { data, response, error in
-            guard let data = data, error == nil else { return }
-            DispatchQueue.main.async() { [weak self] in
-                self?.bandImage.image =  UIImage(data: data)
-            }
-        }
-    }
-    
     // MARK: - likeButtonPressed
     @objc  func likePressed() {
         likeButtomTap?()
@@ -175,10 +166,13 @@ extension MainTableViewCell {
     
 }
 
-extension MainTableViewCell: NetworkManagerImageDelegate {
-    func didUpdateBandImage(data: Data) {
-        DispatchQueue.main.async() { [weak self] in
-            self?.bandImage.image =  UIImage(data: data)
+extension MainTableViewCell {
+    func downloadImage(from url: URL) {
+        networkManager.getData(from: url) { data, response, error in
+            guard let data = data, error == nil else { return }
+            DispatchQueue.main.async() { [weak self] in
+                self?.bandImage.image =  UIImage(data: data)
+            }
         }
     }
 }
