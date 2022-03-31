@@ -13,9 +13,10 @@ class MainTableViewCell: UITableViewCell {
     static var identifier = "MainTableViewCell"
     private var dataManager = DataManager()
     private var networkManager = NetworkManager()
-    
+   
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        networkManager.delegateCell = self
         addViews()
         setConstraints()
         likeButton.addTarget(self, action: #selector(likePressed), for: .touchUpInside)
@@ -87,7 +88,7 @@ class MainTableViewCell: UITableViewCell {
         descriptionLabel.text = "\(dataModel[indexPath.row].author ):  \(dataModel[indexPath.row].description)"
         likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel[indexPath.row].likesCount)
         likeButton.setImage(UIImage(systemName: dataModel[indexPath.row].isLiked ? "heart.fill" : "heart"), for: .normal)
-        downloadImage(from: URL(string: dataModel[indexPath.row].photoImageUrl)!)
+        networkManager.downloadImage(from: URL(string: dataModel[indexPath.row].photoImageUrl)!)
         selectionStyle = .none
     }
     
@@ -166,13 +167,12 @@ extension MainTableViewCell {
     
 }
 
-extension MainTableViewCell {
-    func downloadImage(from url: URL) {
-        networkManager.getData(from: url) { data, response, error in
-            guard let data = data, error == nil else { return }
-            DispatchQueue.main.async() { [weak self] in
-                self?.bandImage.image =  UIImage(data: data)
-            }
+// MARK: - NetworkManagerCellDelegate
+extension MainTableViewCell: NetworkManagerCellDelegate {
+    func didUpdateImageCell(_ networkManager: NetworkManager ,with data: Data) {
+        print("data in cell")
+        DispatchQueue.main.async() { [weak self] in
+            self?.bandImage.image =  UIImage(data: data)
         }
     }
 }

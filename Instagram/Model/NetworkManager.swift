@@ -6,14 +6,21 @@
 //
 
 import Foundation
+import CoreText
+import UIKit
 
 protocol NetworkManagerDelegate {
     func didUpdateImages(_ networkManager:NetworkManager, image: [DataModel])
     func didFailWithError(error: Error)
 }
+
+protocol NetworkManagerCellDelegate {
+    func didUpdateImageCell(_ networkManager: NetworkManager, with: Data)
+}
 struct NetworkManager {
     
     var delegate: NetworkManagerDelegate?
+    var delegateCell: NetworkManagerCellDelegate?
     var dataModel = [DataModel]()
     
     // MARK: - fetch data from URL
@@ -51,8 +58,17 @@ struct NetworkManager {
             task.resume()
         }
     }
-    // MARK: - fetch image from URL
+    // MARK: - downloadImage
     func getData(from url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> ()) {
         URLSession.shared.dataTask(with: url, completionHandler: completion).resume()
     }
+    func downloadImage(from url: URL) -> Void  {
+        getData(from: url) { data, response, error in
+            guard let data = data, error == nil else { return }
+            delegateCell?.didUpdateImageCell(self ,with: data)            
+        }
+    }
 }
+
+
+
