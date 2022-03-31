@@ -47,10 +47,10 @@ extension MainViewController: UITableViewDataSource {
             cell.likeButton.imageView?.alpha = 0.3
             cell.likeButton.setImage(UIImage(systemName: self.dataModel[indexPath.row].isLiked ? "heart.fill" : "heart"), for: .normal)
             cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: self.dataModel[indexPath.row].likesCount)
-            cell.heartImage.alpha = 0.5
+            cell.heartView.alpha = 0.5
             let seconds = 0.3
             DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
-                cell.heartImage.alpha = 0
+                cell.heartView.alpha = 0
             }
         }
         //            cell.shareButtonTap = {

@@ -43,7 +43,11 @@ class MainTableViewCell: UITableViewCell, UIScrollViewDelegate {
     }
     
     // MARK: - UIView
-    private var scrollView = UIScrollView()
+    private var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        return scrollView
+}()
     
     
     private var authorNameLabel: UILabel = {
@@ -54,7 +58,7 @@ class MainTableViewCell: UITableViewCell, UIScrollViewDelegate {
     }()
     private var bandImage: UIImageView = {
         let bandImage = UIImageView()
-        bandImage.contentMode = .scaleAspectFill
+        bandImage.contentMode = .scaleToFill
         bandImage.translatesAutoresizingMaskIntoConstraints = false
         return bandImage
     }()
@@ -81,13 +85,11 @@ class MainTableViewCell: UITableViewCell, UIScrollViewDelegate {
         descriptionLabel.font = UIFont(name: "Times New Roman", size: 12)
         return descriptionLabel
     }()
-    let heartImage: UIImageView = {
-        let heartImage = UIImageView()
-        heartImage.image = UIImage(systemName: "heart.fill")
-        heartImage.translatesAutoresizingMaskIntoConstraints = false
-        heartImage.tintColor = .systemPink
-        heartImage.alpha = 0
-        return heartImage
+    var heartView: BezierPathView = {
+        var heartView = BezierPathView()
+        heartView.translatesAutoresizingMaskIntoConstraints = false
+        heartView.alpha = 0
+        return heartView
     }()
     private lazy var verStackView = UIStackView(arrangedSubviews: [authorNameLabel, scrollView, horStackView, likesCountLabel, descriptionLabel ], axis: .vertical, spacing: 4)
     
@@ -95,23 +97,24 @@ class MainTableViewCell: UITableViewCell, UIScrollViewDelegate {
     private func setup() {
         contentView.addSubview(horStackView)
         contentView.addSubview(verStackView)
-        contentView.addSubview(heartImage)
         contentView.addSubview(scrollView)
         scrollView.addSubview(bandImage)
-    }
+        bandImage.addSubview(heartView)
+ }
     func configure (dataModel:[DataModel], indexPath: IndexPath) {
         authorNameLabel.text = dataModel[indexPath.row].author
         descriptionLabel.text = "\(dataModel[indexPath.row].author ):  \(dataModel[indexPath.row].description)"
         likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel[indexPath.row].likesCount)
+        horStackView.distribution = .fillProportionally
         likeButton.setImage(UIImage(systemName: dataModel[indexPath.row].isLiked ? "heart.fill" : "heart"), for: .normal)
         likeButton.imageView?.tintColor = .systemPink
-        horStackView.distribution = .fillProportionally
+        
         downloadImage(from: URL(string: dataModel[indexPath.row].photoImageUrl)!)
         selectionStyle = .none
         bandImage.clipsToBounds = true
         bandImage.layer.cornerRadius = 15
         bandImage.isUserInteractionEnabled = true
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
+     
     }
     
     func downloadImage(from url: URL) {
@@ -153,10 +156,10 @@ class MainTableViewCell: UITableViewCell, UIScrollViewDelegate {
             likesCountLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 6),
             
             scrollView.topAnchor.constraint(equalTo: authorNameLabel.bottomAnchor, constant: 4),
-            scrollView.bottomAnchor.constraint(equalTo: horStackView.bottomAnchor, constant: 4),
-            scrollView.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
-            scrollView.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 0)
             
+            scrollView.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
+            scrollView.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 0),
+            horStackView.topAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 4),
             
             
         ])
@@ -173,12 +176,12 @@ class MainTableViewCell: UITableViewCell, UIScrollViewDelegate {
             bandImage.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             bandImage.heightAnchor.constraint(equalTo: scrollView.heightAnchor)
         ])
-        NSLayoutConstraint.activate([
-            heartImage.leadingAnchor.constraint(equalTo: bandImage.leadingAnchor, constant: 40),
-            heartImage.topAnchor.constraint(equalTo: bandImage.topAnchor, constant: 70),
-            bandImage.trailingAnchor.constraint(equalTo: heartImage.trailingAnchor, constant: 40),
-            bandImage.bottomAnchor.constraint(equalTo: heartImage.bottomAnchor, constant: 70)
-        ])
+                NSLayoutConstraint.activate([
+                    heartView.leadingAnchor.constraint(equalTo: bandImage.leadingAnchor, constant: 40),
+                    heartView.topAnchor.constraint(equalTo: bandImage.topAnchor, constant: 100),
+                    bandImage.trailingAnchor.constraint(equalTo: heartView.trailingAnchor, constant: 40),
+                    bandImage.bottomAnchor.constraint(equalTo: heartView.bottomAnchor, constant: 100)
+                ])
     }
 }
 
