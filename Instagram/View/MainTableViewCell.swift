@@ -7,8 +7,7 @@
 
 import UIKit
 
-
-class MainTableViewCell: UITableViewCell, UIScrollViewDelegate {
+class MainTableViewCell: UITableViewCell {
     var likeButtomTap: (() -> Void)?
     var shareButtonTap: (() -> Void)?
     static var identifier = "MainTableViewCell"
@@ -17,39 +16,23 @@ class MainTableViewCell: UITableViewCell, UIScrollViewDelegate {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setup()
+        addViews()
         setConstraints()
         likeButton.addTarget(self, action: #selector(likePressed), for: .touchUpInside)
-        
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didDoubleTapImage))
-        tapGesture.numberOfTapsRequired = 2
-        bandImage.isUserInteractionEnabled = true
-        bandImage.addGestureRecognizer(tapGesture)
-        tapGesture.delegate = self
-        //shareButton.addTarget(self, action: #selector(sharePressed), for: .touchUpInside)
-        scrollView.delegate = self
-        scrollView.backgroundColor = UIColor(red: 90, green: 90, blue: 90, alpha: 0.90)
-        scrollView.alwaysBounceVertical = false
-        scrollView.alwaysBounceHorizontal = false
-        scrollView.showsVerticalScrollIndicator = true
-        scrollView.flashScrollIndicators()
-        scrollView.minimumZoomScale = 1.0
-        scrollView.maximumZoomScale = 10.0
-        scrollView.zoomScale = 1.0
+        doubleTapImage()
+        scrollViewSet()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - UIView
+    // MARK: - UIViews
     private var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         return scrollView
-}()
-    
-    
+    }()
     private var authorNameLabel: UILabel = {
         let authorNameLabel = UILabel()
         authorNameLabel.font = UIFont(name: "Times New Roman", size: 17)
@@ -60,25 +43,23 @@ class MainTableViewCell: UITableViewCell, UIScrollViewDelegate {
         let bandImage = UIImageView()
         bandImage.contentMode = .scaleToFill
         bandImage.translatesAutoresizingMaskIntoConstraints = false
+        bandImage.clipsToBounds = true
+        bandImage.layer.cornerRadius = 15
+        bandImage.isUserInteractionEnabled = true
         return bandImage
     }()
     let likeButton: UIButton = {
         let likeButton = UIButton()
-        
+        likeButton.imageView?.tintColor = .systemPink
+        likeButton.translatesAutoresizingMaskIntoConstraints = false
+        likeButton.contentHorizontalAlignment = .leading
         return likeButton
-    }()
-    private let shareButton: UIButton = {
-        let shareButton = UIButton()
-        shareButton.setImage(UIImage(systemName: "paperplane"), for: .normal)
-        shareButton.imageView?.tintColor = .black
-        return shareButton
     }()
     var likesCountLabel: UILabel = {
         var likesCountLabel = UILabel()
         likesCountLabel.font = UIFont(name: "Times New Roman", size: 15)
         return likesCountLabel
     }()
-    private  lazy var horStackView = UIStackView(arrangedSubviews: [likeButton,shareButton], axis: .horizontal, spacing: 20)
     private let descriptionLabel: UILabel = {
         let descriptionLabel = UILabel()
         descriptionLabel.numberOfLines = 0
@@ -91,58 +72,39 @@ class MainTableViewCell: UITableViewCell, UIScrollViewDelegate {
         heartView.alpha = 0
         return heartView
     }()
-    private lazy var verStackView = UIStackView(arrangedSubviews: [authorNameLabel, scrollView, horStackView, likesCountLabel, descriptionLabel ], axis: .vertical, spacing: 4)
+    private lazy var verStackView = UIStackView(arrangedSubviews: [authorNameLabel, scrollView, likeButton, likesCountLabel, descriptionLabel ], axis: .vertical, spacing: 4)
     
     // MARK: - cell setup and configure
-    private func setup() {
-        contentView.addSubview(horStackView)
+    private func addViews() {
         contentView.addSubview(verStackView)
         contentView.addSubview(scrollView)
         scrollView.addSubview(bandImage)
         bandImage.addSubview(heartView)
- }
+    }
     func configure (dataModel:[DataModel], indexPath: IndexPath) {
+        verStackView.alignment = .leading
         authorNameLabel.text = dataModel[indexPath.row].author
         descriptionLabel.text = "\(dataModel[indexPath.row].author ):  \(dataModel[indexPath.row].description)"
         likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel[indexPath.row].likesCount)
-        horStackView.distribution = .fillProportionally
         likeButton.setImage(UIImage(systemName: dataModel[indexPath.row].isLiked ? "heart.fill" : "heart"), for: .normal)
-        likeButton.imageView?.tintColor = .systemPink
-        
         downloadImage(from: URL(string: dataModel[indexPath.row].photoImageUrl)!)
         selectionStyle = .none
-        bandImage.clipsToBounds = true
-        bandImage.layer.cornerRadius = 15
-        bandImage.isUserInteractionEnabled = true
-     
     }
     
     func downloadImage(from url: URL) {
         networkManager.getData(from: url) { data, response, error in
             guard let data = data, error == nil else { return }
-            print(response?.suggestedFilename ?? url.lastPathComponent)
             DispatchQueue.main.async() { [weak self] in
                 self?.bandImage.image =  UIImage(data: data)
             }
         }
     }
-    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-            return bandImage
-        }
+    
     // MARK: - likeButtonPressed
     @objc  func likePressed() {
         likeButtomTap?()
     }
-    @objc func didDoubleTapImage(sender: UITapGestureRecognizer)
-    {
-        likePressed()
-    }
     
-    
-    // MARK: - shareButtonPressed
-    //    @objc  func  sharePressed () {
-    //        shareButtonTap?()
-    //  }
     // MARK: - constraints
     private func setConstraints() {
         NSLayoutConstraint.activate([
@@ -154,14 +116,13 @@ class MainTableViewCell: UITableViewCell, UIScrollViewDelegate {
             descriptionLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 6),
             authorNameLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 6),
             likesCountLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 6),
+            likeButton.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 6),
+            likeButton.widthAnchor.constraint(equalToConstant: 22),
             
             scrollView.topAnchor.constraint(equalTo: authorNameLabel.bottomAnchor, constant: 4),
-            
             scrollView.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
             scrollView.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 0),
-            horStackView.topAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 4),
-            
-            
+            likeButton.topAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 4),
         ])
         
         NSLayoutConstraint.activate([
@@ -169,22 +130,55 @@ class MainTableViewCell: UITableViewCell, UIScrollViewDelegate {
             bandImage.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 0),
             scrollView.trailingAnchor.constraint(equalTo: bandImage.trailingAnchor, constant: 0),
             scrollView.bottomAnchor.constraint(equalTo: bandImage.bottomAnchor, constant: 0),
-            ])
+        ])
         
         NSLayoutConstraint.activate([
             scrollView.heightAnchor.constraint(equalToConstant: 400),
             bandImage.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             bandImage.heightAnchor.constraint(equalTo: scrollView.heightAnchor)
         ])
-                NSLayoutConstraint.activate([
-                    heartView.leadingAnchor.constraint(equalTo: bandImage.leadingAnchor, constant: 40),
-                    heartView.topAnchor.constraint(equalTo: bandImage.topAnchor, constant: 100),
-                    bandImage.trailingAnchor.constraint(equalTo: heartView.trailingAnchor, constant: 40),
-                    bandImage.bottomAnchor.constraint(equalTo: heartView.bottomAnchor, constant: 100)
-                ])
+        NSLayoutConstraint.activate([
+            heartView.leadingAnchor.constraint(equalTo: bandImage.leadingAnchor, constant: 40),
+            heartView.topAnchor.constraint(equalTo: bandImage.topAnchor, constant: 100),
+            bandImage.trailingAnchor.constraint(equalTo: heartView.trailingAnchor, constant: 40),
+            bandImage.bottomAnchor.constraint(equalTo: heartView.bottomAnchor, constant: 100)
+        ])
     }
 }
 
+// MARK: - viewForZooming
+extension MainTableViewCell: UIScrollViewDelegate {
+    func scrollViewSet() {
+        scrollView.delegate = self
+        scrollView.minimumZoomScale = 1.0
+        scrollView.maximumZoomScale = 10.0
+        scrollView.bouncesZoom = false
+        bandImage.isUserInteractionEnabled = true
+    }
+    
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return bandImage
+    }
+}
+// MARK: - doubleTapImage
+extension MainTableViewCell {
+    func doubleTapImage() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didDoubleTapImage))
+        tapGesture.numberOfTapsRequired = 2
+        bandImage.addGestureRecognizer(tapGesture)
+        tapGesture.delegate = self
+    }
+    @objc func didDoubleTapImage(sender: UITapGestureRecognizer)
+    {
+        likePressed()
+    }
+    
+}
 
-
-
+extension MainTableViewCell: NetworkManagerImageDelegate {
+    func didUpdateBandImage(data: Data) {
+        DispatchQueue.main.async() { [weak self] in
+            self?.bandImage.image =  UIImage(data: data)
+        }
+    }
+}

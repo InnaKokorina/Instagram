@@ -9,13 +9,18 @@ import Foundation
 
 protocol NetworkManagerDelegate {
     func didUpdateImages(_ networkManager:NetworkManager, image: [DataModel])
-    func didFailWithError(error:Error)
+    func didFailWithError(error: Error)
+}
+protocol NetworkManagerImageDelegate {
+    func  didUpdateBandImage(data: Data)
 }
 struct NetworkManager {
     
     var delegate: NetworkManagerDelegate?
+    var delegateCell: NetworkManagerImageDelegate?
     var dataModel = [DataModel]()
     
+    // MARK: - fetch data from URL
     func fetchImages() {
         let url = "https://zoo-animal-api.herokuapp.com/animals/rand/10"
         performRequest(with: url)
@@ -50,7 +55,14 @@ struct NetworkManager {
             task.resume()
         }
     }
+    // MARK: - fetch image from URL
     func getData(from url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> ()) {
         URLSession.shared.dataTask(with: url, completionHandler: completion).resume()
+    }
+    func downloadImage(from url: URL) {
+        getData(from: url) { data, response, error in
+            guard let data = data, error == nil else { return }
+            delegateCell?.didUpdateBandImage(data: data)
+        }
     }
 }

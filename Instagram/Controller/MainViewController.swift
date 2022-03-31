@@ -12,7 +12,7 @@ class MainViewController: UIViewController {
     private var dataManager = DataManager()
     private var dataModel = [DataModel]()
     private var networkManager = NetworkManager()
-    //  private var activityController: UIActivityViewController? = nil
+    private var activityController: UIActivityViewController? = nil
     private let tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(MainTableViewCell.self, forCellReuseIdentifier: "MainTableViewCell")
@@ -22,24 +22,26 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        tableViewsSetup()
+        networkManager.delegate = self
+        networkManager.fetchImages()
+    }
+    
+    func tableViewsSetup() {
         view.addSubview(tableView)
         tableView.dataSource = self
         tableView.frame = view.bounds
         tableView.separatorStyle = .none
         tableView.allowsSelection = false
         tableView.separatorColor = .clear
-        networkManager.delegate = self
-        networkManager.fetchImages()
     }
 }
-
 extension MainViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         dataModel.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "MainTableViewCell", for: indexPath) as? MainTableViewCell else { return UITableViewCell() }
-        print("cell")
         cell.configure(dataModel: dataModel, indexPath: indexPath)
         
         cell.likeButtomTap = {
@@ -53,16 +55,11 @@ extension MainViewController: UITableViewDataSource {
                 cell.heartView.alpha = 0
             }
         }
-        //            cell.shareButtonTap = {
-        //                print("HI")
-        //                self.activityController = UIActivityViewController(activityItems: [self.dataModel[indexPath.row].author], applicationActivities: nil)
-        //                self.activityController?.present(MainViewController(), animated: true, completion: nil)
-        //
-        //            }
         return cell
     }
 }
 
+// MARK: - NetworkManagerDelegate
 
 extension MainViewController : NetworkManagerDelegate {
     
@@ -76,6 +73,5 @@ extension MainViewController : NetworkManagerDelegate {
     func didFailWithError(error:Error) {
         print(error)
     }
-    
 }
 

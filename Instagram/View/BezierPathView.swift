@@ -8,7 +8,7 @@
 import UIKit
 
 class BezierPathView: UIView {
-
+    
     var path: UIBezierPath!
     
     override init(frame: CGRect) {
@@ -21,7 +21,6 @@ class BezierPathView: UIView {
         super.init(coder: aDecoder)
     }
     
-    
     func getHearts()  {
         path = UIBezierPath()
         path.move(to: CGPoint(x: self.frame.size.width/2, y: self.frame.size.height))
@@ -33,6 +32,6 @@ class BezierPathView: UIView {
     override func draw(_ rect: CGRect) {
         getHearts()
         UIColor.systemPink.setFill()
-            path.fill()
+        path.fill()
     }
 }
