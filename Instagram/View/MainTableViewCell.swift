@@ -9,7 +9,6 @@ import UIKit
 
 class MainTableViewCell: UITableViewCell {
     var likeButtomTap: (() -> Void)?
-    var shareButtonTap: (() -> Void)?
     static var identifier = "MainTableViewCell"
     private var dataManager = DataManager()
     private var networkManager = NetworkManager()
@@ -42,7 +41,7 @@ class MainTableViewCell: UITableViewCell {
     }()
     private var bandImage: UIImageView = {
         let bandImage = UIImageView()
-        bandImage.contentMode = .scaleToFill
+        bandImage.contentMode = .scaleAspectFill
         bandImage.translatesAutoresizingMaskIntoConstraints = false
         bandImage.clipsToBounds = true
         bandImage.layer.cornerRadius = 15
@@ -54,6 +53,9 @@ class MainTableViewCell: UITableViewCell {
         likeButton.imageView?.tintColor = .systemPink
         likeButton.translatesAutoresizingMaskIntoConstraints = false
         likeButton.contentHorizontalAlignment = .leading
+        likeButton.setImage(UIImage(systemName: "heart.fill"), for: .highlighted)
+        likeButton.setImage(UIImage(systemName: "heart.fill"), for: .selected)
+        likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
         return likeButton
     }()
     var likesCountLabel: UILabel = {
@@ -67,8 +69,8 @@ class MainTableViewCell: UITableViewCell {
         descriptionLabel.font = UIFont(name: "Times New Roman", size: 12)
         return descriptionLabel
     }()
-    var heartView: BezierPathView = {
-        var heartView = BezierPathView()
+    var heartView: BezierHeartView = {
+        var heartView = BezierHeartView()
         heartView.translatesAutoresizingMaskIntoConstraints = false
         heartView.alpha = 0
         return heartView
@@ -87,7 +89,6 @@ class MainTableViewCell: UITableViewCell {
         authorNameLabel.text = dataModel[indexPath.row].author
         descriptionLabel.text = "\(dataModel[indexPath.row].author ):  \(dataModel[indexPath.row].description)"
         likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel[indexPath.row].likesCount)
-        likeButton.setImage(UIImage(systemName: dataModel[indexPath.row].isLiked ? "heart.fill" : "heart"), for: .normal)
         networkManager.downloadImage(from: URL(string: dataModel[indexPath.row].photoImageUrl)!)
         selectionStyle = .none
     }
@@ -151,6 +152,9 @@ extension MainTableViewCell: UIScrollViewDelegate {
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return bandImage
     }
+    func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
+        scrollView.zoomScale = 1.0
+    }
 }
 // MARK: - doubleTapImage
 extension MainTableViewCell {
@@ -170,7 +174,6 @@ extension MainTableViewCell {
 // MARK: - NetworkManagerCellDelegate
 extension MainTableViewCell: NetworkManagerCellDelegate {
     func didUpdateImageCell(_ networkManager: NetworkManager ,with data: Data) {
-        print("data in cell")
         DispatchQueue.main.async() { [weak self] in
             self?.bandImage.image =  UIImage(data: data)
         }

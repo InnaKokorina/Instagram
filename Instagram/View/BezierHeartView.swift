@@ -7,7 +7,7 @@
 
 import UIKit
 
-class BezierPathView: UIView {
+class BezierHeartView: UIView {
     
     var path: UIBezierPath!
     

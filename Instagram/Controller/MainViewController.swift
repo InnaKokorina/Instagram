@@ -46,14 +46,20 @@ extension MainViewController: UITableViewDataSource {
         
         cell.likeButtomTap = {
             self.dataModel[indexPath.row].isLiked.toggle()
-            cell.likeButton.imageView?.alpha = 0.3
-            cell.likeButton.setImage(UIImage(systemName: self.dataModel[indexPath.row].isLiked ? "heart.fill" : "heart"), for: .normal)
-            cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: self.dataModel[indexPath.row].likesCount)
-            cell.heartView.alpha = 0.5
-            let seconds = 0.3
-            DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
-                cell.heartView.alpha = 0
+            if self.dataModel[indexPath.row].isLiked {
+                cell.likeButton.imageView?.isHighlighted = true
+                cell.likeButton.isSelected = true
+                cell.heartView.alpha = 0.5
+                let seconds = 0.3
+                DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
+                    cell.heartView.alpha = 0
+                }
+            } else {
+                cell.likeButton.imageView?.isHighlighted = false
+                cell.likeButton.isSelected = false
             }
+            
+            cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: self.dataModel[indexPath.row].likesCount)
         }
         return cell
     }
