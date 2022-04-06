@@ -11,7 +11,7 @@ import UIKit
 
 protocol NetworkManagerDelegate {
     func didUpdateImages(_ networkManager:NetworkManager, image: [DataModel])
-    func didFailWithError(error: Error)
+    func didFailWithError()
 }
 
 protocol NetworkManagerCellDelegate {
@@ -26,31 +26,46 @@ struct NetworkManager {
     // MARK: - fetch data from URL
     func fetchImages() {
         let url = "https://zoo-animal-api.herokuapp.com/animals/rand/10"
-        performRequest(with: url)
+        performRequest(url: url) { result in
+            print("here")
+            var dbmodel = DataModel()
+            var dataModel = [DataModel]()
+            guard let safeResult = result
+            else {
+                self.delegate?.didFailWithError()
+                return
+            }
+            for model in safeResult {
+                dbmodel.photoImageUrl = model.image_link
+                dbmodel.description = "anymal_type: \(model.animal_type), lifespan: \(model.lifespan), diet: \(model.diet)"
+                dbmodel.likesCount = Int.random(in: 0...100)
+                dbmodel.author = model.name
+                dataModel.append(dbmodel)
+            }
+            
+            self.delegate?.didUpdateImages(self, image: dataModel)
+        }
     }
     
-    func performRequest(with url: String) {
-        if let url = URL(string: url) {
+    func performRequest(url: String?, completion:@escaping ([ImagesModelAPI]?) -> Void) {
+        guard
+            let stringUrl = url,
+            let url = URL(string: stringUrl)
+        else {
+            completion(nil)
+            return
+        }
+        DispatchQueue.global(qos: .background).async {
             let task = URLSession.shared.dataTask(with: url) { data, response, error in
                 if error == nil{
                     let decoder = JSONDecoder()
                     if let safeData = data {
                         do {
                             let result = try decoder.decode([ImagesModelAPI].self, from: safeData)
-                            var dbmodel = DataModel()
-                            var dataModel = [DataModel]()
-                            for model in result {
-                                dbmodel.photoImageUrl = model.image_link
-                                dbmodel.description = "anymal_type: \(model.animal_type), lifespan: \(model.lifespan), diet: \(model.diet)"
-                                dbmodel.likesCount = Int.random(in: 0...100)
-                                dbmodel.author = model.name
-                                dataModel.append(dbmodel)
-                            }
-                            delegate?.didUpdateImages(self, image: dataModel)
-                            
+                            completion(result)
                         } catch {
-                            delegate?.didFailWithError(error: error)
-                            
+                            completion(nil)
+                            return
                         }
                     }
                 }
@@ -60,12 +75,14 @@ struct NetworkManager {
     }
     // MARK: - downloadImage
     func getData(from url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> ()) {
-        URLSession.shared.dataTask(with: url, completionHandler: completion).resume()
+        DispatchQueue.global(qos: .background).async{
+            URLSession.shared.dataTask(with: url, completionHandler: completion).resume()
+        }
     }
     func downloadImage(from url: URL) -> Void  {
         getData(from: url) { data, response, error in
             guard let data = data, error == nil else { return }
-            delegateCell?.didUpdateImageCell(self ,with: data)            
+            delegateCell?.didUpdateImageCell(self ,with: data)
         }
     }
 }

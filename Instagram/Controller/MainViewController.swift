@@ -76,8 +76,8 @@ extension MainViewController : NetworkManagerDelegate {
         }
     }
     
-    func didFailWithError(error:Error) {
-        print(error)
+    func didFailWithError() {
+        print("ошибка сети")
     }
 }
 
