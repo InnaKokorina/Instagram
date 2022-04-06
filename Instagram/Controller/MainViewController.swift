@@ -24,7 +24,7 @@ class MainViewController: UIViewController {
         view.backgroundColor = .systemBackground
         tableViewsSetup()
         networkManager.delegate = self
-        networkManager.fetchImages()
+        networkManager.fetchImages(imagesCount: 10)
     }
     
     func tableViewsSetup() {
@@ -34,8 +34,15 @@ class MainViewController: UIViewController {
         tableView.separatorStyle = .none
         tableView.allowsSelection = false
         tableView.separatorColor = .clear
+        tableView.refreshControl = UIRefreshControl()
+        tableView.refreshControl?.addTarget(self, action: #selector(callPullToRefresh), for: .valueChanged)
+    }
+    // MARK: - RefreshImages
+    @objc func callPullToRefresh() {
+        networkManager.fetchImages(imagesCount: 1)
     }
 }
+// MARK: - UITableViewDataSource
 extension MainViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         dataModel.count
@@ -70,9 +77,10 @@ extension MainViewController: UITableViewDataSource {
 extension MainViewController : NetworkManagerDelegate {
     
     func didUpdateImages(_ networkManager:NetworkManager, image: [DataModel]) {
-        DispatchQueue.main.async  {
-            self.dataModel = image
-            self.tableView.reloadData()
+      DispatchQueue.main.asyncAfter(deadline: .now() + 1){
+                self.dataModel = image + self.dataModel
+                self.tableView.refreshControl?.endRefreshing()
+                self.tableView.reloadData()
         }
     }
     

@@ -23,9 +23,11 @@ struct NetworkManager {
     var delegateCell: NetworkManagerCellDelegate?
     var dataModel = [DataModel]()
     
+    
     // MARK: - fetch data from URL
-    func fetchImages() {
-        let url = "https://zoo-animal-api.herokuapp.com/animals/rand/10"
+    func fetchImages(imagesCount n: Int) {
+        let url = "https://zoo-animal-api.herokuapp.com/animals/rand/\(n)"
+        
         performRequest(url: url) { result in
             print("here")
             var dbmodel = DataModel()
