@@ -14,6 +14,7 @@ class CommentsViewCell: UITableViewCell {
         addViews()
         setConstraints()
         
+        
     }
     
     required init?(coder: NSCoder) {
@@ -39,12 +40,10 @@ class CommentsViewCell: UITableViewCell {
         contentView.addSubview(horStackView)
 
     }
-    
-    
-    func configure() {
-        authorLabel.text = " Auhtor :"
-        commentLabel.text = " some comment"
-        
+ 
+    func configure(indexPath: IndexPath, comment: [CommentsModel]) {
+        authorLabel.text = comment[indexPath.row].author
+        commentLabel.text = comment[indexPath.row].comment
     }
     
     private func setConstraints() {

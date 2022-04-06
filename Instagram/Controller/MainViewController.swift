@@ -73,6 +73,10 @@ extension MainViewController: UITableViewDataSource {
             let vc = CommentsViewController()
             self.navigationController?.pushViewController(vc, animated: true)
             
+            DispatchQueue.main.async {
+                vc.selectedImage = self.dataModel[indexPath.row]
+            }
+            
         }
         return cell
     }
