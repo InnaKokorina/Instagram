@@ -9,6 +9,7 @@ import UIKit
 
 class MainTableViewCell: UITableViewCell {
     var likeButtomTap: (() -> Void)?
+    var commentButtonPressed: (() -> Void)?
     static var identifier = "MainTableViewCell"
     private var dataManager = DataManager()
     private var networkManager = NetworkManager()
@@ -19,6 +20,7 @@ class MainTableViewCell: UITableViewCell {
         addViews()
         setConstraints()
         likeButton.addTarget(self, action: #selector(likePressed), for: .touchUpInside)
+        commentsButton.addTarget(self, action: #selector(commentButtonpTap), for: .touchUpInside)
         doubleTapImage()
         scrollViewSet()
     }
@@ -75,7 +77,16 @@ class MainTableViewCell: UITableViewCell {
         heartView.alpha = 0
         return heartView
     }()
-    private lazy var verStackView = UIStackView(arrangedSubviews: [authorNameLabel, scrollView, likeButton, likesCountLabel, descriptionLabel ], axis: .vertical, spacing: 4)
+    let commentsButton: UIButton = {
+        let commentsButton = UIButton()
+        commentsButton.setTitle(" Комментарии", for: .normal)
+        commentsButton.titleLabel?.font = UIFont(name: "Times New Roman", size: 14)
+        commentsButton.translatesAutoresizingMaskIntoConstraints = false
+        commentsButton.setTitleColor(.black, for: .normal)
+        commentsButton.setImage(UIImage(systemName: "message"), for: .normal)
+        return commentsButton
+    }()
+    private lazy var verStackView = UIStackView(arrangedSubviews: [authorNameLabel, scrollView, likeButton, likesCountLabel, descriptionLabel, commentsButton ], axis: .vertical, spacing: 4)
     
     // MARK: - cell setup and configure
     private func addViews() {
@@ -91,13 +102,18 @@ class MainTableViewCell: UITableViewCell {
         likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel[indexPath.row].likesCount)
         networkManager.downloadImage(from: URL(string: dataModel[indexPath.row].photoImageUrl)!)
         selectionStyle = .none
+        commentsButton.tintColor = .black
+        
     }
     
     // MARK: - likeButtonPressed
     @objc  func likePressed() {
         likeButtomTap?()
     }
-    
+    @objc  func  commentButtonpTap (_ sender: UIButton) {
+       commentButtonPressed?()
+    }
+   
     // MARK: - constraints
     private func setConstraints() {
         NSLayoutConstraint.activate([

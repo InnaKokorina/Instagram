@@ -68,6 +68,12 @@ extension MainViewController: UITableViewDataSource {
             
             cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: self.dataModel[indexPath.row].likesCount)
         }
+        
+        cell.commentButtonPressed = {
+            let vc = CommentsViewController()
+            self.navigationController?.pushViewController(vc, animated: true)
+            
+        }
         return cell
     }
 }
