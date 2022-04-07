@@ -77,24 +77,29 @@ class NetworkManager {
     }
     // MARK: - downloadImage
     
-  func getImage(with stringUrl: String?, completion: @escaping (UIImage?) -> Void) {
-            guard
-                let stringUrl = stringUrl,
-                let url = URL(string: stringUrl)
-            else {
-                completion(nil)
-                return
-            }
-            DispatchQueue.global(qos: .background).async {
-                guard let imageData = try? Data(contentsOf: url),
-                      let  result = UIImage(data: imageData) else { return }
-                DispatchQueue.main.async {
+    func getImage(with stringUrl: String?, completion: @escaping (UIImage?) -> Void) {
+        guard
+            let stringUrl = stringUrl,
+            let url = URL(string: stringUrl)
+        else {
+            completion(nil)
+            return
+        }
+        DispatchQueue.global(qos: .background).async {
+            guard let imageData = try? Data(contentsOf: url),
+                  let  result = UIImage(data: imageData) else { return }
+            DispatchQueue.main.async {
+                SpinnerViewController.start()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    SpinnerViewController.stop()
                     self.imageDictionary.updateValue(result, forKey: stringUrl)
                     completion(result)
                 }
+                
             }
+        }
     }
 }
-
-
-
+    
+    
+    

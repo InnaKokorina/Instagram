@@ -78,9 +78,7 @@ extension MainViewController: UITableViewDataSource {
             
         }
         return cell
-    }
-    
-    
+    }   
 }
 
 // MARK: - NetworkManagerDelegate
