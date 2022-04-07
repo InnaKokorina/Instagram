@@ -11,7 +11,8 @@ class MainViewController: UIViewController {
     
     private var dataManager = DataManager()
     private var dataModel = [DataModel]()
-    //  private var activityController: UIActivityViewController? = nil
+    private var networkManager = NetworkManager()
+    private var activityController: UIActivityViewController? = nil
     private let tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(MainTableViewCell.self, forCellReuseIdentifier: "MainTableViewCell")
@@ -21,46 +22,62 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        tableViewsSetup()
+        networkManager.delegate = self
+        networkManager.fetchImages()
+    }
+    
+    func tableViewsSetup() {
         view.addSubview(tableView)
         tableView.dataSource = self
         tableView.frame = view.bounds
         tableView.separatorStyle = .none
         tableView.allowsSelection = false
         tableView.separatorColor = .clear
-        
-        for i in 0..<10 {
-            self.dataModel.append(DataModel(author: dataManager.author[i], photoImageName: dataManager.photoImageName[i], likesCount: Int(dataManager.likesCount[i]), description: dataManager.descript[i], isLiked: dataManager.isLiked[i]))
-            self.tableView.reloadData()
-        }
     }
 }
-
 extension MainViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         dataModel.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "MainTableViewCell", for: indexPath) as? MainTableViewCell else { return UITableViewCell() }
-        cell.configure(with: dataModel[indexPath.row].photoImageName, dataModel: dataModel, indexPath: indexPath)
+        cell.configure(dataModel: dataModel, indexPath: indexPath)
         
         cell.likeButtomTap = {
             self.dataModel[indexPath.row].isLiked.toggle()
-            cell.likeButton.imageView?.alpha = 0.3
-            cell.likeButton.setImage(UIImage(systemName: self.dataModel[indexPath.row].isLiked ? "heart.fill" : "heart"), for: .normal)
-            cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: self.dataModel[indexPath.row].likesCount)
-            cell.heartImage.alpha = 0.5
-            let seconds = 0.3
-            DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
-                cell.heartImage.alpha = 0
+            if self.dataModel[indexPath.row].isLiked {
+                cell.likeButton.imageView?.isHighlighted = true
+                cell.likeButton.isSelected = true
+                cell.heartView.alpha = 0.5
+                let seconds = 0.3
+                DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
+                    cell.heartView.alpha = 0
+                }
+            } else {
+                cell.likeButton.imageView?.isHighlighted = false
+                cell.likeButton.isSelected = false
             }
+            
+            cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: self.dataModel[indexPath.row].likesCount)
         }
-        //            cell.shareButtonTap = {
-        //                print("HI")
-        //                self.activityController = UIActivityViewController(activityItems: [self.dataModel[indexPath.row].author], applicationActivities: nil)
-        //                self.activityController?.present(MainViewController(), animated: true, completion: nil)
-        //
-        //            }
         return cell
+    }
+}
+
+// MARK: - NetworkManagerDelegate
+
+extension MainViewController : NetworkManagerDelegate {
+    
+    func didUpdateImages(_ networkManager:NetworkManager, image: [DataModel]) {
+        DispatchQueue.main.async  {
+            self.dataModel = image
+            self.tableView.reloadData()
+        }
+    }
+    
+    func didFailWithError() {
+        print("ошибка сети")
     }
 }
 

@@ -9,11 +9,11 @@ import Foundation
 import UIKit
 
 struct DataModel {
-    var author: String
-    var photoImageName: String
-    var likesCount: Int
-    var description: String
-    var isLiked: Bool {
+    var author: String = ""
+    var photoImageUrl: String = ""
+    var likesCount: Int = 0
+    var description: String = ""
+    var isLiked: Bool = false{
         didSet {
             if isLiked {
                 likesCount += 1

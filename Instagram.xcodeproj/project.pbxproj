@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C37D60F427F4D921002E39CB /* BezierHeartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37D60F327F4D921002E39CB /* BezierHeartView.swift */; };
+		C380A2EF27F1DE170006E0E6 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C380A2EE27F1DE160006E0E6 /* NetworkManager.swift */; };
+		C380A2F127F1DE350006E0E6 /* ImagesModelAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C380A2F027F1DE350006E0E6 /* ImagesModelAPI.swift */; };
 		C38BF59027EDFF4900A1D08A /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = C38BF58F27EDFF4900A1D08A /* Localizable.stringsdict */; };
 		C3E4EA3127EB5DDE003815D2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4EA3027EB5DDE003815D2 /* AppDelegate.swift */; };
 		C3E4EA3527EB5DDE003815D2 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4EA3427EB5DDE003815D2 /* MainViewController.swift */; };
@@ -19,6 +22,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C37D60F327F4D921002E39CB /* BezierHeartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezierHeartView.swift; sourceTree = "<group>"; };
+		C380A2EE27F1DE160006E0E6 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		C380A2F027F1DE350006E0E6 /* ImagesModelAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesModelAPI.swift; sourceTree = "<group>"; };
 		C38BF58F27EDFF4900A1D08A /* Localizable.stringsdict */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; path = Localizable.stringsdict; sourceTree = "<group>"; };
 		C3E4EA2D27EB5DDE003815D2 /* Instagram.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Instagram.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3E4EA3027EB5DDE003815D2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -87,6 +93,8 @@
 			children = (
 				C3E4EA4727EB5FA7003815D2 /* DataModel.swift */,
 				C3E4EA4927EB5FB4003815D2 /* DataManager.swift */,
+				C380A2EE27F1DE160006E0E6 /* NetworkManager.swift */,
+				C380A2F027F1DE350006E0E6 /* ImagesModelAPI.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -94,7 +102,9 @@
 		C3E4EA4527EB5F8D003815D2 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				C3E4EA4B27EB5FD9003815D2 /* MainTableViewCell.swift */,
 				C3E4EA4D27EB5FF9003815D2 /* StackViewExtensions.swift */,
+				C37D60F327F4D921002E39CB /* BezierHeartView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -103,7 +113,6 @@
 			isa = PBXGroup;
 			children = (
 				C3E4EA3427EB5DDE003815D2 /* MainViewController.swift */,
-				C3E4EA4B27EB5FD9003815D2 /* MainTableViewCell.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -179,9 +188,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C380A2F127F1DE350006E0E6 /* ImagesModelAPI.swift in Sources */,
 				C3E4EA3527EB5DDE003815D2 /* MainViewController.swift in Sources */,
 				C3E4EA4E27EB5FF9003815D2 /* StackViewExtensions.swift in Sources */,
 				C3E4EA4A27EB5FB4003815D2 /* DataManager.swift in Sources */,
+				C380A2EF27F1DE170006E0E6 /* NetworkManager.swift in Sources */,
+				C37D60F427F4D921002E39CB /* BezierHeartView.swift in Sources */,
 				C3E4EA3127EB5DDE003815D2 /* AppDelegate.swift in Sources */,
 				C3E4EA4827EB5FA7003815D2 /* DataModel.swift in Sources */,
 				C3E4EA4C27EB5FD9003815D2 /* MainTableViewCell.swift in Sources */,
