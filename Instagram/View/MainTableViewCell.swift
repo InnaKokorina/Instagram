@@ -100,10 +100,23 @@ class MainTableViewCell: UITableViewCell {
         authorNameLabel.text = dataModel[indexPath.row].author
         descriptionLabel.text = "\(dataModel[indexPath.row].author ):  \(dataModel[indexPath.row].description)"
         likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel[indexPath.row].likesCount)
-        networkManager.downloadImage(from: URL(string: dataModel[indexPath.row].photoImageUrl)!)
+        
+        if let cachedImage = networkManager.imageDictionary[dataModel[indexPath.row].photoImageUrl] {
+                  print("Using a cached image for item\(cachedImage)")
+                  bandImage.image = cachedImage
+              } else {
+                  networkManager.getImage(with: dataModel[indexPath.row].photoImageUrl) { image in
+            self.bandImage.image = image
+        }
+              }
         selectionStyle = .none
         commentsButton.tintColor = .black
         
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.bandImage.image = nil
     }
     
     // MARK: - likeButtonPressed

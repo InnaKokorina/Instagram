@@ -17,11 +17,12 @@ protocol NetworkManagerDelegate {
 protocol NetworkManagerCellDelegate {
     func didUpdateImageCell(_ networkManager: NetworkManager, with: Data)
 }
-struct NetworkManager {
+class NetworkManager {
     
     var delegate: NetworkManagerDelegate?
     var delegateCell: NetworkManagerCellDelegate?
     var dataModel = [DataModel]()
+    var imageDictionary: [String:UIImage] = [:]
     
     
     // MARK: - fetch data from URL
@@ -29,7 +30,6 @@ struct NetworkManager {
         let url = "https://zoo-animal-api.herokuapp.com/animals/rand/\(n)"
         
         performRequest(url: url) { result in
-            print("here")
             var dbmodel = DataModel()
             var dataModel = [DataModel]()
             guard let safeResult = result
@@ -76,16 +76,23 @@ struct NetworkManager {
         }
     }
     // MARK: - downloadImage
-    func getData(from url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> ()) {
-        DispatchQueue.global(qos: .background).async{
-            URLSession.shared.dataTask(with: url, completionHandler: completion).resume()
-        }
-    }
-    func downloadImage(from url: URL) -> Void  {
-        getData(from: url) { data, response, error in
-            guard let data = data, error == nil else { return }
-            delegateCell?.didUpdateImageCell(self ,with: data)
-        }
+    
+  func getImage(with stringUrl: String?, completion: @escaping (UIImage?) -> Void) {
+            guard
+                let stringUrl = stringUrl,
+                let url = URL(string: stringUrl)
+            else {
+                completion(nil)
+                return
+            }
+            DispatchQueue.global(qos: .background).async {
+                guard let imageData = try? Data(contentsOf: url),
+                      let  result = UIImage(data: imageData) else { return }
+                DispatchQueue.main.async {
+                    self.imageDictionary.updateValue(result, forKey: stringUrl)
+                    completion(result)
+                }
+            }
     }
 }
 

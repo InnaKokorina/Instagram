@@ -8,7 +8,6 @@
 import UIKit
 
 class MainViewController: UIViewController {
-    
     private var dataManager = DataManager()
     private var dataModel = [DataModel]()
     private var networkManager = NetworkManager()
@@ -80,6 +79,8 @@ extension MainViewController: UITableViewDataSource {
         }
         return cell
     }
+    
+    
 }
 
 // MARK: - NetworkManagerDelegate
