@@ -165,16 +165,12 @@ extension CommentsViewController {
             
             if shouldMoveViewUp {
                 self.view.frame.origin.y = 0 - keyboardSize.height
-                // self.horStackView.frame.origin.y = self.view.frame.height - keyboardSize.height - horStackView.frame.height
-                //не удалось поднять textField, чтобы верние ячейки таблицы оставались на месте без использования IQkeyqboardManagerSwift
-                // если поднимать только textField(вместе с кнопкой = horStackView), то при начале ввода текста стеквью снова опускается вниз
             }
         }
     }
     
     @objc func keyboardWillHide(notification: NSNotification) {
         self.view.frame.origin.y = 0
-        // self.horStackView.frame.origin.y = self.view.frame.height - horStackView.frame.height
     }
 }
 
