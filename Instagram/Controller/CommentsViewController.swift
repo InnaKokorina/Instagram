@@ -10,6 +10,7 @@ import UIKit
 class CommentsViewController: UIViewController {
     
     private var comments = [CommentsModel]()
+    var activeTextField : UITextField? = nil
     var selectedImage: DataModel? {
         didSet{
             tableView.reloadData()
@@ -20,6 +21,7 @@ class CommentsViewController: UIViewController {
         let tableView = UITableView()
         tableView.register(CommentsViewCell.self, forCellReuseIdentifier: "CommentsViewCell")
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.setContentHuggingPriority(UILayoutPriority.init(249), for: .vertical)
         return tableView
     }()
     
@@ -54,29 +56,23 @@ class CommentsViewController: UIViewController {
         setConstraints()
         textField.delegate = self
         addComment.addTarget(self, action: #selector(addCommentTap), for: .touchUpInside)
+        NotificationCenter.default.addObserver(self, selector: #selector(CommentsViewController.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(CommentsViewController.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     func tableViewsSetup() {
+        tableView.setContentHuggingPriority(UILayoutPriority.init(249), for: .vertical)
+        // textField.setContentHuggingPriority(UILayoutPriority.init(250), for: .vertical)
         view.addSubview(tableView)
         tableView.dataSource = self
         tableView.delegate = self
         tableView.allowsSelection = false
         tableView.separatorStyle = .singleLine
-        tableView.allowsSelection = true
-        tableView.separatorColor = .clear
-        
+        tableView.allowsSelection = false
+        tableView.separatorColor = .black
     }
     
-    @objc func addCommentTap() {
-    if  let message = textField.text {
-        let newcomment = CommentsModel(author: selectedImage!.author, comment: message)
-        DispatchQueue.main.async {
-            self.comments.append(newcomment)
-            self.tableView.reloadData()
-        }
-        
-    }
-        }
+    
 }
 
 extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
@@ -87,9 +83,6 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "CommentsViewCell", for: indexPath) as? CommentsViewCell else { return UITableViewCell() }
         cell.configure(indexPath: indexPath, comment: comments)
-        
-        
-        
         return cell
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -124,17 +117,64 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
 }
 
 extension CommentsViewController: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        self.activeTextField = self.textField
+        print(activeTextField?.text ?? "nil")
+    }
+    func textFieldDidChangeSelection(_ textField: UITextField) {
+        self.activeTextField = self.textField
+    }
     
     
-    func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
-        if textField.text != "" {
-            return true
-        } else {
-            textField.placeholder = "type a message"
-            return false
-        }
+    @objc func addCommentTap() {
+        textField.endEditing(true)
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.endEditing(true)
+        return true
     }
     func textFieldDidEndEditing(_ textField: UITextField) {
-        textField.text = ""
+        if  let message = textField.text {
+            let newcomment = CommentsModel(author: selectedImage!.author, comment: message)
+            DispatchQueue.main.async {
+                self.comments.append(newcomment)
+                self.tableView.reloadData()
+                self.textField.text = ""
+                self.textField.endEditing(true)
+                
+            }
+            self.activeTextField = nil
+        }
     }
 }
+
+
+extension CommentsViewController {
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
+        var shouldMoveViewUp = false
+        if let activeTextField = activeTextField {
+            let bottomOfTextField = activeTextField.convert(activeTextField.bounds, to: self.view).maxY;
+            let topOfKeyboard = self.view.frame.height - keyboardSize.height
+            if bottomOfTextField > topOfKeyboard {
+                shouldMoveViewUp = true
+            }
+            
+            
+            if shouldMoveViewUp {
+                self.view.frame.origin.y = 0 - keyboardSize.height
+                // self.horStackView.frame.origin.y = self.view.frame.height - keyboardSize.height - horStackView.frame.height
+                //не удалось поднять textField, чтобы верние ячейки таблицы оставались на месте без использования IQkeyqboardManagerSwift
+                // если поднимать только textField(вместе с кнопкой = horStackView), то при начале ввода текста стеквью снова опускается вниз
+            }
+        }
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        self.view.frame.origin.y = 0
+        // self.horStackView.frame.origin.y = self.view.frame.height - horStackView.frame.height
+    }
+}
+
