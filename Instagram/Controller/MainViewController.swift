@@ -68,17 +68,13 @@ extension MainViewController: UITableViewDataSource {
             cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: self.dataModel[indexPath.row].likesCount)
         }
         
-        cell.commentButtonPressed = {
+        cell.commentButtonPressed = { [weak self] in
             let vc = CommentsViewController()
-            self.navigationController?.pushViewController(vc, animated: true)
-            
-            DispatchQueue.main.async {
-                vc.selectedImage = self.dataModel[indexPath.row]
-            }
-            
+            vc.selectedImage = self?.dataModel[indexPath.row]
+            self?.navigationController?.pushViewController(vc, animated: true)   
         }
         return cell
-    }   
+    }
 }
 
 // MARK: - NetworkManagerDelegate

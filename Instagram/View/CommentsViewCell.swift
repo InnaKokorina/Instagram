@@ -22,6 +22,7 @@ class CommentsViewCell: UITableViewCell {
     var authorLabel: UILabel = {
         var authorLabel = UILabel()
         authorLabel.font = UIFont(name: "Times New Roman", size: 17)
+        authorLabel.numberOfLines = 0
         authorLabel.translatesAutoresizingMaskIntoConstraints = false
         return authorLabel
     }()
@@ -29,6 +30,7 @@ class CommentsViewCell: UITableViewCell {
     var commentLabel: UILabel = {
         var textLabel = UILabel()
         textLabel.font = UIFont(name: "Times New Roman", size: 15)
+        textLabel.numberOfLines = 0
         textLabel.translatesAutoresizingMaskIntoConstraints = false
         return textLabel
     }()
@@ -51,7 +53,8 @@ class CommentsViewCell: UITableViewCell {
             contentView.bottomAnchor.constraint(equalTo: horStackView.bottomAnchor, constant: 10),
             
             authorLabel.leadingAnchor.constraint(equalTo: horStackView.leadingAnchor, constant: 6),
-            commentLabel.trailingAnchor.constraint(equalTo: authorLabel.leadingAnchor, constant: -6)
+            commentLabel.trailingAnchor.constraint(equalTo: authorLabel.leadingAnchor, constant: -6),
+            authorLabel.widthAnchor.constraint(equalToConstant: 100)
         ])
     }
 }
