@@ -86,10 +86,10 @@ extension MainViewController: UITableViewDataSource {
 extension MainViewController : NetworkManagerDelegate {
     
     func didUpdateImages(_ networkManager:NetworkManager, image: [DataModel]) {
-      DispatchQueue.main.asyncAfter(deadline: .now() + 1){
-                self.dataModel = image + self.dataModel
-                self.tableView.refreshControl?.endRefreshing()
-                self.tableView.reloadData()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1){
+            self.dataModel = image + self.dataModel
+            self.tableView.refreshControl?.endRefreshing()
+            self.tableView.reloadData()
         }
     }
     

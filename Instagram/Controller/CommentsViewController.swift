@@ -11,6 +11,7 @@ class CommentsViewController: UIViewController {
     
     private var comments = [CommentsModel]()
     var activeTextField : UITextField? = nil
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Comments.plist")
     var selectedImage: DataModel? {
         didSet{
             tableView.reloadData()
@@ -48,7 +49,6 @@ class CommentsViewController: UIViewController {
     private lazy var horStackView = UIStackView(arrangedSubviews: [textField, addComment], axis: .horizontal, spacing: 4)
     
     override func viewDidLoad() {
-        
         view.backgroundColor = .systemBackground
         horStackView.backgroundColor = .systemIndigo
         tableViewsSetup()
@@ -58,37 +58,43 @@ class CommentsViewController: UIViewController {
         addComment.addTarget(self, action: #selector(addCommentTap), for: .touchUpInside)
         NotificationCenter.default.addObserver(self, selector: #selector(CommentsViewController.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(CommentsViewController.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        print(dataFilePath)
+        
+        loadComments()
     }
     
     func tableViewsSetup() {
-        tableView.setContentHuggingPriority(UILayoutPriority.init(249), for: .vertical)
-        // textField.setContentHuggingPriority(UILayoutPriority.init(250), for: .vertical)
         view.addSubview(tableView)
         tableView.dataSource = self
         tableView.delegate = self
         tableView.allowsSelection = false
-        tableView.separatorStyle = .singleLine
+        tableView.separatorStyle = .none
         tableView.allowsSelection = false
-        tableView.separatorColor = .black
     }
     
     
 }
-
+// MARK: - UITableViewDataSource, UITableViewDelegate
 extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        comments.count
+        let newArray = comments.filter { model in
+            selectedImage?.author == model.author }
+        return newArray.count
+        
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "CommentsViewCell", for: indexPath) as? CommentsViewCell else { return UITableViewCell() }
-        cell.configure(indexPath: indexPath, comment: comments)
+        let newArray = comments.filter { model in
+            selectedImage?.author == model.author
+        }
+        
+        cell.configure(indexPath: indexPath.row, comment: newArray)
         return cell
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         70
     }
-    
     
     func setConstraints() {
         NSLayoutConstraint.activate([
@@ -96,7 +102,6 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
             view.trailingAnchor.constraint(equalTo: tableView.trailingAnchor, constant: 0),
-            
             
             horStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             horStackView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 0),
@@ -108,15 +113,15 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
             view.trailingAnchor.constraint(equalTo: addComment.trailingAnchor, constant: 20),
             view.bottomAnchor.constraint(equalTo: textField.bottomAnchor, constant: 20),
             
-            
             horStackView.heightAnchor.constraint(equalToConstant: 100),
             addComment.widthAnchor.constraint(equalToConstant: 30)
             
         ])
     }
 }
-
+// MARK: - UITextFieldDelegate
 extension CommentsViewController: UITextFieldDelegate {
+    
     func textFieldDidBeginEditing(_ textField: UITextField) {
         self.activeTextField = self.textField
         print(activeTextField?.text ?? "nil")
@@ -137,21 +142,20 @@ extension CommentsViewController: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         if  let message = textField.text {
             let newcomment = CommentsModel(author: selectedImage!.author, comment: message)
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [self] in
                 self.comments.append(newcomment)
                 self.tableView.reloadData()
+                self.saveComments()
                 self.textField.text = ""
                 self.textField.endEditing(true)
-                
             }
             self.activeTextField = nil
         }
     }
 }
 
-
+// MARK: - keyboardWillShow
 extension CommentsViewController {
-    
     @objc func keyboardWillShow(notification: NSNotification) {
         guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
         var shouldMoveViewUp = false
@@ -174,3 +178,26 @@ extension CommentsViewController {
     }
 }
 
+extension CommentsViewController {
+    func saveComments() {
+        let encoder = PropertyListEncoder()
+        do {
+            let data =  try encoder.encode(comments)
+            try data.write(to: dataFilePath!)
+        } catch {
+            print("Error encoding item array,\(error)")
+        }
+        
+        self.tableView.reloadData()
+    }
+    func loadComments() {
+        if let data = try? Data(contentsOf: dataFilePath!) {
+            let decoder = PropertyListDecoder()
+            do {
+                comments = try decoder.decode([CommentsModel].self, from: data)
+            } catch {
+                print("Error dencoding item array,\(error)")
+            }
+        }
+    }
+}

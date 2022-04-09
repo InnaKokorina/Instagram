@@ -13,7 +13,7 @@ class MainTableViewCell: UITableViewCell {
     static var identifier = "MainTableViewCell"
     private var dataManager = DataManager()
     private var networkManager = NetworkManager()
-   
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         networkManager.delegateCell = self
@@ -102,16 +102,15 @@ class MainTableViewCell: UITableViewCell {
         likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel[indexPath.row].likesCount)
         
         if let cachedImage = networkManager.imageDictionary[dataModel[indexPath.row].photoImageUrl] {
-                  print("Using a cached image for item\(cachedImage)")
-                  bandImage.image = cachedImage
-              } else {
-                  networkManager.getImage(with: dataModel[indexPath.row].photoImageUrl) { image in
-            self.bandImage.image = image
+            print("Using a cached image for item\(cachedImage)")
+            bandImage.image = cachedImage
+        } else {
+            networkManager.getImage(with: dataModel[indexPath.row].photoImageUrl) { image in
+                self.bandImage.image = image
+            }
         }
-              }
         selectionStyle = .none
         commentsButton.tintColor = .black
-        
     }
     
     override func prepareForReuse() {
@@ -124,9 +123,9 @@ class MainTableViewCell: UITableViewCell {
         likeButtomTap?()
     }
     @objc  func  commentButtonpTap (_ sender: UIButton) {
-       commentButtonPressed?()
+        commentButtonPressed?()
     }
-   
+    
     // MARK: - constraints
     private func setConstraints() {
         NSLayoutConstraint.activate([

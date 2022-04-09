@@ -13,8 +13,6 @@ class CommentsViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         addViews()
         setConstraints()
-        
-        
     }
     
     required init?(coder: NSCoder) {
@@ -23,7 +21,7 @@ class CommentsViewCell: UITableViewCell {
     
     var authorLabel: UILabel = {
         var authorLabel = UILabel()
-        authorLabel.font = UIFont(name: "Times New Roman", size: 15)
+        authorLabel.font = UIFont(name: "Times New Roman", size: 17)
         authorLabel.translatesAutoresizingMaskIntoConstraints = false
         return authorLabel
     }()
@@ -38,12 +36,11 @@ class CommentsViewCell: UITableViewCell {
     private lazy var horStackView = UIStackView(arrangedSubviews: [authorLabel, commentLabel], axis: .horizontal, spacing: 4)
     func addViews() {
         contentView.addSubview(horStackView)
-
-    }
- 
-    func configure(indexPath: IndexPath, comment: [CommentsModel]) {
-        authorLabel.text = comment[indexPath.row].author
-        commentLabel.text = comment[indexPath.row].comment
+}
+    
+    func configure(indexPath: Int, comment: [CommentsModel]) {
+        authorLabel.text = "\(comment[indexPath].author): "
+        commentLabel.text = comment[indexPath].comment
     }
     
     private func setConstraints() {
@@ -56,5 +53,5 @@ class CommentsViewCell: UITableViewCell {
             authorLabel.leadingAnchor.constraint(equalTo: horStackView.leadingAnchor, constant: 6),
             commentLabel.trailingAnchor.constraint(equalTo: authorLabel.leadingAnchor, constant: -6)
         ])
-}
+    }
 }
