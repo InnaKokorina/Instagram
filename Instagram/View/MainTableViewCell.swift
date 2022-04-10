@@ -105,8 +105,11 @@ class MainTableViewCell: UITableViewCell {
             print("Using a cached image for item\(cachedImage)")
             bandImage.image = cachedImage
         } else {
-            networkManager.getImage(with: dataModel[indexPath.row].photoImageUrl) { image in
-                self.bandImage.image = image
+            networkManager.getImage(with: dataModel[indexPath.row].photoImageUrl) { image in SpinnerViewController.start(window: self.bandImage)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    SpinnerViewController.stop()
+                    self.bandImage.image = image
+                }
             }
         }
         selectionStyle = .none

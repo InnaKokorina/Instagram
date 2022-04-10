@@ -11,12 +11,12 @@ open class SpinnerViewController {
     
     public static var spinner: UIActivityIndicatorView?
     public static var style: UIActivityIndicatorView.Style = .medium
-    public static var baseBackColor = UIColor(white: 0, alpha: 0.6)
+    public static var baseBackColor = UIColor(white: 0, alpha: 0.1)
     public static var baseColor = UIColor.darkGray
     
-    public static func start(style: UIActivityIndicatorView.Style = style, backColor: UIColor = baseBackColor, baseColor: UIColor = baseColor) {
-        if spinner == nil, let window = UIApplication.shared.keyWindow {
-            let frame = UIScreen.main.bounds
+    public static func start(style: UIActivityIndicatorView.Style = style, backColor: UIColor = baseBackColor, baseColor: UIColor = baseColor, window: UIImageView) {
+        if spinner == nil {
+            let frame = window.bounds
             spinner = UIActivityIndicatorView(frame: frame)
             spinner!.backgroundColor = backColor
             spinner!.style = style

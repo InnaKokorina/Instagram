@@ -89,17 +89,9 @@ class NetworkManager {
             guard let imageData = try? Data(contentsOf: url),
                   let  result = UIImage(data: imageData) else { return }
             DispatchQueue.main.async {
-                SpinnerViewController.start()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    SpinnerViewController.stop()
-                    self.imageDictionary.updateValue(result, forKey: stringUrl)
-                    completion(result)
-                }
-                
+            self.imageDictionary.updateValue(result, forKey: stringUrl)
+                completion(result)
             }
         }
     }
 }
-    
-    
-    
