@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class MainViewController: UIViewController {
     private var dataManager = DataManager()
@@ -17,6 +18,9 @@ class MainViewController: UIViewController {
         tableView.register(MainTableViewCell.self, forCellReuseIdentifier: "MainTableViewCell")
         return tableView
     }()
+   
+
+  
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,6 +28,9 @@ class MainViewController: UIViewController {
         tableViewsSetup()
         networkManager.delegate = self
         networkManager.fetchImages(imagesCount: 10)
+        let logOutButton = UIBarButtonItem(title: "Выйти", style: .plain, target: self, action: #selector(logOutButtonPressed))
+        self.navigationItem.rightBarButtonItem  = logOutButton
+        
     }
     
     func tableViewsSetup() {
@@ -40,6 +47,14 @@ class MainViewController: UIViewController {
     @objc func callPullToRefresh() {
         networkManager.fetchImages(imagesCount: 1)
     }
+    // MARK: - Logout
+    @objc func logOutButtonPressed(_ sender: Any) {
+           do {
+               try Auth.auth().signOut()
+           } catch{
+               print(error)
+           }
+       }
 }
 // MARK: - UITableViewDataSource
 extension MainViewController: UITableViewDataSource {

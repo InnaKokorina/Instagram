@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class CommentsViewController: UIViewController {
     
@@ -56,11 +57,16 @@ class CommentsViewController: UIViewController {
         setConstraints()
         textField.delegate = self
         addComment.addTarget(self, action: #selector(addCommentTap), for: .touchUpInside)
+        
+        // spinner
         NotificationCenter.default.addObserver(self, selector: #selector(CommentsViewController.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(CommentsViewController.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         print(dataFilePath)
         
         loadComments()
+        // logout
+        let logOutButton = UIBarButtonItem(title: "Выйти", style: .plain, target: self, action: #selector(logOutButtonPressed))
+        self.navigationItem.rightBarButtonItem  = logOutButton
     }
     
     func tableViewsSetup() {
@@ -71,6 +77,14 @@ class CommentsViewController: UIViewController {
         tableView.separatorStyle = .none
         tableView.allowsSelection = false
     }
+    // MARK: - Logout
+    @objc func logOutButtonPressed(_ sender: Any) {
+           do{
+               try Auth.auth().signOut()
+           }catch{
+               print(error)
+           }
+       }
     
     
 }
