@@ -86,12 +86,20 @@ class NetworkManager {
             return
         }
         DispatchQueue.global(qos: .background).async {
-            guard let imageData = try? Data(contentsOf: url),
-                  let  result = UIImage(data: imageData) else { return }
-            DispatchQueue.main.async {
-            self.imageDictionary.updateValue(result, forKey: stringUrl)
-                completion(result)
+            if let imageData = try? Data(contentsOf: url),
+               let  result = UIImage(data: imageData) {
+                
+                DispatchQueue.main.async {
+                    self.imageDictionary.updateValue(result, forKey: stringUrl)
+                    completion(result)
+                }
+            } else {
+                DispatchQueue.main.async {
+                    let imageNil = UIImage(systemName: "xmark.circle")
+                    completion(imageNil)
+                }
             }
         }
     }
 }
+
