@@ -103,7 +103,11 @@ class MainTableViewCell: UITableViewCell {
         
         if let cachedImage = networkManager.imageDictionary[dataModel[indexPath.row].photoImageUrl] {
             print("Using a cached image for item\(cachedImage)")
-            bandImage.image = cachedImage
+            SpinnerViewController.start(window: self.bandImage)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                SpinnerViewController.stop()
+                self.bandImage.image = cachedImage
+            }
         } else {
             networkManager.getImage(with: dataModel[indexPath.row].photoImageUrl) { image in
                 
