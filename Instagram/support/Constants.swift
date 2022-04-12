@@ -17,6 +17,7 @@ struct K {
         static let switchButtonSignIn = "Есть аккаунт?"
         static let placeholderPassword = "Введите пароль"
         static let placeholderEmail = "Введите Email"
+        static let backImageName = "backAuth"
     }
     
     struct Font {

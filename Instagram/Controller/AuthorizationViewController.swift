@@ -22,6 +22,14 @@ class AuthorizationViewController: UIViewController {
             }
         }
     }
+    private var backImage:UIImageView = {
+        let backImage = UIImageView()
+        backImage.image = UIImage(named: K.Auth.backImageName)
+        backImage.contentMode = .scaleAspectFill
+        backImage.alpha = 0.3
+        backImage.translatesAutoresizingMaskIntoConstraints = false
+        return backImage
+    }()
     private var titleLabel: UILabel = {
         let titleLabel = UILabel()
         titleLabel.font = UIFont(name: K.Font.font, size: 30)
@@ -93,6 +101,7 @@ class AuthorizationViewController: UIViewController {
     //lifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.addSubview(backImage)
         verStackView.contentMode = .center
         verStackView.distribution = .fillProportionally
         view.addSubview(verStackView)
@@ -111,6 +120,10 @@ extension AuthorizationViewController {
             verStackView.topAnchor.constraint(equalTo: view.topAnchor, constant: 70),
             view.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 20),
             
+            backImage.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
+            backImage.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
+            view.trailingAnchor.constraint(equalTo: backImage.trailingAnchor, constant: 0),
+            view.bottomAnchor.constraint(equalTo: backImage.bottomAnchor, constant: 0),
             
             signInButton.heightAnchor.constraint(equalToConstant: 40),
             titleLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
