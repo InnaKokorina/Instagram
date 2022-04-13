@@ -30,7 +30,8 @@ open class SpinnerViewController {
     public static func stop() {
         if spinner != nil {
             spinner!.stopAnimating()
-            spinner!.removeFromSuperview()
+            spinner!.isHidden = true
+          //  spinner!.removeFromSuperview()
             spinner = nil
         }
     }

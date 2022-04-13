@@ -7,19 +7,37 @@
 
 import UIKit
 import FirebaseAuth
+import Firebase
+import FirebaseDatabase
+import FirebaseStorage
 
 class MainViewController: UIViewController {
     private var dataManager = DataManager()
     private var dataModel = [DataModel]()
     private var networkManager = NetworkManager()
     private var activityController: UIActivityViewController? = nil
+    var ref: DatabaseReference!
     private let tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(MainTableViewCell.self, forCellReuseIdentifier: "MainTableViewCell")
         return tableView
     }()
    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        ref = Database.database().reference().child("photos")
 
+        ref.observe(DataEventType.value) { snapshot in
+            if snapshot.childrenCount > 0 {
+                
+                for i in snapshot.children.allObjects as! [DataSnapshot] {
+                    let object =  i.value as? [String: AnyObject]
+                    let user = object?["user"]
+               print(user)
+                }
+            }
+        }
+    }
   
     
     override func viewDidLoad() {
@@ -30,6 +48,7 @@ class MainViewController: UIViewController {
         networkManager.fetchImages(imagesCount: 10)
         let logOutButton = UIBarButtonItem(title: "Выйти", style: .plain, target: self, action: #selector(logOutButtonPressed))
         self.navigationItem.rightBarButtonItem  = logOutButton
+       
         
     }
     
@@ -95,7 +114,7 @@ extension MainViewController: UITableViewDataSource {
 // MARK: - NetworkManagerDelegate
 
 extension MainViewController : NetworkManagerDelegate {
-    
+
     func didUpdateImages(_ networkManager:NetworkManager, image: [DataModel]) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1){
             self.dataModel = image + self.dataModel
@@ -103,7 +122,7 @@ extension MainViewController : NetworkManagerDelegate {
             self.tableView.reloadData()
         }
     }
-    
+
     func didFailWithError() {
         print("ошибка сети")
     }
