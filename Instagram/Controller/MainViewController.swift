@@ -13,42 +13,36 @@ import FirebaseStorage
 
 class MainViewController: UIViewController {
     private var dataManager = DataManager()
-    private var dataModel = [DataModel]()
-    private var networkManager = NetworkManager()
+    private var dataModel = DataModel(photos: [Photos]())
+    private var firebaseManager = FireBaseManager()
+    //    private var networkManager = NetworkManager()
     private var activityController: UIActivityViewController? = nil
-    var ref: DatabaseReference!
+
     private let tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(MainTableViewCell.self, forCellReuseIdentifier: "MainTableViewCell")
         return tableView
     }()
-   
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        ref = Database.database().reference().child("photos")
-
-        ref.observe(DataEventType.value) { snapshot in
-            if snapshot.childrenCount > 0 {
-                
-                for i in snapshot.children.allObjects as! [DataSnapshot] {
-                    let object =  i.value as? [String: AnyObject]
-                    let user = object?["user"]
-               print(user)
-                }
-            }
-        }
+        firebaseManager.getData()
+        
     }
-  
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         tableViewsSetup()
-        networkManager.delegate = self
-        networkManager.fetchImages(imagesCount: 10)
+       // networkManager.delegate = self
+       //   networkManager.fetchImages(imagesCount: 10)
+        firebaseManager.delegate = self
+        
+
         let logOutButton = UIBarButtonItem(title: "Выйти", style: .plain, target: self, action: #selector(logOutButtonPressed))
         self.navigationItem.rightBarButtonItem  = logOutButton
-       
+        
         
     }
     
@@ -64,29 +58,29 @@ class MainViewController: UIViewController {
     }
     // MARK: - RefreshImages
     @objc func callPullToRefresh() {
-        networkManager.fetchImages(imagesCount: 1)
+           firebaseManager.getData()
     }
     // MARK: - Logout
     @objc func logOutButtonPressed(_ sender: Any) {
-           do {
-               try Auth.auth().signOut()
-           } catch{
-               print(error)
-           }
-       }
+        do {
+            try Auth.auth().signOut()
+        } catch{
+            print(error)
+        }
+    }
 }
 // MARK: - UITableViewDataSource
 extension MainViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        dataModel.count
+        dataModel.photos.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "MainTableViewCell", for: indexPath) as? MainTableViewCell else { return UITableViewCell() }
         cell.configure(dataModel: dataModel, indexPath: indexPath)
         
         cell.likeButtomTap = {
-            self.dataModel[indexPath.row].isLiked.toggle()
-            if self.dataModel[indexPath.row].isLiked {
+            self.dataModel.photos[indexPath.row].liked.toggle()
+            if self.dataModel.photos[indexPath.row].liked {
                 cell.likeButton.imageView?.isHighlighted = true
                 cell.likeButton.isSelected = true
                 cell.heartView.alpha = 0.5
@@ -99,32 +93,46 @@ extension MainViewController: UITableViewDataSource {
                 cell.likeButton.isSelected = false
             }
             
-            cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: self.dataModel[indexPath.row].likesCount)
+            cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: self.dataModel.photos[indexPath.row].likes)
         }
         
-        cell.commentButtonPressed = { [weak self] in
-            let vc = CommentsViewController()
-            vc.selectedImage = self?.dataModel[indexPath.row]
-            self?.navigationController?.pushViewController(vc, animated: true)   
-        }
+        //        cell.commentButtonPressed = { [weak self] in
+        //            let vc = CommentsViewController()
+        //            vc.selectedImage = self?.dataModel[indexPath.row]
+        //            self?.navigationController?.pushViewController(vc, animated: true)
+        //        }
         return cell
     }
 }
+// MARK: - FirebaseManagerDelegate
 
-// MARK: - NetworkManagerDelegate
+extension MainViewController : FirebaseManagerDelegate {
 
-extension MainViewController : NetworkManagerDelegate {
-
-    func didUpdateImages(_ networkManager:NetworkManager, image: [DataModel]) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1){
-            self.dataModel = image + self.dataModel
+    func didUpdateImages(_ firebaseManager:FireBaseManager, image: DataModel) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.dataModel = image
+            print(self.dataModel.photos[0].link)
             self.tableView.refreshControl?.endRefreshing()
             self.tableView.reloadData()
         }
     }
-
-    func didFailWithError() {
-        print("ошибка сети")
-    }
 }
+
+
+// MARK: - NetworkManagerDelegate
+
+//extension MainViewController : NetworkManagerDelegate {
+//
+//    func didUpdateImages(_ networkManager:NetworkManager, image: [DataModel]) {
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 1){
+//            self.dataModel = image + self.dataModel
+//            self.tableView.refreshControl?.endRefreshing()
+//            self.tableView.reloadData()
+//        }
+//    }
+//
+//    func didFailWithError() {
+//        print("ошибка сети")
+//    }
+//}
 

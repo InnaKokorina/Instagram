@@ -23,6 +23,7 @@ open class SpinnerViewController {
             spinner?.color = baseColor
             window.addSubview(spinner!)
             spinner!.startAnimating()
+            spinner?.isHidden = false
         }
     }
     
@@ -32,7 +33,7 @@ open class SpinnerViewController {
             spinner!.stopAnimating()
             spinner!.isHidden = true
           //  spinner!.removeFromSuperview()
-            spinner = nil
+         //   spinner = nil
         }
     }
 }

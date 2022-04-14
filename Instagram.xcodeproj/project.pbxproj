@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		C3730DB827FF34CC00BDF0C5 /* SpinnerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3730DB727FF34CC00BDF0C5 /* SpinnerViewController.swift */; };
 		C37D60F427F4D921002E39CB /* BezierHeartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37D60F327F4D921002E39CB /* BezierHeartView.swift */; };
+		C37F2DF4280827EC008C0F53 /* FireBaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37F2DF3280827EC008C0F53 /* FireBaseManager.swift */; };
 		C380A2EF27F1DE170006E0E6 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C380A2EE27F1DE160006E0E6 /* NetworkManager.swift */; };
 		C380A2F127F1DE350006E0E6 /* ImagesModelAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C380A2F027F1DE350006E0E6 /* ImagesModelAPI.swift */; };
 		C380BCA828046AA100063E76 /* AuthorizationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C380BCA728046AA100063E76 /* AuthorizationViewController.swift */; };
@@ -35,6 +36,7 @@
 		ADAEA71A16EE230392B76EAD /* Pods_Instagram.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Instagram.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3730DB727FF34CC00BDF0C5 /* SpinnerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpinnerViewController.swift; sourceTree = "<group>"; };
 		C37D60F327F4D921002E39CB /* BezierHeartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezierHeartView.swift; sourceTree = "<group>"; };
+		C37F2DF3280827EC008C0F53 /* FireBaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireBaseManager.swift; sourceTree = "<group>"; };
 		C380A2EE27F1DE160006E0E6 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		C380A2F027F1DE350006E0E6 /* ImagesModelAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesModelAPI.swift; sourceTree = "<group>"; };
 		C380BCA728046AA100063E76 /* AuthorizationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationViewController.swift; sourceTree = "<group>"; };
@@ -128,6 +130,7 @@
 				C380A2EE27F1DE160006E0E6 /* NetworkManager.swift */,
 				C380A2F027F1DE350006E0E6 /* ImagesModelAPI.swift */,
 				C397B38727FDF2EE000F056E /* CommentsModel.swift */,
+				C37F2DF3280827EC008C0F53 /* FireBaseManager.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -290,6 +293,7 @@
 				C397B38A27FDF41F000F056E /* CommentsViewCell.swift in Sources */,
 				C3E4EA3127EB5DDE003815D2 /* AppDelegate.swift in Sources */,
 				C3E4EA4827EB5FA7003815D2 /* DataModel.swift in Sources */,
+				C37F2DF4280827EC008C0F53 /* FireBaseManager.swift in Sources */,
 				C397B38627FDD5ED000F056E /* CommentsViewController.swift in Sources */,
 				C397B38827FDF2EF000F056E /* CommentsModel.swift in Sources */,
 				C3E4EA4C27EB5FD9003815D2 /* MainTableViewCell.swift in Sources */,
