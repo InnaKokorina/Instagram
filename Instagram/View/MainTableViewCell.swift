@@ -100,7 +100,7 @@ class MainTableViewCell: UITableViewCell {
         authorNameLabel.text = dataModel.photos[indexPath.row].user
         descriptionLabel.text = "\(dataModel.photos[indexPath.row].user ):  \(dataModel.photos[indexPath.row].description)"
         likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel.photos[indexPath.row].likes)
-        FireBaseManager.shared.getImage(picName: dataModel.photos[indexPath.row].image) { pic in
+        FirebaseManager.shared.getImage(picName: dataModel.photos[indexPath.row].image) { pic in
             SpinnerViewController.start(window: self.bandImage)
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                 SpinnerViewController.stop()

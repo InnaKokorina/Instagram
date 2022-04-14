@@ -14,7 +14,7 @@ import FirebaseStorage
 class MainViewController: UIViewController {
     private var dataManager = DataManager()
     private var dataModel = DataModel(photos: [Photos]())
-    private var firebaseManager = FireBaseManager()
+    private var firebaseManager = FirebaseManager()
     //    private var networkManager = NetworkManager()
     private var activityController: UIActivityViewController? = nil
 
@@ -26,7 +26,7 @@ class MainViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        firebaseManager.getData()   
+        firebaseManager.fetchData()   
     }
     
     
@@ -57,7 +57,7 @@ class MainViewController: UIViewController {
     }
     // MARK: - RefreshImages
     @objc func callPullToRefresh() {
-           firebaseManager.getData()
+           firebaseManager.fetchData()
     }
     // MARK: - Logout
     @objc func logOutButtonPressed(_ sender: Any) {
@@ -107,10 +107,10 @@ extension MainViewController: UITableViewDataSource {
 
 extension MainViewController : FirebaseManagerDelegate {
 
-    func didUpdateImages(_ firebaseManager:FireBaseManager, image: DataModel) {
+    func didUpdateImages(_ firebaseManager:FirebaseManager, image: DataModel) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.dataModel = image
-            print(self.dataModel.photos[0].link)
+            print("DATA MODEL: \(self.dataModel)")
             self.tableView.refreshControl?.endRefreshing()
             self.tableView.reloadData()
         }
