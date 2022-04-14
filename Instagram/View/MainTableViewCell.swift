@@ -12,11 +12,11 @@ class MainTableViewCell: UITableViewCell {
     var commentButtonPressed: (() -> Void)?
     static var identifier = "MainTableViewCell"
     private var dataManager = DataManager()
-    private var networkManager = NetworkManager()
+   // private var networkManager = NetworkManager()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        networkManager.delegateCell = self
+     //   networkManager.delegateCell = self
         addViews()
         setConstraints()
         likeButton.addTarget(self, action: #selector(likePressed), for: .touchUpInside)
@@ -104,28 +104,27 @@ class MainTableViewCell: UITableViewCell {
             SpinnerViewController.start(window: self.bandImage)
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                 SpinnerViewController.stop()
-                print("картинка: \(pic)")
                 self.bandImage.image = pic
             }
         }
-        
-        
-        //        if let cachedImage = networkManager.imageDictionary[dataModel.photos[indexPath.row].link] {
-        //            print("Using a cached image for item\(cachedImage)")
-        //            bandImage.image = cachedImage
-        //        } else {
-        //            networkManager.getImage(with: dataModel.photos[indexPath.row].link) { image in
-        //print(" link картинки\(dataModel.photos[indexPath.row].link)")
-        //                SpinnerViewController.start(window: self.bandImage)
-        //                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-        //                    SpinnerViewController.stop()
-        //                    self.setImage(image: image!)
-        //
-        //            }
-        //        }
         selectionStyle = .none
         commentsButton.tintColor = .black
     }
+    
+    //        if let cachedImage = networkManager.imageDictionary[dataModel.photos[indexPath.row].link] {
+    //            print("Using a cached image for item\(cachedImage)")
+    //            bandImage.image = cachedImage
+    //        } else {
+    //            networkManager.getImage(with: dataModel.photos[indexPath.row].link) { image in
+    //print(" link картинки\(dataModel.photos[indexPath.row].link)")
+    //                SpinnerViewController.start(window: self.bandImage)
+    //                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+    //                    SpinnerViewController.stop()
+    //                    self.setImage(image: image!)
+    //
+    //            }
+    //        }
+    
     override func prepareForReuse() {
         super.prepareForReuse()
         self.bandImage.image = nil
@@ -221,11 +220,11 @@ extension MainTableViewCell {
     
 }
 
-// MARK: - NetworkManagerCellDelegate
-extension MainTableViewCell: NetworkManagerCellDelegate {
-    func didUpdateImageCell(_ networkManager: NetworkManager ,with data: Data) {
-        DispatchQueue.main.async() { [weak self] in
-            self?.bandImage.image =  UIImage(data: data)
-        }
-    }
-}
+//// MARK: - NetworkManagerCellDelegate
+//extension MainTableViewCell: NetworkManagerCellDelegate {
+//    func didUpdateImageCell(_ networkManager: NetworkManager ,with data: Data) {
+//        DispatchQueue.main.async() { [weak self] in
+//            self?.bandImage.image =  UIImage(data: data)
+//        }
+//    }
+//}

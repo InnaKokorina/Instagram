@@ -5,24 +5,24 @@
 //  Created by Inna Kokorina on 28.03.2022.
 //
 
-import Foundation
-import CoreText
-import UIKit
-
-protocol NetworkManagerDelegate {
-    func didUpdateImages(_ networkManager:NetworkManager, image: [DataModel])
-    func didFailWithError()
-}
-
-protocol NetworkManagerCellDelegate {
-    func didUpdateImageCell(_ networkManager: NetworkManager, with: Data)
-}
-class NetworkManager {
+//import Foundation
+//import CoreText
+//import UIKit
+//
+//protocol NetworkManagerDelegate {
+//    func didUpdateImages(_ networkManager:NetworkManager, image: [DataModel])
+//    func didFailWithError()
+//}
+////
+//protocol NetworkManagerCellDelegate {
+//    func didUpdateImageCell(_ networkManager: NetworkManager, with: Data)
+//}
+//class NetworkManager {
     
-    var delegate: NetworkManagerDelegate?
-    var delegateCell: NetworkManagerCellDelegate?
+//    var delegate: NetworkManagerDelegate?
+//    var delegateCell: NetworkManagerCellDelegate?
  //   var dataModel = [DataModel]()
-    var imageDictionary: [String:UIImage] = [:]
+ //   var imageDictionary: [String:UIImage] = [:]
     
     
     // MARK: - fetch data from URL
@@ -76,30 +76,30 @@ class NetworkManager {
 //        }
 //    }
     // MARK: - downloadImage
-    
-    func getImage(with stringUrl: String?, completion: @escaping (UIImage?) -> Void) {
-        guard
-            let stringUrl = stringUrl,
-            let url = URL(string: stringUrl)
-        else {
-            completion(nil)
-            return
-        }
-        DispatchQueue.global(qos: .background).async {
-            if let imageData = try? Data(contentsOf: url),
-               let  result = UIImage(data: imageData) {
-                
-                DispatchQueue.main.async {
-                    self.imageDictionary.updateValue(result, forKey: stringUrl)
-                    completion(result)
-                }
-            } else {
-                DispatchQueue.main.async {
-                    let imageNil = UIImage(systemName: "xmark.circle")
-                    completion(imageNil)
-                }
-            }
-        }
-    }
-}
+//
+//    func getImage(with stringUrl: String?, completion: @escaping (UIImage?) -> Void) {
+//        guard
+//            let stringUrl = stringUrl,
+//            let url = URL(string: stringUrl)
+//        else {
+//            completion(nil)
+//            return
+//        }
+//        DispatchQueue.global(qos: .background).async {
+//            if let imageData = try? Data(contentsOf: url),
+//               let  result = UIImage(data: imageData) {
+//
+//                DispatchQueue.main.async {
+//                    self.imageDictionary.updateValue(result, forKey: stringUrl)
+//                    completion(result)
+//                }
+//            } else {
+//                DispatchQueue.main.async {
+//                    let imageNil = UIImage(systemName: "xmark.circle")
+//                    completion(imageNil)
+//                }
+//            }
+//        }
+//    }
+//}
 

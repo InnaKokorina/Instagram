@@ -13,7 +13,7 @@ struct DataModel {
 }
 
 struct Photos {
-  //  var comment: [CommentsModel]
+    var comment: [CommentsModel]
     var description: String = ""
     var id: Int = 0
     var image: String = ""
@@ -37,4 +37,5 @@ struct CommentsModel {
     var email: String = ""
     var id: Int = 0
     var postId: Int = 0
+
 }
