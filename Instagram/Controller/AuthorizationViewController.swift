@@ -9,6 +9,7 @@ import UIKit
 import FirebaseAuth
 
 class AuthorizationViewController: UIViewController {
+   var email = ""
     var signup: Bool = true {
         willSet {
             if newValue {
@@ -159,7 +160,7 @@ extension AuthorizationViewController: UITextFieldDelegate {
     }
     
     func checkAuth() {
-        let email = emailField.text!
+        email = emailField.text!
         let password = passwordField.text!
         if signup {
             if (!email.isEmpty && !password.isEmpty) {

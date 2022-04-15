@@ -15,7 +15,6 @@ class MainViewController: UIViewController {
     private var dataManager = DataManager()
     private var dataModel = DataModel(photos: [Photos]())
     private var firebaseManager = FirebaseManager()
-    //    private var networkManager = NetworkManager()
     private var activityController: UIActivityViewController? = nil
 
     private let tableView: UITableView = {
@@ -34,15 +33,11 @@ class MainViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         tableViewsSetup()
-       // networkManager.delegate = self
-       //   networkManager.fetchImages(imagesCount: 10)
         firebaseManager.delegate = self
         
 
         let logOutButton = UIBarButtonItem(title: "Выйти", style: .plain, target: self, action: #selector(logOutButtonPressed))
         self.navigationItem.rightBarButtonItem  = logOutButton
-        
-        
     }
     
     func tableViewsSetup() {
@@ -95,26 +90,30 @@ extension MainViewController: UITableViewDataSource {
             cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: self.dataModel.photos[indexPath.row].likes)
         }
         
-        //        cell.commentButtonPressed = { [weak self] in
-        //            let vc = CommentsViewController()
-        //            vc.selectedImage = self?.dataModel[indexPath.row]
-        //            self?.navigationController?.pushViewController(vc, animated: true)
-        //        }
+                cell.commentButtonPressed = { [weak self] in
+                    let vc = CommentsViewController()
+                    vc.selectedImage = self?.dataModel.photos[indexPath.row]
+                    self?.navigationController?.pushViewController(vc, animated: true)
+                }
         return cell
     }
 }
 // MARK: - FirebaseManagerDelegate
 
 extension MainViewController : FirebaseManagerDelegate {
+    func didUpdateComments(_ firebaseManager: FirebaseManager, comment: [CommentsModel]) {
+    
+    }
+    
 
     func didUpdateImages(_ firebaseManager:FirebaseManager, image: DataModel) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.dataModel = image
-            print("DATA MODEL: \(self.dataModel)")
             self.tableView.refreshControl?.endRefreshing()
             self.tableView.reloadData()
         }
     }
+    
 }
 
 

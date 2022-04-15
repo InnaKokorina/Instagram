@@ -40,9 +40,9 @@ class CommentsViewCell: UITableViewCell {
         contentView.addSubview(horStackView)
 }
     
-    func configure(indexPath: Int, comment: DataModel) {
-        authorLabel.text = "автор" //"\(comment.photos[0].comment[indexPath].email): "
-        commentLabel.text = "сообщение"//comment.photos[0].comment[indexPath].body
+    func configure(indexPath: Int, comment: [CommentsModel]) {
+        authorLabel.text = "\(comment[indexPath].email): "
+        commentLabel.text = comment[indexPath].body
     }
     
     private func setConstraints() {
