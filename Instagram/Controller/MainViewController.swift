@@ -74,6 +74,7 @@ extension MainViewController: UITableViewDataSource {
         
         cell.likeButtomTap = {
             self.dataModel.photos[indexPath.row].liked.toggle()
+          
             if self.dataModel.photos[indexPath.row].liked {
                 cell.likeButton.imageView?.isHighlighted = true
                 cell.likeButton.isSelected = true
@@ -87,7 +88,10 @@ extension MainViewController: UITableViewDataSource {
                 cell.likeButton.isSelected = false
             }
             
+            
             cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: self.dataModel.photos[indexPath.row].likes)
+            self.firebaseManager.saveData(dataModel: self.dataModel)
+          //  print("liked??? \(self.dataModel.photos[indexPath.row].liked)")
         }
         
                 cell.commentButtonPressed = { [weak self] in
