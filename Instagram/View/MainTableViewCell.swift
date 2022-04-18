@@ -103,14 +103,9 @@ class MainTableViewCell: UITableViewCell {
         
         if let cachedImage = networkManager.imageDictionary[dataModel[indexPath.row].photoImageUrl] {
             print("Using a cached image for item\(cachedImage)")
-            SpinnerViewController.start(window: self.bandImage)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                SpinnerViewController.stop()
                 self.bandImage.image = cachedImage
-            }
         } else {
             networkManager.getImage(with: dataModel[indexPath.row].photoImageUrl) { image in
-                
                 SpinnerViewController.start(window: self.bandImage)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     SpinnerViewController.stop()
@@ -124,6 +119,8 @@ class MainTableViewCell: UITableViewCell {
         override func prepareForReuse() {
             super.prepareForReuse()
             self.bandImage.image = nil
+            SpinnerViewController.spinner?.startAnimating()
+            SpinnerViewController.spinner?.isHidden = false
         }
         
         // MARK: - likeButtonPressed

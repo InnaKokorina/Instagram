@@ -15,7 +15,6 @@ open class SpinnerViewController {
     public static var baseColor = UIColor.darkGray
     
     public static func start(style: UIActivityIndicatorView.Style = style, backColor: UIColor = baseBackColor, baseColor: UIColor = baseColor, window: UIImageView) {
-        if spinner == nil {
             let frame = window.bounds
             spinner = UIActivityIndicatorView(frame: frame)
             spinner!.backgroundColor = backColor
@@ -23,16 +22,13 @@ open class SpinnerViewController {
             spinner?.color = baseColor
             window.addSubview(spinner!)
             spinner!.startAnimating()
-        }
+            spinner?.isHidden = false 
     }
     
     
     public static func stop() {
-        if spinner != nil {
-            spinner!.stopAnimating()
-            spinner!.removeFromSuperview()
-            spinner = nil
-        }
+          spinner?.isHidden = true
+          spinner!.stopAnimating()
     }
 }
     
