@@ -55,7 +55,6 @@ class MainTableViewCell: UITableViewCell {
         likeButton.imageView?.tintColor = .systemPink
         likeButton.translatesAutoresizingMaskIntoConstraints = false
         likeButton.contentHorizontalAlignment = .leading
-        likeButton.setImage(UIImage(systemName: "heart.fill"), for: .highlighted)
         likeButton.setImage(UIImage(systemName: "heart.fill"), for: .selected)
         likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
         return likeButton
@@ -100,7 +99,7 @@ class MainTableViewCell: UITableViewCell {
         authorNameLabel.text = dataModel[indexPath.row].author
         descriptionLabel.text = "\(dataModel[indexPath.row].author ):  \(dataModel[indexPath.row].description)"
         likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel[indexPath.row].likesCount)
-        
+        likeButton.isSelected = dataModel[indexPath.row].isLiked ? true : false
         if let cachedImage = networkManager.imageDictionary[dataModel[indexPath.row].photoImageUrl] {
             print("Using a cached image for item\(cachedImage)")
                 self.bandImage.image = cachedImage
@@ -119,7 +118,6 @@ class MainTableViewCell: UITableViewCell {
         override func prepareForReuse() {
             super.prepareForReuse()
             self.bandImage.image = nil
-            SpinnerViewController.spinner?.startAnimating()
             SpinnerViewController.spinner?.isHidden = false
         }
         
