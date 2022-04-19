@@ -55,8 +55,6 @@ class MainTableViewCell: UITableViewCell {
         likeButton.imageView?.tintColor = .systemPink
         likeButton.translatesAutoresizingMaskIntoConstraints = false
         likeButton.contentHorizontalAlignment = .leading
-        likeButton.setImage(UIImage(systemName: "heart.fill"), for: .selected)
-        likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
         return likeButton
     }()
     var likesCountLabel: UILabel = {
@@ -99,16 +97,18 @@ class MainTableViewCell: UITableViewCell {
         authorNameLabel.text = dataModel.photos[indexPath.row].user
         descriptionLabel.text = "\(dataModel.photos[indexPath.row].user ):  \(dataModel.photos[indexPath.row].description)"
         likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel.photos[indexPath.row].likes)
-        likeButton.isSelected = dataModel.photos[indexPath.row].liked ? true : false
-        
-        FirebaseManager.shared.getImage(picName: dataModel.photos[indexPath.row].image) { pic in
-           
-            SpinnerViewController.start(window: self.bandImage)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                SpinnerViewController.stop()
-                self.bandImage.image = pic
-            }
-        }
+        likeButton.setImage(UIImage(systemName: dataModel.photos[indexPath.row].liked ? "heart.fill" : "heart"), for: .normal)
+        print(dataModel.photos[0].liked)
+        print(dataModel.photos[0].likes)
+        print("--------------")
+//        FirebaseManager.shared.getImage(picName: dataModel.photos[indexPath.row].image) { pic in
+//
+//            SpinnerViewController.start(window: self.bandImage)
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+//                SpinnerViewController.stop()
+//                self.bandImage.image = pic
+//            }
+//        }
         selectionStyle = .none
         commentsButton.tintColor = .black
     }

@@ -20,15 +20,15 @@ struct Photos {
     var likes: Int = 0
     var link: String = ""
     var user: String = ""
-    var liked: Bool = false {
-        didSet {
-            if liked {
-                likes += 1
-            } else {
-                likes -= 1
-            }
-        }
-    }
+    var liked: Bool = false 
+//        didSet {
+//            if liked {
+//                likes += 1
+//            } else {
+//                likes -= 1
+//            }
+//        }
+ //   }
 }
 
 

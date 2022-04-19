@@ -40,7 +40,7 @@ class FirebaseManager {
                     let link = object?["link"]
                     var commentsModel  = CommentsModel()
                     for comment in data .children.allObjects as! [DataSnapshot] {
-                        let objectComment = comment.value as? [String: AnyObject]
+                      //  let objectComment = comment.value as? [String: AnyObject]
                         if let commentsArray  = comment.value as? [Any]  {
                             for i in commentsArray {
                                 let oneCom = i as? [String: AnyObject]
@@ -54,7 +54,7 @@ class FirebaseManager {
                             }
                         }
                     }
-                    let model = Photos(comment: [commentsModel], description: description as! String, id: id as! Int , image: image as! String, likes: likes as! Int, link: link as! String, user: user as! String)
+                    let model = Photos(comment: [commentsModel], description: description as! String, id: id as! Int , image: image as! String, likes: likes as! Int, link: link as! String, user: user as! String, liked: liked as! Bool)
                     self.dataModel.photos.append(model)
                     self.delegate?.didUpdateImages(self, image: self.dataModel)
                     
@@ -80,24 +80,26 @@ class FirebaseManager {
         )
     }
     
-    func saveData(dataModel: DataModel) {
-        ref = Database.database().reference().child("photos")
-        var photos : Dictionary<String, Any> = [:]
-        var array : [Dictionary<String, Any>] = [[:]]
-        var commentsArray: [Dictionary<String, Any>] = [[:]]
-        for i in dataModel.photos {
-            for comment in i.comment {
-                let commentData : Dictionary<String, Any> = ["id": comment.id, "email": comment.email, "postId": comment.postId, "body":comment.body]
-                commentsArray.append(commentData)
-            }
-            let data : Dictionary<String, Any> = ["user" : i.user, "description" : i.description, "id" : i.id, "image": i.image, "liked": i.liked, "likes": i.likes , "link": i.link, "comments": commentsArray ]
-            array.append(data)
-            
-    }
-        photos = ["photos": array]
-                      self.ref.setValue(photos)
-       // print("liked????\(photos["photos"])")
-    }
+//    func saveData(dataModel: DataModel) {
+//        ref = Database.database().reference().child("photos")
+//        var photos : Dictionary<String, Any> = [:]
+//        var array : [Dictionary<String, Any>] = [[:]]
+//        var commentsArray: [Dictionary<String, Any>] = [[:]]
+//        for i in dataModel.photos {
+//            print("dataModel.photos.count = \(dataModel.photos.count)")
+//            for comment in i.comment {
+//                print("comments.count = \(i.comment.count)")
+//                let commentData : Dictionary<String, Any> = ["id": comment.id, "email": comment.email, "postId": comment.postId, "body":comment.body]
+//                commentsArray.append(commentData)
+//            }
+//            let data : Dictionary<String, Any> = ["user" : i.user, "description" : i.description, "id" : i.id, "image": i.image, "liked": i.liked, "likes": i.likes , "link": i.link, "comments": commentsArray ]
+//            array.append(data)
+//        commentsArray = [[:]]
+//    }
+//        photos = ["photos": array]
+//        self.ref.updateChildValues(photos)
+//      //  print("liked????\(photos["photos"])")
+//    }
 }
 
 
