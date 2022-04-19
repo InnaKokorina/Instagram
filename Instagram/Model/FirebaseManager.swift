@@ -96,7 +96,7 @@ class FirebaseManager {
     }
         photos = ["photos": array]
                       self.ref.setValue(photos)
-        print("liked????\(photos["photos"])")
+       // print("liked????\(photos["photos"])")
     }
 }
 

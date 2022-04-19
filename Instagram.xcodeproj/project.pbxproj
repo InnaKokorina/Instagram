@@ -15,10 +15,10 @@
 		C380BCA828046AA100063E76 /* AuthorizationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C380BCA728046AA100063E76 /* AuthorizationViewController.swift */; };
 		C380BCAA2804857A00063E76 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C380BCA92804857A00063E76 /* GoogleService-Info.plist */; };
 		C380BCAC28048DD700063E76 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C380BCAB28048DD700063E76 /* Constants.swift */; };
-		C38BF59027EDFF4900A1D08A /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = C38BF58F27EDFF4900A1D08A /* Localizable.stringsdict */; };
 		C397B38627FDD5ED000F056E /* CommentsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C397B38527FDD5ED000F056E /* CommentsViewController.swift */; };
 		C397B38827FDF2EF000F056E /* CommentsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C397B38727FDF2EE000F056E /* CommentsModel.swift */; };
 		C397B38A27FDF41F000F056E /* CommentsViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C397B38927FDF41F000F056E /* CommentsViewCell.swift */; };
+		C3B29865280EA2E5004E7BB3 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = C3B29867280EA2E5004E7BB3 /* Localizable.stringsdict */; };
 		C3E4EA3127EB5DDE003815D2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4EA3027EB5DDE003815D2 /* AppDelegate.swift */; };
 		C3E4EA3527EB5DDE003815D2 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4EA3427EB5DDE003815D2 /* MainViewController.swift */; };
 		C3E4EA3A27EB5DE3003815D2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C3E4EA3927EB5DE3003815D2 /* Assets.xcassets */; };
@@ -42,15 +42,16 @@
 		C380BCA728046AA100063E76 /* AuthorizationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationViewController.swift; sourceTree = "<group>"; };
 		C380BCA92804857A00063E76 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C380BCAB28048DD700063E76 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
-		C38BF58F27EDFF4900A1D08A /* Localizable.stringsdict */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; path = Localizable.stringsdict; sourceTree = "<group>"; };
 		C397B38527FDD5ED000F056E /* CommentsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsViewController.swift; sourceTree = "<group>"; };
 		C397B38727FDF2EE000F056E /* CommentsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsModel.swift; sourceTree = "<group>"; };
 		C397B38927FDF41F000F056E /* CommentsViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsViewCell.swift; sourceTree = "<group>"; };
+		C3B29864280EA2E2004E7BB3 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		C3B29866280EA2E5004E7BB3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = en.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
+		C3B29868280EA2F5004E7BB3 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ru; path = ru.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		C3E4EA2D27EB5DDE003815D2 /* Instagram.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Instagram.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3E4EA3027EB5DDE003815D2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C3E4EA3427EB5DDE003815D2 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		C3E4EA3927EB5DE3003815D2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		C3E4EA3C27EB5DE3003815D2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C3E4EA3E27EB5DE3003815D2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C3E4EA4727EB5FA7003815D2 /* DataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModel.swift; sourceTree = "<group>"; };
 		C3E4EA4927EB5FB4003815D2 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
@@ -83,7 +84,7 @@
 			isa = PBXGroup;
 			children = (
 				C3E4EA3927EB5DE3003815D2 /* Assets.xcassets */,
-				C38BF58F27EDFF4900A1D08A /* Localizable.stringsdict */,
+				C3B29867280EA2E5004E7BB3 /* Localizable.stringsdict */,
 				C380BCAB28048DD700063E76 /* Constants.swift */,
 			);
 			path = support;
@@ -208,7 +209,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
-				Base,
+				ru,
 			);
 			mainGroup = C3E4EA2427EB5DDE003815D2;
 			productRefGroup = C3E4EA2E27EB5DDE003815D2 /* Products */;
@@ -228,7 +229,7 @@
 				C3E4EA3D27EB5DE3003815D2 /* LaunchScreen.storyboard in Resources */,
 				C380BCAA2804857A00063E76 /* GoogleService-Info.plist in Resources */,
 				C3E4EA3A27EB5DE3003815D2 /* Assets.xcassets in Resources */,
-				C38BF59027EDFF4900A1D08A /* Localizable.stringsdict in Resources */,
+				C3B29865280EA2E5004E7BB3 /* Localizable.stringsdict in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -303,10 +304,19 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
+		C3B29867280EA2E5004E7BB3 /* Localizable.stringsdict */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C3B29866280EA2E5004E7BB3 /* en */,
+				C3B29868280EA2F5004E7BB3 /* ru */,
+			);
+			name = Localizable.stringsdict;
+			sourceTree = "<group>";
+		};
 		C3E4EA3B27EB5DE3003815D2 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				C3E4EA3C27EB5DE3003815D2 /* Base */,
+				C3B29864280EA2E2004E7BB3 /* en */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -318,6 +328,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
@@ -379,6 +390,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
