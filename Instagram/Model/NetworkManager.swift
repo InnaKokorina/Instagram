@@ -17,17 +17,19 @@ protocol NetworkManagerDelegate {
 protocol NetworkManagerCellDelegate {
     func didUpdateImageCell(_ networkManager: NetworkManager, with: Data)
 }
-struct NetworkManager {
+class NetworkManager {
     
     var delegate: NetworkManagerDelegate?
     var delegateCell: NetworkManagerCellDelegate?
     var dataModel = [DataModel]()
+    var imageDictionary: [String:UIImage] = [:]
+    
     
     // MARK: - fetch data from URL
-    func fetchImages() {
-        let url = "https://zoo-animal-api.herokuapp.com/animals/rand/10"
+    func fetchImages(imagesCount n: Int) {
+        let url = "https://zoo-animal-api.herokuapp.com/animals/rand/\(n)"
+        
         performRequest(url: url) { result in
-            print("here")
             var dbmodel = DataModel()
             var dataModel = [DataModel]()
             guard let safeResult = result
@@ -74,18 +76,30 @@ struct NetworkManager {
         }
     }
     // MARK: - downloadImage
-    func getData(from url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> ()) {
-        DispatchQueue.global(qos: .background).async{
-            URLSession.shared.dataTask(with: url, completionHandler: completion).resume()
+    
+    func getImage(with stringUrl: String?, completion: @escaping (UIImage?) -> Void) {
+        guard
+            let stringUrl = stringUrl,
+            let url = URL(string: stringUrl)
+        else {
+            completion(nil)
+            return
         }
-    }
-    func downloadImage(from url: URL) -> Void  {
-        getData(from: url) { data, response, error in
-            guard let data = data, error == nil else { return }
-            delegateCell?.didUpdateImageCell(self ,with: data)
+        DispatchQueue.global(qos: .background).async {
+            if let imageData = try? Data(contentsOf: url),
+               let  result = UIImage(data: imageData) {
+                
+                DispatchQueue.main.async {
+                    self.imageDictionary.updateValue(result, forKey: stringUrl)
+                    completion(result)
+                }
+            } else {
+                DispatchQueue.main.async {
+                    let imageNil = UIImage(systemName: "xmark.circle")
+                    completion(imageNil)
+                }
+            }
         }
     }
 }
-
-
 

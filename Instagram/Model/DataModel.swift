@@ -13,6 +13,7 @@ struct DataModel {
     var photoImageUrl: String = ""
     var likesCount: Int = 0
     var description: String = ""
+    var image: UIImage?
     var isLiked: Bool = false{
         didSet {
             if isLiked {
