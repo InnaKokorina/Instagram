@@ -98,9 +98,9 @@ class MainTableViewCell: UITableViewCell {
         descriptionLabel.text = "\(dataModel.photos[indexPath.row].user ):  \(dataModel.photos[indexPath.row].description)"
         likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel.photos[indexPath.row].likes)
         likeButton.setImage(UIImage(systemName: dataModel.photos[indexPath.row].liked ? "heart.fill" : "heart"), for: .normal)
-        print(dataModel.photos[0].liked)
-        print(dataModel.photos[0].likes)
-        print("--------------")
+//        print(dataModel.photos[0].liked)
+//        print(dataModel.photos[0].likes)
+//        print("--------------")
 //        FirebaseManager.shared.getImage(picName: dataModel.photos[indexPath.row].image) { pic in
 //
 //            SpinnerViewController.start(window: self.bandImage)

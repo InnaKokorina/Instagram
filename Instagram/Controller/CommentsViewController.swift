@@ -210,8 +210,8 @@ extension CommentsViewController : FirebaseManagerDelegate {
     func didUpdateComments(_ firebaseManager: FirebaseManager, comment: [CommentsModel]) {
         DispatchQueue.main.async() {
             self.comments = comment
-            print("comments: \(self.comments)")
-            print("selected post:\(self.selectedImage?.id)")
+//            print("comments: \(self.comments)")
+//            print("selected post:\(self.selectedImage?.id)")
             self.tableView.reloadData()
     }
     }
