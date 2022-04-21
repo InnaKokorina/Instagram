@@ -21,8 +21,8 @@ class CommentsViewController: UIViewController {
     
     var selectedImage: Photos? {
         didSet{
-            firebaseManager.fetchData()
-            // tableView.reloadData()
+           firebaseManager.fetchData()
+             tableView.reloadData()
         }
     }
     

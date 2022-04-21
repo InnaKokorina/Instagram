@@ -26,7 +26,10 @@ open class SpinnerViewController {
     
     public static func stop() {
           spinner?.isHidden = true
-          spinner!.stopAnimating()
+        print(" spinner?.isHidden = true")
+          spinner?.stopAnimating()
+        spinner?.removeFromSuperview()
+        spinner = nil
     }
 }
     

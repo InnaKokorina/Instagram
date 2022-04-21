@@ -50,12 +50,13 @@ class MainViewController: UIViewController {
         tableView.allowsSelection = false
         tableView.separatorColor = .clear
         tableView.refreshControl = UIRefreshControl()
-        //        tableView.refreshControl?.addTarget(self, action: #selector(callPullToRefresh), for: .valueChanged)
+        tableView.refreshControl?.addTarget(self, action: #selector(callPullToRefresh), for: .valueChanged)
     }
     // MARK: - RefreshImages
-    //    @objc func callPullToRefresh() {
-    //        firebaseManager.fetchData()
-    //    }
+        @objc func callPullToRefresh() {
+            
+            firebaseManager.fetchData(countImages: 1)
+        }
     // MARK: - Logout
     @objc func logOutButtonPressed(_ sender: Any) {
         do {
@@ -114,8 +115,8 @@ extension MainViewController : FirebaseManagerDelegate {
     
     func didUpdateImages(_ firebaseManager:FirebaseManager, image: DataModel) {
         DispatchQueue.main.async {
-            self.dataModel = image
-            //   self.tableView.refreshControl?.endRefreshing()
+            self.dataModel.photos = image.photos + self.dataModel.photos
+            self.tableView.refreshControl?.endRefreshing()
             self.tableView.reloadData()
         }
     }

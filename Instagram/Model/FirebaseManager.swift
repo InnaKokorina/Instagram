@@ -24,7 +24,7 @@ class FirebaseManager {
     private var dataModel = DataModel(photos: [Photos]())
     private var comments = [CommentsModel]()
     
-    func fetchData() {
+    func fetchData(countImages: Int = 10) {
         ref = Database.database().reference().child("photos")
         ref.observe(DataEventType.value) { snapshot in
             if snapshot.childrenCount > 0 {
@@ -53,10 +53,14 @@ class FirebaseManager {
                         }
                     }
                     let model = Photos(comment: self.comments, description: description as! String, id: id as! Int , image: image as! String, likes: likes as! Int, link: link as! String, user: user as! String, liked: liked as! Bool)
+                    if self.dataModel.photos.count < countImages {
                     self.dataModel.photos.append(model)
+                    }
                 }
                 self.delegate?.didUpdateImages(self, image: self.dataModel)
                 self.comments = []
+                self.dataModel.photos = []
+                
             }
         }
     }
