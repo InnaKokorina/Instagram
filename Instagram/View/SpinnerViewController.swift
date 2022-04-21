@@ -7,27 +7,27 @@
 
 import UIKit
 
-open class SpinnerViewController {
+class SpinnerViewController {
     
-    public static var spinner: UIActivityIndicatorView?
-    public static var style: UIActivityIndicatorView.Style = .medium
-    public static var baseColor = UIColor.darkGray
+var spinner: UIActivityIndicatorView?
+var style: UIActivityIndicatorView.Style = .medium
+var baseColor = UIColor.darkGray
     
-    public static func start(style: UIActivityIndicatorView.Style = style,  baseColor: UIColor = baseColor, window: UIImageView) {
-            let frame = window.bounds
+ func start(view: UIImageView) {
+            let frame = view.bounds
             spinner = UIActivityIndicatorView(frame: frame)
             spinner!.style = style
             spinner?.color = baseColor
-            window.addSubview(spinner!)
+            view.addSubview(spinner!)
             spinner!.startAnimating()
             spinner?.isHidden = false
+
     }
     
     
-    public static func stop() {
-          spinner?.isHidden = true
-        print(" spinner?.isHidden = true")
-          spinner?.stopAnimating()
+func stop() {
+        spinner?.isHidden = true
+        spinner?.stopAnimating()
         spinner?.removeFromSuperview()
         spinner = nil
     }

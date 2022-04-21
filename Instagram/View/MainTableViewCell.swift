@@ -13,6 +13,7 @@ class MainTableViewCell: UITableViewCell {
     static var identifier = "MainTableViewCell"
     private var dataManager = DataManager()
     // private var networkManager = NetworkManager()
+    let spinner = SpinnerViewController()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -98,15 +99,12 @@ class MainTableViewCell: UITableViewCell {
         descriptionLabel.text = "\(dataModel.photos[indexPath.row].user ):  \(dataModel.photos[indexPath.row].description)"
         likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel.photos[indexPath.row].likes)
         likeButton.setImage(UIImage(systemName: dataModel.photos[indexPath.row].liked ? "heart.fill" : "heart"), for: .normal)
-        
         FirebaseManager.shared.getImage(picName: dataModel.photos[indexPath.row].image) { pic in
-         
-//            SpinnerViewController.start(window: self.bandImage)
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//                SpinnerViewController.stop()
-//                SpinnerViewController.spinner = nil
+            self.spinner.start(view: self.bandImage)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 self.bandImage.image = pic
-//            }
+                self.spinner.stop()
+            }
         }
         selectionStyle = .none
         commentsButton.tintColor = .black
@@ -116,7 +114,7 @@ class MainTableViewCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         self.bandImage.image = nil
-//        SpinnerViewController.start(window: self.bandImage)
+
     }
     // MARK: - buttons pressed
     @objc  func likePressed() {

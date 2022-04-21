@@ -26,7 +26,7 @@ class FirebaseManager {
     
     func fetchData(countImages: Int = 10) {
         ref = Database.database().reference().child("photos")
-        ref.observe(DataEventType.value) { snapshot in
+        ref.observeSingleEvent(of: DataEventType.value) { snapshot in
             if snapshot.childrenCount > 0 {
                 for data in snapshot.children.allObjects as! [DataSnapshot] {
                     let object =  data.value as? [String: AnyObject]
