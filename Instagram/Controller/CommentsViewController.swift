@@ -168,7 +168,7 @@ extension CommentsViewController: UITextFieldDelegate {
                 selectedImage?.id == model.postId
             }
            
-            let email  = "Inna"
+            let email  = auth.setName()
             let id = selectedcomments.count
             let postId = (selectedImage?.id)!
             let newcomment = CommentsModel(body: message, email: email, id: id, postId: postId)
@@ -176,7 +176,7 @@ extension CommentsViewController: UITextFieldDelegate {
             comments.append(newcomment)
             if let index = selectedImage?.id  {
                 let indexPath = index - 1
-               
+               // save to FB
                 self.ref =  Database.database().reference().child("photos/\(indexPath)/comments/\(id)")
                 print(newcomment)
                 let dictionary = ["email": newcomment.email,"body": newcomment.body,"id": newcomment.id,"postId": newcomment.postId] as [String : Any]
@@ -184,7 +184,6 @@ extension CommentsViewController: UITextFieldDelegate {
                 tableView.reloadData()
                 self.textField.text = ""
                 self.textField.endEditing(true)
-                
             }
             
             self.activeTextField = nil

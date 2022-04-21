@@ -6,10 +6,10 @@
 //
 
 import UIKit
+import Firebase
 import FirebaseAuth
 
 class AuthorizationViewController: UIViewController {
-   var email = ""
     var signup: Bool = true {
         willSet {
             if newValue {
@@ -160,14 +160,14 @@ extension AuthorizationViewController: UITextFieldDelegate {
     }
     
     func checkAuth() {
-        email = emailField.text!
+        let name = "New user"
+        let email = emailField.text!
         let password = passwordField.text!
         if signup {
             if (!email.isEmpty && !password.isEmpty) {
                 Auth.auth().createUser(withEmail: email, password: password) {  result, err in
                     if err == nil {
                         if let result = result {
-                            print(result.user.uid)
                             let vc = MainViewController()
                             self.navigationController?.pushViewController(vc, animated: true)
                         }
@@ -189,5 +189,11 @@ extension AuthorizationViewController: UITextFieldDelegate {
             }
         }
         
+    }
+    
+    func setName() -> String {
+        let name = Auth.auth().currentUser?.email as? String
+        print(" in auth \(name)")
+        return name ?? "User"
     }
 }
