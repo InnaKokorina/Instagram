@@ -23,4 +23,8 @@ struct K {
     struct Font {
         static let font = "Times New Roman"
     }
+    
+    struct App {
+        static let title = "PhotoStory"
+    }
 }

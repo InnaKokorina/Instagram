@@ -160,7 +160,6 @@ extension AuthorizationViewController: UITextFieldDelegate {
     }
     
     func checkAuth() {
-        let name = "New user"
         let email = emailField.text!
         let password = passwordField.text!
         if signup {
@@ -193,7 +192,6 @@ extension AuthorizationViewController: UITextFieldDelegate {
     
     func setName() -> String {
         let name = Auth.auth().currentUser?.email as? String
-        print(" in auth \(name)")
         return name ?? "User"
     }
 }

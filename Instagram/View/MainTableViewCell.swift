@@ -101,12 +101,12 @@ class MainTableViewCell: UITableViewCell {
         
         FirebaseManager.shared.getImage(picName: dataModel.photos[indexPath.row].image) { pic in
          
-            SpinnerViewController.start(window: self.bandImage)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                SpinnerViewController.stop()
-                SpinnerViewController.spinner = nil
+//            SpinnerViewController.start(window: self.bandImage)
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+//                SpinnerViewController.stop()
+//                SpinnerViewController.spinner = nil
                 self.bandImage.image = pic
-            }
+//            }
         }
         selectionStyle = .none
         commentsButton.tintColor = .black
@@ -116,7 +116,7 @@ class MainTableViewCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         self.bandImage.image = nil
-        SpinnerViewController.start(window: self.bandImage)
+//        SpinnerViewController.start(window: self.bandImage)
     }
     // MARK: - buttons pressed
     @objc  func likePressed() {

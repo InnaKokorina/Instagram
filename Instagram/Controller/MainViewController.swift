@@ -35,7 +35,7 @@ class MainViewController: UIViewController {
         view.backgroundColor = .systemBackground
         tableViewsSetup()
         firebaseManager.delegate = self
-        
+        navigationController?.title = K.App.title
         firebaseManager.fetchData()
         
         let logOutButton = UIBarButtonItem(title: "Выйти", style: .plain, target: self, action: #selector(logOutButtonPressed))
@@ -53,10 +53,9 @@ class MainViewController: UIViewController {
         tableView.refreshControl?.addTarget(self, action: #selector(callPullToRefresh), for: .valueChanged)
     }
     // MARK: - RefreshImages
-        @objc func callPullToRefresh() {
-            
-            firebaseManager.fetchData(countImages: 1)
-        }
+    @objc func callPullToRefresh() {
+        firebaseManager.fetchData(countImages: 1)
+    }
     // MARK: - Logout
     @objc func logOutButtonPressed(_ sender: Any) {
         do {
@@ -73,11 +72,10 @@ extension MainViewController: UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "MainTableViewCell", for: indexPath) as? MainTableViewCell else { return UITableViewCell() }
-        cell.configure(dataModel: dataModel, indexPath: indexPath)
+        
         
         cell.likeButtomTap = {
             self.dataModel.photos[indexPath.row].liked.toggle()
-            DispatchQueue.main.async {
                 if self.dataModel.photos[indexPath.row].liked == true {
                     cell.heartView.alpha = 0.5
                     let seconds = 0.3
@@ -86,17 +84,11 @@ extension MainViewController: UITableViewDataSource {
                         cell.heartView.alpha = 0
                     }
                 }
-                
                 self.ref = Database.database().reference().child("photos/\(indexPath.row)")
-                let  liked = ["liked": self.dataModel.photos[indexPath.row].liked, "likes": self.dataModel.photos[indexPath.row].likes] as [String : Any]
-                self.ref.updateChildValues(liked)
-                tableView.reloadData()
-            }
+                let  dict = ["liked":self.dataModel.photos[indexPath.row].liked, "likes":self.dataModel.photos[indexPath.row].likes] as [String : Any]
+                self.ref.updateChildValues(dict)     
         }
-        
-        print(self.dataModel.photos[0].liked)
-        print(self.dataModel.photos[0].likes)
-        
+        cell.configure(dataModel: dataModel, indexPath: indexPath)
         cell.commentButtonPressed = { [weak self] in
             let vc = CommentsViewController()
             vc.selectedImage = self?.dataModel.photos[indexPath.row]
