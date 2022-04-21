@@ -97,8 +97,6 @@ extension MainViewController: UITableViewDataSource {
         }
        
         cell.configure(dataModel: dataModel, indexPath: indexPath)
-        print("liked -- - \(self.dataModel.photos[indexPath.row].liked)")
-        print("likes -----\(self.dataModel.photos[indexPath.row].likes)")
         
         cell.commentButtonPressed = { [weak self] in
             let vc = CommentsViewController()
@@ -126,21 +124,4 @@ extension MainViewController : FirebaseManagerDelegate {
     
 }
 
-
-// MARK: - NetworkManagerDelegate
-
-//extension MainViewController : NetworkManagerDelegate {
-//
-//    func didUpdateImages(_ networkManager:NetworkManager, image: [DataModel]) {
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 1){
-//            self.dataModel = image + self.dataModel
-//            self.tableView.refreshControl?.endRefreshing()
-//            self.tableView.reloadData()
-//        }
-//    }
-//
-//    func didFailWithError() {
-//        print("ошибка сети")
-//    }
-//}
 
