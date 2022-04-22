@@ -13,19 +13,19 @@ class AuthorizationViewController: UIViewController {
     var signup: Bool = true {
         willSet {
             if newValue {
-                titleLabel.text = K.Auth.createUser
-                infoLabel.text = K.Auth.infoCreate
-                switchButton.setTitle(K.Auth.switchButtonSignIn, for: .normal)
+                titleLabel.text = Constants.Auth.createUser
+                infoLabel.text = Constants.Auth.infoCreate
+                switchButton.setTitle(Constants.Auth.switchButtonSignIn, for: .normal)
             } else{
-                titleLabel.text = K.Auth.signIn
-                infoLabel.text = K.Auth.infoSignIn
-                switchButton.setTitle(K.Auth.switchButtonCreate, for: .normal)
+                titleLabel.text = Constants.Auth.signIn
+                infoLabel.text = Constants.Auth.infoSignIn
+                switchButton.setTitle(Constants.Auth.switchButtonCreate, for: .normal)
             }
         }
     }
     private var backImage:UIImageView = {
         let backImage = UIImageView()
-        backImage.image = UIImage(named: K.Auth.backImageName)
+        backImage.image = UIImage(named: Constants.Auth.backImageName)
         backImage.contentMode = .scaleAspectFill
         backImage.alpha = 0.3
         backImage.translatesAutoresizingMaskIntoConstraints = false
@@ -33,19 +33,19 @@ class AuthorizationViewController: UIViewController {
     }()
     private var titleLabel: UILabel = {
         let titleLabel = UILabel()
-        titleLabel.font = UIFont(name: K.Font.font, size: 30)
+        titleLabel.font = UIFont(name: Constants.Font.font, size: 30)
         titleLabel.numberOfLines = 0
         titleLabel.textColor = .white
         titleLabel.textAlignment = .center
-        titleLabel.text = K.Auth.createUser
+        titleLabel.text = Constants.Auth.createUser
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         return titleLabel
     }()
     private var infoLabel: UILabel = {
         let infoLabel = UILabel()
-        infoLabel.font = UIFont(name: K.Font.font, size: 14)
+        infoLabel.font = UIFont(name: Constants.Font.font, size: 14)
         infoLabel.textAlignment = .center
-        infoLabel.text = K.Auth.infoCreate
+        infoLabel.text = Constants.Auth.infoCreate
         infoLabel.numberOfLines = 0
         infoLabel.textColor = .white
         infoLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -53,9 +53,9 @@ class AuthorizationViewController: UIViewController {
     }()
     private var emailField: UITextField = {
         let emailField = UITextField()
-        emailField.font = UIFont(name: K.Font.font, size: 17)
+        emailField.font = UIFont(name: Constants.Font.font, size: 17)
         emailField.textAlignment = .left
-        emailField.placeholder = K.Auth.placeholderEmail
+        emailField.placeholder = Constants.Auth.placeholderEmail
         emailField.borderStyle = .roundedRect
         emailField.textContentType = .emailAddress
         emailField.translatesAutoresizingMaskIntoConstraints = false
@@ -64,9 +64,9 @@ class AuthorizationViewController: UIViewController {
     
     private var passwordField: UITextField = {
         let passwordField = UITextField()
-        passwordField.font = UIFont(name: K.Font.font, size: 17)
+        passwordField.font = UIFont(name: Constants.Font.font, size: 17)
         passwordField.textAlignment = .left
-        passwordField.placeholder = K.Auth.placeholderPassword
+        passwordField.placeholder = Constants.Auth.placeholderPassword
         passwordField.borderStyle = .roundedRect
         passwordField.textContentType = .password
         passwordField.isSecureTextEntry = true
@@ -76,7 +76,7 @@ class AuthorizationViewController: UIViewController {
     private var switchButton: UIButton = {
         let switchButton = UIButton()
         switchButton.backgroundColor = .gray
-        switchButton.setTitle(K.Auth.switchButtonSignIn, for: .normal)
+        switchButton.setTitle(Constants.Auth.switchButtonSignIn, for: .normal)
         switchButton.setTitleColor(.black, for: .normal)
         if #available(iOS 15.0, *) {
             switchButton.configuration?.cornerStyle = .dynamic

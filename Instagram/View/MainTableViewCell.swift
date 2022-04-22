@@ -38,7 +38,7 @@ class MainTableViewCell: UITableViewCell {
     }()
     private var authorNameLabel: UILabel = {
         let authorNameLabel = UILabel()
-        authorNameLabel.font = UIFont(name: K.Font.font, size: 17)
+        authorNameLabel.font = UIFont(name: Constants.Font.font, size: 17)
         authorNameLabel.textAlignment = .left
         return authorNameLabel
     }()
@@ -60,13 +60,13 @@ class MainTableViewCell: UITableViewCell {
     }()
     var likesCountLabel: UILabel = {
         var likesCountLabel = UILabel()
-        likesCountLabel.font = UIFont(name: K.Font.font, size: 15)
+        likesCountLabel.font = UIFont(name: Constants.Font.font, size: 15)
         return likesCountLabel
     }()
     private let descriptionLabel: UILabel = {
         let descriptionLabel = UILabel()
         descriptionLabel.numberOfLines = 0
-        descriptionLabel.font = UIFont(name: K.Font.font, size: 12)
+        descriptionLabel.font = UIFont(name: Constants.Font.font, size: 12)
         return descriptionLabel
     }()
     var heartView: BezierHeartView = {
@@ -78,7 +78,7 @@ class MainTableViewCell: UITableViewCell {
     let commentsButton: UIButton = {
         let commentsButton = UIButton()
         commentsButton.setTitle(" Комментарии", for: .normal)
-        commentsButton.titleLabel?.font = UIFont(name: K.Font.font, size: 14)
+        commentsButton.titleLabel?.font = UIFont(name: Constants.Font.font, size: 14)
         commentsButton.translatesAutoresizingMaskIntoConstraints = false
         commentsButton.setTitleColor(.black, for: .normal)
         commentsButton.setImage(UIImage(systemName: "message"), for: .normal)

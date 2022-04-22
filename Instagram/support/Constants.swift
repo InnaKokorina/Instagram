@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct K {
+struct Constants {
     struct Auth {
         static let createUser = "Создайте аккаунт"
         static let signIn = "Войдите в аккаунт"

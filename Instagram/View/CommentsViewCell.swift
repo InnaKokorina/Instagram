@@ -21,7 +21,7 @@ class CommentsViewCell: UITableViewCell {
     
     var authorLabel: UILabel = {
         var authorLabel = UILabel()
-        authorLabel.font = UIFont(name: K.Font.font, size: 17)
+        authorLabel.font = UIFont(name: Constants.Font.font, size: 17)
         authorLabel.numberOfLines = 0
         authorLabel.translatesAutoresizingMaskIntoConstraints = false
         return authorLabel
@@ -29,7 +29,7 @@ class CommentsViewCell: UITableViewCell {
     
     var commentLabel: UILabel = {
         var textLabel = UILabel()
-        textLabel.font = UIFont(name: K.Font.font, size: 15)
+        textLabel.font = UIFont(name: Constants.Font.font, size: 15)
         textLabel.numberOfLines = 0
         textLabel.translatesAutoresizingMaskIntoConstraints = false
         return textLabel

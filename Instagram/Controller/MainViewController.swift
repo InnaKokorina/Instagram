@@ -35,7 +35,7 @@ class MainViewController: UIViewController {
         view.backgroundColor = .systemBackground
         tableViewsSetup()
         firebaseManager.delegate = self
-        navigationItem.title = K.App.title
+        navigationItem.title = Constants.App.title
         firebaseManager.fetchData()
         
         let logOutButton = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(logOutButtonPressed))
