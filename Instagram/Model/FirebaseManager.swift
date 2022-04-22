@@ -24,7 +24,7 @@ class FirebaseManager {
     private var dataModel = DataModel(photos: [Photos]())
     private var comments = [CommentsModel]()
     
-    func fetchData(countImages: Int = 10) {
+    func fetchData(countImages: Int = 11) {
         ref = Database.database().reference().child("photos")
         ref.observeSingleEvent(of: DataEventType.value) { snapshot in
             if snapshot.childrenCount > 0 {
@@ -54,7 +54,7 @@ class FirebaseManager {
                     }
                     let model = Photos(comment: self.comments, description: description as! String, id: id as! Int , image: image as! String, likes: likes as! Int, link: link as! String, user: user as! String, liked: liked as! Bool)
                     if self.dataModel.photos.count < countImages {
-                    self.dataModel.photos.append(model)
+                        self.dataModel.photos.append(model)
                     }
                 }
                 self.delegate?.didUpdateImages(self, image: self.dataModel)
@@ -72,16 +72,17 @@ class FirebaseManager {
         let pathRef = reference.child("pictures")
         let fileRef = pathRef.child(picName + ".png")
         fileRef.getData(maxSize: 3048*3048, completion: { data, error in
-            guard error == nil else {
+            if let result = data {
+                let image = UIImage(data: result)
+                completion(image!)
+            } else {
                 print("error \(error)")
-                return
+                let imageNil = UIImage(systemName: "xmark.circle")
+                completion(imageNil!)
             }
-            let image = UIImage(data: data!)!
-            completion(image)
         }
         )
     }
-    
 }
 
 
