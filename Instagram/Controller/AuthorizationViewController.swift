@@ -163,25 +163,29 @@ extension AuthorizationViewController: UITextFieldDelegate {
         let email = emailField.text!
         let password = passwordField.text!
         if signup {
-            if (!email.isEmpty && !password.isEmpty) {
-                Auth.auth().createUser(withEmail: email, password: password) {  result, err in
-                    if err == nil {
-                        if let result = result {
-                            let vc = MainViewController()
-                            self.navigationController?.pushViewController(vc, animated: true)
-                        }
+            if !email.isEmpty && !password.isEmpty {
+                Auth.auth().createUser(withEmail: email, password: password) { result, err in
+                    guard err == nil
+                    else {
+                        print(err!)
+                        return
                     }
+                    let vc = MainViewController()
+                    self.navigationController?.pushViewController(vc, animated: true)
                 }
             } else {
                 showAlert()
             }
         } else {
-            if (!email.isEmpty && !password.isEmpty){
+            if !email.isEmpty && !password.isEmpty {
                 Auth.auth().signIn(withEmail:email, password: password) { (result,err) in
-                    if err == nil {
+                    guard err == nil
+                    else {
+                        print(err!)
+                        return
+                    }
                         let vc = MainViewController()
                         self.navigationController?.pushViewController(vc, animated: true)
-                    }
                 }
             } else {
                 showAlert()
