@@ -12,7 +12,6 @@ class MainTableViewCell: UITableViewCell {
     var commentButtonPressed: (() -> Void)?
     static var identifier = "MainTableViewCell"
     private var dataManager = DataManager()
-    // private var networkManager = NetworkManager()
     let spinner = SpinnerViewController()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -206,12 +205,3 @@ extension MainTableViewCell {
     }
     
 }
-
-//// MARK: - NetworkManagerCellDelegate
-//extension MainTableViewCell: NetworkManagerCellDelegate {
-//    func didUpdateImageCell(_ networkManager: NetworkManager ,with data: Data) {
-//        DispatchQueue.main.async() { [weak self] in
-//            self?.bandImage.image =  UIImage(data: data)
-//        }
-//    }
-//}
