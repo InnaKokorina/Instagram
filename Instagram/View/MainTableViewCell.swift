@@ -98,11 +98,11 @@ class MainTableViewCell: UITableViewCell {
         descriptionLabel.text = "\(dataModel.photos[indexPath.row].user ):  \(dataModel.photos[indexPath.row].description)"
         likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel.photos[indexPath.row].likes)
         likeButton.setImage(UIImage(systemName: dataModel.photos[indexPath.row].liked ? "heart.fill" : "heart"), for: .normal)
-        self.spinner.start(view: self.bandImage)
-        FirebaseManager.shared.getImage(picName: dataModel.photos[indexPath.row].image) { pic in
-            self.setImage(image: pic)
-            self.spinner.stop()
-        }
+      //  self.spinner.start(view: self.bandImage)
+//        FirebaseManager.shared.getImage(picName: dataModel.photos[indexPath.row].image) { pic in
+//            self.setImage(image: pic)
+//            self.spinner.stop()
+//        }
         selectionStyle = .none
         commentsButton.tintColor = .black
     }

@@ -23,32 +23,20 @@ class MainViewController: UIViewController {
         tableView.register(MainTableViewCell.self, forCellReuseIdentifier: "MainTableViewCell")
         return tableView
     }()
-//    private let addPhoto: UIBarButtonItem = {
-//        let addPhoto = UIBarButtonItem(image: UIImage(systemName: "plus.app"), style: .plain, target: MainViewController.self, action: #selector(logOutButtonPressed))
-//        addPhoto.image = UIImage(systemName: "plus.app")
-//        addPhoto.tintColor = .black
-//        return addPhoto
-//    }()
-//    
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         tableViewsSetup()
         firebaseManager.delegate = self
-        navigationItem.title = Constants.App.title
-        firebaseManager.fetchData()
         
-        let logOutButton = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(logOutButtonPressed))
-        logOutButton.tintColor = .black
-        let addPhoto = UIBarButtonItem(image: UIImage(systemName: "plus.app"), style: .plain, target: self, action: #selector(logOutButtonPressed))
-        addPhoto.tintColor = .black
-        self.navigationItem.leftBarButtonItem  = logOutButton
-        self.navigationItem.rightBarButtonItem = addPhoto
+        firebaseManager.fetchData()
+        setupNavItems()
     }
     
     func tableViewsSetup() {
@@ -61,17 +49,32 @@ class MainViewController: UIViewController {
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl?.addTarget(self, action: #selector(callPullToRefresh), for: .valueChanged)
     }
-    // MARK: - RefreshImages
-    @objc func callPullToRefresh() {
-        firebaseManager.fetchData(countImages: 1)
+    // MARK: - navigationItems
+    func setupNavItems() {
+        let logOutButton = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(logOutButtonPressed))
+        logOutButton.tintColor = .black
+        let addPhoto = UIBarButtonItem(image: UIImage(systemName: "plus.app"), style: .plain, target: self, action: #selector(addNewPost))
+        addPhoto.tintColor = .black
+        self.navigationItem.leftBarButtonItem  = logOutButton
+        self.navigationItem.rightBarButtonItem = addPhoto
+        navigationItem.title = Constants.App.title
     }
-    // MARK: - Logout
+    
     @objc func logOutButtonPressed(_ sender: Any) {
         do {
             try Auth.auth().signOut()
         } catch{
             print(error)
         }
+    }
+    @objc func addNewPost(_ sender: Any) {
+        let vc = NewPhotoViewController()
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    // MARK: - RefreshImages
+    @objc func callPullToRefresh() {
+        firebaseManager.fetchData(countImages: 1)
     }
 }
 // MARK: - UITableViewDataSource
@@ -82,29 +85,29 @@ extension MainViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "MainTableViewCell", for: indexPath) as? MainTableViewCell else { return UITableViewCell() }
         
-       
+        
         
         cell.likeButtomTap = {
             self.dataModel.photos[indexPath.row].liked.toggle()
-                if self.dataModel.photos[indexPath.row].liked == true {
-                    cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-                   
-                    cell.heartView.alpha = 0.5
-                    let seconds = 0.3
-                    cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: self.dataModel.photos[indexPath.row].likes)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
-                        cell.heartView.alpha = 0
-                    }
-                } else {
-                    cell.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
+            if self.dataModel.photos[indexPath.row].liked == true {
+                cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+                
+                cell.heartView.alpha = 0.5
+                let seconds = 0.3
+                cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: self.dataModel.photos[indexPath.row].likes)
+                DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
+                    cell.heartView.alpha = 0
                 }
+            } else {
+                cell.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
+            }
             
             cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: self.dataModel.photos[indexPath.row].likes)
-                self.ref = Database.database().reference().child("photos/\(indexPath.row)")
-                let  dict = ["liked":self.dataModel.photos[indexPath.row].liked, "likes":self.dataModel.photos[indexPath.row].likes] as [String : Any]
-                self.ref.updateChildValues(dict)
+            self.ref = Database.database().reference().child("photos/\(indexPath.row)")
+            let  dict = ["liked":self.dataModel.photos[indexPath.row].liked, "likes":self.dataModel.photos[indexPath.row].likes] as [String : Any]
+            self.ref.updateChildValues(dict)
         }
-       
+        
         cell.configure(dataModel: dataModel, indexPath: indexPath)
         
         cell.commentButtonPressed = { [weak self] in
