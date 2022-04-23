@@ -9,19 +9,28 @@ import UIKit
 
 class SpinnerViewController: UIActivityIndicatorView {
     
-    var spinner = UIActivityIndicatorView(style: .medium)
-
- func start(view: UIImageView) {
-     spinner.frame = view.bounds
-     spinner.color = UIColor.darkGray
-     view.addSubview(spinner)
-     spinner.startAnimating()
-     spinner.isHidden = false
+    private var spinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView(style: .medium)
+        spinner.color = UIColor.darkGray
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        return spinner
+    }()
+    private  func setConstraints(view: UIImageView) {
+        NSLayoutConstraint.activate([
+            spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+    }
+    func start(view: UIImageView) {
+        view.addSubview(spinner)
+        setConstraints(view: view)
+        spinner.startAnimating()
+        spinner.isHidden = false
     }
     
     
-func stop() {
-    spinner.isHidden = true
+    func stop() {
+        spinner.isHidden = true
     }
 }
-    
+
