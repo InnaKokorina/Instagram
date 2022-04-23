@@ -23,13 +23,18 @@ class MainViewController: UIViewController {
         tableView.register(MainTableViewCell.self, forCellReuseIdentifier: "MainTableViewCell")
         return tableView
     }()
-    
+//    private let addPhoto: UIBarButtonItem = {
+//        let addPhoto = UIBarButtonItem(image: UIImage(systemName: "plus.app"), style: .plain, target: MainViewController.self, action: #selector(logOutButtonPressed))
+//        addPhoto.image = UIImage(systemName: "plus.app")
+//        addPhoto.tintColor = .black
+//        return addPhoto
+//    }()
+//    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
     }
-    
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -39,7 +44,11 @@ class MainViewController: UIViewController {
         firebaseManager.fetchData()
         
         let logOutButton = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(logOutButtonPressed))
-        self.navigationItem.rightBarButtonItem  = logOutButton
+        logOutButton.tintColor = .black
+        let addPhoto = UIBarButtonItem(image: UIImage(systemName: "plus.app"), style: .plain, target: self, action: #selector(logOutButtonPressed))
+        addPhoto.tintColor = .black
+        self.navigationItem.leftBarButtonItem  = logOutButton
+        self.navigationItem.rightBarButtonItem = addPhoto
     }
     
     func tableViewsSetup() {
