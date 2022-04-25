@@ -27,4 +27,14 @@ struct Constants {
     struct App {
         static let title = "PhotoStory"
     }
+    
+    struct ImagePicker {
+        static let title = "Новая побликация"
+        static let takePhoto = "Сделать фото"
+        static let photoLib = "Выбрать фото"
+        static let cancel = "Отмена"
+        static let textPhotoPlaceholder = "Поделитесь впечатлением..."
+        static let share = "Поделиться"
+        
+    }
 }

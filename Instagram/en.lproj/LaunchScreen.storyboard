@@ -23,12 +23,20 @@
                                     <constraint firstAttribute="height" constant="100" id="FSp-3h-u68"/>
                                 </constraints>
                             </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome to PhotoStrory!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ihv-QG-epM">
+                                <rect key="frame" x="111.5" y="741" width="191" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" red="0.95606931706064757" green="0.95606931706064757" blue="0.95606931706064757" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="UeV-xU-XtW" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="Wo7-XL-Bti"/>
                             <constraint firstItem="UeV-xU-XtW" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="eL6-7D-wpk"/>
+                            <constraint firstItem="ihv-QG-epM" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="gfg-4K-smK"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="ihv-QG-epM" secondAttribute="bottom" constant="100" id="uuC-wG-oWZ"/>
                         </constraints>
                     </view>
                 </viewController>

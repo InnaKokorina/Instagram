@@ -123,7 +123,7 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
         NSLayoutConstraint.activate([
             
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-            tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
             view.trailingAnchor.constraint(equalTo: tableView.trailingAnchor, constant: 0),
             
             horStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
@@ -209,7 +209,7 @@ extension CommentsViewController {
             }
         }
     }
-    
+
     @objc func keyboardWillHide(notification: NSNotification) {
         self.view.frame.origin.y = 0
     }

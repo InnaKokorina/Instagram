@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		C3730DB827FF34CC00BDF0C5 /* SpinnerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3730DB727FF34CC00BDF0C5 /* SpinnerViewController.swift */; };
 		C37D60F427F4D921002E39CB /* BezierHeartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37D60F327F4D921002E39CB /* BezierHeartView.swift */; };
+		C3855B022816E497002C7CDA /* ExtensionKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3855B012816E496002C7CDA /* ExtensionKeyboard.swift */; };
 		C387BA922814188300167213 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C387BA912814188300167213 /* ImagePicker.swift */; };
 		C387BA9428141AE500167213 /* NewPhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C387BA9328141AE500167213 /* NewPhotoViewController.swift */; };
 		C388268428128F9F00E02CE8 /* AuthorizationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C388268328128F9F00E02CE8 /* AuthorizationViewController.swift */; };
@@ -35,6 +36,7 @@
 		5CB4162244BB3E1118FDA11A /* Pods-Instagram.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Instagram.debug.xcconfig"; path = "Target Support Files/Pods-Instagram/Pods-Instagram.debug.xcconfig"; sourceTree = "<group>"; };
 		C3730DB727FF34CC00BDF0C5 /* SpinnerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpinnerViewController.swift; sourceTree = "<group>"; };
 		C37D60F327F4D921002E39CB /* BezierHeartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezierHeartView.swift; sourceTree = "<group>"; };
+		C3855B012816E496002C7CDA /* ExtensionKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionKeyboard.swift; sourceTree = "<group>"; };
 		C387BA912814188300167213 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		C387BA9328141AE500167213 /* NewPhotoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPhotoViewController.swift; sourceTree = "<group>"; };
 		C388268328128F9F00E02CE8 /* AuthorizationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationViewController.swift; sourceTree = "<group>"; };
@@ -147,6 +149,7 @@
 				C3E4EA4D27EB5FF9003815D2 /* StackViewExtensions.swift */,
 				C37D60F327F4D921002E39CB /* BezierHeartView.swift */,
 				C3730DB727FF34CC00BDF0C5 /* SpinnerViewController.swift */,
+				C3855B012816E496002C7CDA /* ExtensionKeyboard.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -279,6 +282,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C3855B022816E497002C7CDA /* ExtensionKeyboard.swift in Sources */,
 				C388268428128F9F00E02CE8 /* AuthorizationViewController.swift in Sources */,
 				C3E4EA3527EB5DDE003815D2 /* MainViewController.swift in Sources */,
 				C3E4EA4E27EB5FF9003815D2 /* StackViewExtensions.swift in Sources */,
