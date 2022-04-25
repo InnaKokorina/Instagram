@@ -13,7 +13,7 @@ import FirebaseStorage
 
 class MainViewController: UIViewController {
     private var dataManager = DataManager()
-    private var dataModel = DataModel(photos: [Photos]())
+    var dataModel = DataModel(photos: [Photos]())
     private var firebaseManager = FirebaseManager()
     private var activityController: UIActivityViewController? = nil
     private var ref: DatabaseReference!
@@ -65,6 +65,7 @@ class MainViewController: UIViewController {
     @objc func addNewPost(_ sender: Any) {
         let vc = NewPhotoViewController()
         self.navigationController?.pushViewController(vc, animated: true)
+        vc.dataModel = self.dataModel
     }
     
     // MARK: - RefreshImages

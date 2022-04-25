@@ -144,6 +144,7 @@
 		C3E4EA4527EB5F8D003815D2 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				C387BA912814188300167213 /* ImagePicker.swift */,
 				C3E4EA4B27EB5FD9003815D2 /* MainTableViewCell.swift */,
 				C397B38927FDF41F000F056E /* CommentsViewCell.swift */,
 				C3E4EA4D27EB5FF9003815D2 /* StackViewExtensions.swift */,
@@ -160,7 +161,6 @@
 				C3E4EA3427EB5DDE003815D2 /* MainViewController.swift */,
 				C397B38527FDD5ED000F056E /* CommentsViewController.swift */,
 				C388268328128F9F00E02CE8 /* AuthorizationViewController.swift */,
-				C387BA912814188300167213 /* ImagePicker.swift */,
 				C387BA9328141AE500167213 /* NewPhotoViewController.swift */,
 			);
 			path = Controller;
