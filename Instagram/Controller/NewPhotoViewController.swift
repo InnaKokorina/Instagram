@@ -72,6 +72,7 @@ class NewPhotoViewController: UIViewController {
     @objc func addNewPhoto() {
         self.imagePicker = ImagePicker(presentationController: self, delegate: self)
         self.imagePicker.present(from: view)
+        
     }
     
     
@@ -89,6 +90,22 @@ class NewPhotoViewController: UIViewController {
         let vc = MainViewController()
         self.navigationController?.pushViewController(vc, animated: true)
         
+        // save image to Storage
+        let currentDateTime = Date()
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMddHH:mm"
+        let currentDateTimeString = formatter.string(from: currentDateTime)
+        if let image = newImage.image {
+            let filePath = "YourPath\(currentDateTimeString)"
+            FirebaseManager.create(for: image, path: filePath) { (downloadURL) in
+                guard let downloadURL = downloadURL else {
+                    print("Download url not found")
+                    return
+                }
+                let urlString = downloadURL
+                print("image url for download image :: \(urlString)")
+            }
+        }
         // safe to FB
         dataModel.photos.append(Photos(comment: [], description: photoTextField.text, id: dataModel.photos.count, image: "номер", likes: 0, link: "ссылка", user: userLabel.text ?? "user", liked: false))
         self.ref = Database.database().reference().child("photos/\(dataModel.photos.count)")
@@ -122,15 +139,12 @@ extension NewPhotoViewController {
             verStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 8),
             verStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
             view.safeAreaLayoutGuide.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 8),
-            //view.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: verStackView.bottomAnchor, constant: 8),
-            
+          
             photoTextField.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
             userLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
             
-            //   newImage.topAnchor.constraint(equalTo: userLabel.bottomAnchor, constant: 0),
             newImage.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
             newImage.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 0),
-            //photoTextField.topAnchor.constraint(equalTo: newImage.bottomAnchor, constant: 0),
             
             userLabel.heightAnchor.constraint(equalToConstant: 70),
             newImage.heightAnchor.constraint(equalToConstant: 400),
@@ -145,31 +159,23 @@ extension NewPhotoViewController: UITextViewDelegate {
         textView.text = ""
         photoTextField.textColor = .black
     }
-//    func textFieldDidBeginEditing(_ textField: UITextView) {
-//        self.activeTextField = self.photoTextField
-//        print(activeTextField?.text ?? "nil")
-//    }
+
     
     func textViewDidChangeSelection(_ textView: UITextView) {
         self.activeTextField = self.photoTextField
     }
-//    func textFieldDidChangeSelection(_ textField: UITextField) {
-//        self.activeTextField = self.photoTextField
-//    }
+
     
     func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
         textView.resignFirstResponder()
         return true
     }
-//    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-//        textField.resignFirstResponder()
-//        return true
-//    }
+
     
     func textViewDidEndEditing(_ textView: UITextView) {
         self.photoTextField.endEditing(true)
     }
-   func textFieldDidEndEditing(_ textField: UITextField) {
+    func textFieldDidEndEditing(_ textField: UITextField) {
         self.photoTextField.endEditing(true)
     }
 }

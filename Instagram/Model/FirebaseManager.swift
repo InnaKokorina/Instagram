@@ -83,6 +83,75 @@ class FirebaseManager {
         }
         )
     }
+    
+    func saveImage() {
+        let storage = Storage.storage()
+        let storageRef = storage.reference()
+        // File located on disk
+        let localFile = URL(string: "path/to/image")!
+
+        // Create a reference to the file you want to upload
+        let riversRef = storageRef.child("images/rivers.jpg")
+
+        // Upload the file to the path "images/rivers.jpg"
+        let uploadTask = riversRef.putFile(from: localFile, metadata: nil) { metadata, error in
+          guard let metadata = metadata else {
+            // Uh-oh, an error occurred!
+            return
+          }
+          // Metadata contains file metadata such as size, content-type.
+          let size = metadata.size
+          // You can also access to download URL after upload.
+          riversRef.downloadURL { (url, error) in
+            guard let downloadURL = url else {
+              // Uh-oh, an error occurred!
+              return
+            }
+          }
+        }
+        
+        
+        
+            
+
+    }
+    static func uploadImage(_ image: UIImage, at reference: StorageReference, completion: @escaping (URL?) -> Void) {
+
+        guard let imageData = image.jpegData(compressionQuality: 0.1) else {
+                return completion(nil)
+            }
+            
+            let metaData = StorageMetadata()
+            metaData.contentType = "image/pictures/jpg"
+            reference.putData(imageData, metadata: metaData, completion: { (metadata, error) in
+                if let error = error {
+                    assertionFailure(error.localizedDescription)
+                    print("Upload failed :: ",error.localizedDescription)
+                    return completion(nil)
+                }
+                
+        
+                reference.downloadURL { (url, error) in
+                    guard let downloadURL = url else {
+                      return
+                    }
+                    completion(downloadURL)
+                }
+            })
+        }
+    
+    static func create(for image: UIImage,path: String, completion: @escaping (String?) -> ()) {
+            let filePath = path
+            
+            let imageRef = Storage.storage().reference().child(filePath)
+            uploadImage(image, at: imageRef) { (downloadURL) in
+                guard let downloadURL = downloadURL else {
+                    print("Download url not found or error to upload")
+                    return completion(nil)
+                }
+                completion(downloadURL.absoluteString)
+            }
+        }
 }
 
 
