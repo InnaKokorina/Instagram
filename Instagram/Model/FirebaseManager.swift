@@ -17,14 +17,13 @@ protocol FirebaseManagerDelegate {
 }
 
 class FirebaseManager {
-    
-    static let shared = FirebaseManager()
+
     var delegate: FirebaseManagerDelegate?
     private var ref: DatabaseReference!
     private var dataModel = DataModel(photos: [Photos]())
     private var comments = [CommentsModel]()
     
-    func fetchData(countImages: Int = 11) {
+    func fetchData() {
         ref = Database.database().reference().child("photos")
         ref.observeSingleEvent(of: DataEventType.value) { snapshot in
             if snapshot.childrenCount > 0 {
@@ -53,9 +52,12 @@ class FirebaseManager {
                         }
                     }
                     let model = Photos(comment: self.comments, description: description as! String, id: id as! Int , image: image as! String, likes: likes as! Int, link: link as! String, user: user as! String, liked: liked as! Bool)
-                    if self.dataModel.photos.count < countImages {
+                 //   if self.dataModel.photos.count < countImages {
                         self.dataModel.photos.append(model)
-                    }
+                //    }
+                 //   if self.dataModel.photos.count < countImages {
+                  //      self.dataModel.photos = [model] + self.dataModel.photos
+                   // }
                 }
                 self.delegate?.didUpdateImages(self, image: self.dataModel)
                 self.comments = []
@@ -69,9 +71,9 @@ class FirebaseManager {
     func getImage(picName: String, completion: @escaping (UIImage) -> Void) {
         let storage = Storage.storage()
         let reference = storage.reference()
-        let pathRef = reference.child("pictures")
-        let fileRef = pathRef.child(picName + ".png")
-        fileRef.getData(maxSize: 3048*3048, completion: { data, error in
+        let pathRef = reference.child("")
+        let fileRef = pathRef.child(picName)
+        fileRef.getData(maxSize: 1080*1080, completion: { data, error in
             if let result = data {
                 let image = UIImage(data: result)
                 completion(image!)
@@ -91,38 +93,25 @@ class FirebaseManager {
         let localFile = URL(string: "path/to/image")!
 
         // Create a reference to the file you want to upload
-        let riversRef = storageRef.child("images/rivers.jpg")
+        let picRef = storageRef.child("pictures")
 
         // Upload the file to the path "images/rivers.jpg"
-        let uploadTask = riversRef.putFile(from: localFile, metadata: nil) { metadata, error in
-          guard let metadata = metadata else {
-            // Uh-oh, an error occurred!
-            return
-          }
-          // Metadata contains file metadata such as size, content-type.
-          let size = metadata.size
-          // You can also access to download URL after upload.
-          riversRef.downloadURL { (url, error) in
-            guard let downloadURL = url else {
-              // Uh-oh, an error occurred!
-              return
-            }
+        let uploadTask = picRef.putFile(from: localFile, metadata: nil) { metadata, error in
+          guard let metadata = metadata else { return }
+            picRef.downloadURL { (url, error) in
+            guard let downloadURL = url else { return }
           }
         }
-        
-        
-        
-            
-
     }
-    static func uploadImage(_ image: UIImage, at reference: StorageReference, completion: @escaping (URL?) -> Void) {
+    
+ func uploadImage(_ image: UIImage, at reference: StorageReference, completion: @escaping (URL?) -> Void) {
 
         guard let imageData = image.jpegData(compressionQuality: 0.1) else {
                 return completion(nil)
             }
             
             let metaData = StorageMetadata()
-            metaData.contentType = "image/pictures/jpg"
+            metaData.contentType = "image/jpeg"
             reference.putData(imageData, metadata: metaData, completion: { (metadata, error) in
                 if let error = error {
                     assertionFailure(error.localizedDescription)
@@ -140,9 +129,8 @@ class FirebaseManager {
             })
         }
     
-    static func create(for image: UIImage,path: String, completion: @escaping (String?) -> ()) {
+ func create(for image: UIImage,path: String, completion: @escaping (String?) -> ()) {
             let filePath = path
-            
             let imageRef = Storage.storage().reference().child(filePath)
             uploadImage(image, at: imageRef) { (downloadURL) in
                 guard let downloadURL = downloadURL else {

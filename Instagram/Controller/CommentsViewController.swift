@@ -174,8 +174,7 @@ extension CommentsViewController: UITextFieldDelegate {
             let newcomment = CommentsModel(body: message, email: email, id: id, postId: postId)
             selectedcomments.append(newcomment)
             comments.append(newcomment)
-            if let index = selectedImage?.id  {
-                let indexPath = index - 1
+            if let indexPath = selectedImage?.id  {
                // save to FB
                 self.ref =  Database.database().reference().child("photos/\(indexPath)/comments/\(id)")
                 print(newcomment)

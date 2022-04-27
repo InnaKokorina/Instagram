@@ -17,8 +17,8 @@ class NewPhotoViewController: UIViewController {
     private var firebaseManager = FirebaseManager()
     private var ref: DatabaseReference!
     var dataModel = DataModel(photos: [Photos]())
-    
-    
+    private let dataManager = DataManager()
+      
     private var userLabel: UILabel = {
         let userLabel = UILabel()
         userLabel.font = UIFont(name: Constants.Font.font, size: 17)
@@ -85,31 +85,31 @@ class NewPhotoViewController: UIViewController {
         navigationItem.title = Constants.App.title
     }
     
-    
+  // MARK: - sharePressed
     @objc func sharePressed(_ sender: Any) {
-        let vc = MainViewController()
-        self.navigationController?.pushViewController(vc, animated: true)
+
+       
         
-        // save image to Storage
-        let currentDateTime = Date()
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMddHH:mm"
-        let currentDateTimeString = formatter.string(from: currentDateTime)
+        // save image to FBStorage
+        var urlString = ""
+        var filePath = ""
         if let image = newImage.image {
-            let filePath = "YourPath\(currentDateTimeString)"
-            FirebaseManager.create(for: image, path: filePath) { (downloadURL) in
+            filePath = "\(dataManager.dateFormatter()).jpg"
+            firebaseManager.create(for: image, path: filePath) { (downloadURL) in
                 guard let downloadURL = downloadURL else {
                     print("Download url not found")
                     return
                 }
-                let urlString = downloadURL
-                print("image url for download image :: \(urlString)")
+                urlString = downloadURL
             }
         }
         // safe to FB
-        dataModel.photos.append(Photos(comment: [], description: photoTextField.text, id: dataModel.photos.count, image: "номер", likes: 0, link: "ссылка", user: userLabel.text ?? "user", liked: false))
-        self.ref = Database.database().reference().child("photos/\(dataModel.photos.count)")
+        dataModel.photos.append(Photos(comment: [CommentsModel](), description: photoTextField.text, id: dataModel.photos.count, image: filePath, likes: 0, link: urlString, user: userLabel.text ?? "user", liked: false))
+        print("dataModel.photos.count \(dataModel.photos.count)")
+        
+        self.ref = Database.database().reference().child("photos/\(dataModel.photos.count - 1)")
         let post = dataModel.photos[dataModel.photos.count - 1]
+    print("data model share pressed \(dataModel.photos)")
         let  dict = [
             "user": post.user,
             "description": post.description,
@@ -118,9 +118,15 @@ class NewPhotoViewController: UIViewController {
             "liked": post.liked,
             "likes": post.likes,
             "link": post.link,
-            "comments": []
+            "comments": post.comment
         ] as [String : Any]
         self.ref.setValue(dict)
+        
+        DispatchQueue.main.async {
+        let vc = MainViewController()
+        self.navigationController?.pushViewController(vc, animated: true)
+           
+        }
     }
     
 }

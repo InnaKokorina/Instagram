@@ -23,14 +23,17 @@ class MainViewController: UIViewController {
         tableView.register(MainTableViewCell.self, forCellReuseIdentifier: "MainTableViewCell")
         return tableView
     }()
-
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        firebaseManager.fetchData()
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         tableViewsSetup()
         firebaseManager.delegate = self
         
-        firebaseManager.fetchData()
+       // firebaseManager.fetchData()
         setupNavItems()
     }
     
@@ -70,7 +73,7 @@ class MainViewController: UIViewController {
     
     // MARK: - RefreshImages
     @objc func callPullToRefresh() {
-        firebaseManager.fetchData(countImages: 1)
+     //   firebaseManager.fetchData()
     }
 }
 // MARK: - UITableViewDataSource
@@ -124,7 +127,7 @@ extension MainViewController : FirebaseManagerDelegate {
     
     func didUpdateImages(_ firebaseManager:FirebaseManager, image: DataModel) {
         DispatchQueue.main.async {
-            self.dataModel.photos = image.photos + self.dataModel.photos
+            self.dataModel.photos = image.photos.reversed() + self.dataModel.photos
             self.tableView.refreshControl?.endRefreshing()
             self.tableView.reloadData()
         }
