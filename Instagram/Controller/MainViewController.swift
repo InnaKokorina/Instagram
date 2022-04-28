@@ -66,9 +66,12 @@ class MainViewController: UIViewController {
         }
     }
     @objc func addNewPost(_ sender: Any) {
+        
         let vc = NewPhotoViewController()
-        self.navigationController?.pushViewController(vc, animated: true)
         vc.dataModel = self.dataModel
+        self.navigationController?.pushViewController(vc, animated: true)
+        
+        print("---------------- new data \(self.dataModel.photos.count)")
     }
     
     // MARK: - RefreshImages
@@ -111,7 +114,8 @@ extension MainViewController: UITableViewDataSource {
         
         cell.commentButtonPressed = { [weak self] in
             let vc = CommentsViewController()
-            vc.selectedImage = self?.dataModel.photos[indexPath.row]
+            vc.selectedImage = (self?.dataModel.photos[indexPath.row])!
+            print("!!!!! dataModel.photos.count \(self?.dataModel.photos.count)")
             self?.navigationController?.pushViewController(vc, animated: true)
         }
         return cell

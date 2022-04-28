@@ -13,18 +13,13 @@ import FirebaseStorage
 
 class CommentsViewController: UIViewController {
     
-    private var comments = [CommentsModel]()
     private var auth = AuthorizationViewController()
     var activeTextField : UITextField? = nil
     private var firebaseManager = FirebaseManager()
     private var ref: DatabaseReference!
     
-    var selectedImage: Photos? {
-        didSet{
-           firebaseManager.fetchData()
-             tableView.reloadData()
-        }
-    }
+    
+    var selectedImage = Photos(comment: [CommentsModel]())
     
     private let tableView: UITableView = {
         let tableView = UITableView()
@@ -67,16 +62,14 @@ class CommentsViewController: UIViewController {
         view.addSubview(horStackView)
         setConstraints()
         textField.delegate = self
-        firebaseManager.delegate = self
+        // firebaseManager.delegate = self
         addComment.addTarget(self, action: #selector(addCommentTap), for: .touchUpInside)
-        
+        setupNavItems()
         // keyboard
         NotificationCenter.default.addObserver(self, selector: #selector(CommentsViewController.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(CommentsViewController.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         
-        // logout
-        let logOutButton = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(logOutButtonPressed))
-        self.navigationItem.rightBarButtonItem  = logOutButton
+        
     }
     
     func tableViewsSetup() {
@@ -87,7 +80,20 @@ class CommentsViewController: UIViewController {
         tableView.separatorStyle = .none
         tableView.allowsSelection = false
     }
-    // MARK: - Logout
+    // MARK: - NavigationItems
+    func setupNavItems() {
+        let logOutButton = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(logOutButtonPressed))
+        self.navigationItem.rightBarButtonItem  = logOutButton
+        let back = UIBarButtonItem(image: UIImage(systemName: "chevron.compact.left"), style: .plain, target: self, action: #selector(backPressed))
+        back.tintColor = .black
+        self.navigationItem.leftBarButtonItem = back
+    }
+    
+    @objc func backPressed() {
+        let vc = MainViewController()
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
     @objc func logOutButtonPressed(_ sender: Any) {
         do{
             try Auth.auth().signOut()
@@ -102,17 +108,13 @@ class CommentsViewController: UIViewController {
 extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let newArray = comments.filter { model in
-            selectedImage?.id == model.postId }
-        return newArray.count
+        return selectedImage.comment.count
+        
         
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "CommentsViewCell", for: indexPath) as? CommentsViewCell else { return UITableViewCell() }
-        let newArray = comments.filter { model in
-            selectedImage?.id == model.postId
-        }
-        cell.configure(indexPath: indexPath.row, comment: newArray)
+        cell.configure(indexPath: indexPath.row, comment: selectedImage.comment)
         return cell
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -164,27 +166,19 @@ extension CommentsViewController: UITextFieldDelegate {
     }
     func textFieldDidEndEditing(_ textField: UITextField) {
         if  let message = textField.text {
-            var selectedcomments = comments.filter { model in
-                selectedImage?.id == model.postId
-            }
-           
             let email  = auth.setName()
-            let id = selectedcomments.count
-            let postId = (selectedImage?.id)!
+            let id = selectedImage.comment.count
+            let postId = selectedImage.id
             let newcomment = CommentsModel(body: message, email: email, id: id, postId: postId)
-            selectedcomments.append(newcomment)
-            comments.append(newcomment)
-            if let indexPath = selectedImage?.id  {
-               // save to FB
-                self.ref =  Database.database().reference().child("photos/\(indexPath)/comments/\(id)")
-                print(newcomment)
-                let dictionary = ["email": newcomment.email,"body": newcomment.body,"id": newcomment.id,"postId": newcomment.postId] as [String : Any]
-                ref.setValue(dictionary)
-                tableView.reloadData()
-                self.textField.text = ""
-                self.textField.endEditing(true)
-            }
+            selectedImage.comment.append(newcomment)
             
+            // save to FB
+            self.ref =  Database.database().reference().child("photos/\(postId)/comments/\(id)")
+            let dictionary = ["email": newcomment.email,"body": newcomment.body,"id": newcomment.id,"postId": newcomment.postId] as [String : Any]
+            ref.setValue(dictionary)
+            tableView.reloadData()
+            self.textField.text = ""
+            self.textField.endEditing(true)
             self.activeTextField = nil
         }
     }
@@ -208,7 +202,7 @@ extension CommentsViewController {
             }
         }
     }
-
+    
     @objc func keyboardWillHide(notification: NSNotification) {
         self.view.frame.origin.y = 0
     }
@@ -216,16 +210,20 @@ extension CommentsViewController {
 
 // MARK: - FirebaseManagerDelegate
 
-extension CommentsViewController : FirebaseManagerDelegate {
-    
-    func didUpdateImages(_ firebaseManager: FirebaseManager, image: DataModel) {
-        
-    }
-    
-    func didUpdateComments(_ firebaseManager: FirebaseManager, comment: [CommentsModel]) {
-        DispatchQueue.main.async() {
-            self.comments = comment
-            self.tableView.reloadData()
-        }
-    }
-}
+//extension CommentsViewController : FirebaseManagerDelegate {
+//
+//    func didUpdateImages(_ firebaseManager: FirebaseManager, image: DataModel) {
+//        DispatchQueue.main.async {
+//            self.dataModel.photos = image.photos.reversed() + self.dataModel.photos
+//            self.tableView.refreshControl?.endRefreshing()
+//            self.tableView.reloadData()
+//        }
+//    }
+//
+//    func didUpdateComments(_ firebaseManager: FirebaseManager, comment: [CommentsModel]) {
+//        DispatchQueue.main.async() {
+//            self.comments = comment
+//            self.tableView.reloadData()
+//        }
+//    }
+//}

@@ -64,7 +64,7 @@ class NewPhotoViewController: UIViewController {
         addNewPhoto()
         setupNavItems()
         tapImage()
-        
+       
         NotificationCenter.default.addObserver(self, selector: #selector(NewPhotoViewController.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(NewPhotoViewController.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
@@ -81,10 +81,17 @@ class NewPhotoViewController: UIViewController {
         let addPhoto = UIBarButtonItem(image: UIImage(systemName: "arrow.up.circle.fill"), style: .plain, target: self, action: #selector(sharePressed))
         addPhoto.tintColor = .black
         self.navigationItem.rightBarButtonItem = addPhoto
-        self.navigationItem.leftBarButtonItem?.tintColor = .black
+        let back = UIBarButtonItem(image: UIImage(systemName: "chevron.compact.left"), style: .plain, target: self, action: #selector(backPressed))
+        back.tintColor = .black
+        self.navigationItem.leftBarButtonItem = back
         navigationItem.title = Constants.App.title
     }
     
+    @objc func backPressed() {
+        let vc = MainViewController()
+        self.navigationController?.pushViewController(vc, animated: true)
+        
+    }
   // MARK: - sharePressed
     @objc func sharePressed(_ sender: Any) {
 
@@ -105,11 +112,11 @@ class NewPhotoViewController: UIViewController {
         }
         // safe to FB
         dataModel.photos.append(Photos(comment: [CommentsModel](), description: photoTextField.text, id: dataModel.photos.count, image: filePath, likes: 0, link: urlString, user: userLabel.text ?? "user", liked: false))
-        print("dataModel.photos.count \(dataModel.photos.count)")
+       
         
         self.ref = Database.database().reference().child("photos/\(dataModel.photos.count - 1)")
         let post = dataModel.photos[dataModel.photos.count - 1]
-    print("data model share pressed \(dataModel.photos)")
+   
         let  dict = [
             "user": post.user,
             "description": post.description,
@@ -125,7 +132,7 @@ class NewPhotoViewController: UIViewController {
         DispatchQueue.main.async {
         let vc = MainViewController()
         self.navigationController?.pushViewController(vc, animated: true)
-           
+            print(";;;;;;;;;;new data \(self.dataModel.photos.count)")
         }
     }
     

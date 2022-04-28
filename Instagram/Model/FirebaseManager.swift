@@ -54,13 +54,15 @@ class FirebaseManager {
                     let model = Photos(comment: self.comments, description: description as! String, id: id as! Int , image: image as! String, likes: likes as! Int, link: link as! String, user: user as! String, liked: liked as! Bool)
                  //   if self.dataModel.photos.count < countImages {
                         self.dataModel.photos.append(model)
+                    self.comments = []
                 //    }
                  //   if self.dataModel.photos.count < countImages {
                   //      self.dataModel.photos = [model] + self.dataModel.photos
                    // }
                 }
                 self.delegate?.didUpdateImages(self, image: self.dataModel)
-                self.comments = []
+                
+                
                 self.dataModel.photos = []
                 
             }
