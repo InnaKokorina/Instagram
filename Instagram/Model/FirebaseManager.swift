@@ -10,32 +10,34 @@ import FirebaseAuth
 import Firebase
 import FirebaseDatabase
 import FirebaseStorage
+import RealmSwift
 
-protocol FirebaseManagerDelegate {
-    func didUpdateImages(_ firebaseManager: FirebaseManager, image: DataModel)
-    func didUpdateComments(_ firebaseManager: FirebaseManager, comment: [CommentsModel])
-}
+//protocol FirebaseManagerDelegate {
+ //   func didUpdateImages(_ firebaseManager: FirebaseManager, image: Photos)
+  //  func didUpdateComments(_ firebaseManager: FirebaseManager, comment: [CommentsModel])
+//}
 
 class FirebaseManager {
 
-    var delegate: FirebaseManagerDelegate?
+  //  var delegate: FirebaseManagerDelegate?
     private var ref: DatabaseReference!
-    private var dataModel = DataModel(photos: [Photos]())
-    private var comments = [CommentsModel]()
-    
+    private var dataModel: Results<Photos>?
+    private var comments: List<CommentsModel>?
+    private var realmManager = RealmManager()
+
     func fetchData() {
         ref = Database.database().reference().child("photos")
         ref.observeSingleEvent(of: DataEventType.value) { snapshot in
             if snapshot.childrenCount > 0 {
                 for data in snapshot.children.allObjects as! [DataSnapshot] {
                     let object =  data.value as? [String: AnyObject]
-                    let user = object?["user"]
-                    let description = object?["description"]
-                    let id = object?["id"]
-                    let image = object?["image"]
-                    let liked = object?["liked"]
-                    let likes = object?["likes"]
-                    let link = object?["link"]
+                    let user = object?["user"] as! String
+                    let description = object?["description"] as! String
+                    let id = object?["id"] as! Int
+                    let image = object?["image"] as! String
+                    let liked = object?["liked"] as! Bool
+                    let likes = object?["likes"] as! Int
+                    let link = object?["link"] as! String
                     var commentsModel  = CommentsModel()
                     for comment in data .children.allObjects as! [DataSnapshot] {
                         if let commentsArray  = comment.value as? [Any]  {
@@ -45,44 +47,80 @@ class FirebaseManager {
                                 let email = oneCom?["email"] as? String ?? ""
                                 let id = oneCom?["id"] as? Int ?? 0
                                 let postId = oneCom?["postId"] as? Int ?? 0
-                                commentsModel = CommentsModel(body: body, email: email, id: id, postId: postId)
-                                self.comments.append(commentsModel)
-                                self.delegate?.didUpdateComments(self, comment: self.comments)
-                            }
+                                commentsModel.id = id
+                                commentsModel.email = email
+                                commentsModel.postId = postId
+                                commentsModel.body = body
+    
+//                                self.commentModelRealm?.append(commentsRealm)
+//                                commentsModel = CommentsModel(body: body, email: email, id: id, postId: postId)
+                                self.comments?.append(commentsModel)
+                              //  self.delegate?.didUpdateComments(self, comment: self.comments)
+                       
+                        }
                         }
                     }
-                    let model = Photos(comment: self.comments, description: description as! String, id: id as! Int , image: image as! String, likes: likes as! Int, link: link as! String, user: user as! String, liked: liked as! Bool)
+                    let realm = try! Realm()
+                    do {
+                        try realm.write({
+                            
+                    let post = Photos()
+                    post.id = id
+                    post.user = user
+                    post.liked = liked
+                    post.descriptionImage = description
+                    post.likes = likes
+                    post.comment = self.comments ?? List<CommentsModel>()
+                    post.imageName = image
+                    self.getImage(picName: post.imageName) { data in
+                        post.image = NSData(data: data)
+                    }
+//                    let model = Photos(comment: self.comments, description: description as! String, id: id as! Int , image: image as! String, likes: likes as! Int, link: link as! String, user: user as! String, liked: liked as! Bool)
                  //   if self.dataModel.photos.count < countImages {
-                        self.dataModel.photos.append(model)
-                    self.comments = []
+                 //   self.realmManager.saveRealm(photos: post)
+                      //  self.dataModel.photos.append(model)
+                          //  try realm.add(post)
+                            print("self.dataModel? \(self.dataModel?.count)")
+                            
+                            if realm.isEmpty {
+                                 try realm.add(post)
+                            } else {
+                            realm.refresh()
+                            }
+                        })
+                    } catch {
+                        print("Error saving Data context \(error)")
+                    }
+              //  }
+                    self.comments = List<CommentsModel>()
                 //    }
                  //   if self.dataModel.photos.count < countImages {
                   //      self.dataModel.photos = [model] + self.dataModel.photos
                    // }
                 }
-                self.delegate?.didUpdateImages(self, image: self.dataModel)
+              //  self.delegate?.didUpdateImages(self, image: self.dataModel)
                 
                 
-                self.dataModel.photos = []
+           //     self.dataModel.photos = []
                 
             }
         }
     }
     
     
-    func getImage(picName: String, completion: @escaping (UIImage) -> Void) {
+    func getImage(picName: String, completion: @escaping (Data) -> Void) {
         let storage = Storage.storage()
         let reference = storage.reference()
         let pathRef = reference.child("")
         let fileRef = pathRef.child(picName)
         fileRef.getData(maxSize: 1080*1080, completion: { data, error in
             if let result = data {
-                let image = UIImage(data: result)
-                completion(image!)
+              //  let image = UIImage(data: result)
+                completion(result)
             } else {
                 print("error \(error)")
-                let imageNil = UIImage(systemName: "xmark.circle")
-                completion(imageNil!)
+               // let imageNil = UIImage(systemName: "xmark.circle")
+               // completion(imageNil!)
             }
         }
         )

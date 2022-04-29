@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import RealmSwift
 
 class MainTableViewCell: UITableViewCell {
     var likeButtomTap: (() -> Void)?
@@ -92,14 +93,14 @@ class MainTableViewCell: UITableViewCell {
         scrollView.addSubview(bandImage)
         bandImage.addSubview(heartView)
     }
-    func configure (dataModel:DataModel, indexPath: IndexPath) {
+    func configure (dataModel: Results<Photos>, indexPath: IndexPath) {
         verStackView.alignment = .leading
-        authorNameLabel.text = dataModel.photos[indexPath.row].user
-        descriptionLabel.text = "\(dataModel.photos[indexPath.row].user ):  \(dataModel.photos[indexPath.row].description)"
-        likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel.photos[indexPath.row].likes)
-        likeButton.setImage(UIImage(systemName: dataModel.photos[indexPath.row].liked ? "heart.fill" : "heart"), for: .normal)
+        authorNameLabel.text = dataModel[indexPath.row].user
+        descriptionLabel.text = "\(dataModel[indexPath.row].user ):  \(dataModel[indexPath.row].descriptionImage)"
+        likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel[indexPath.row].likes)
+        likeButton.setImage(UIImage(systemName: dataModel[indexPath.row].liked ? "heart.fill" : "heart"), for: .normal)
         self.spinner.start(view: self.bandImage)
-        firebaseManager.getImage(picName: dataModel.photos[indexPath.row].image) { pic in
+        firebaseManager.getImage(picName: dataModel[indexPath.row].imageName) { pic in
             self.setImage(image: pic)
             self.spinner.stop()
         }
@@ -122,15 +123,15 @@ class MainTableViewCell: UITableViewCell {
     }
     
     // MARK: - set image from Api or failImage
-    func setImage(image: UIImage) {
-        if image == UIImage(systemName: "xmark.circle") {
-            bandImage.contentMode = .center
-            bandImage.tintColor = .red
-            self.bandImage.image = image
-        } else {
-            self.bandImage.image = image
-        }
-    }
+    func setImage(image: Data) {
+        // if image == UIImage(systemName: "xmark.circle") {
+             bandImage.contentMode = .center
+             bandImage.tintColor = .red
+             self.bandImage.image = UIImage(data: image)
+ //        } else {
+ //            self.bandImage.image = image
+ //        }
+     }
     // MARK: - constraints
     private func setConstraints() {
         NSLayoutConstraint.activate([

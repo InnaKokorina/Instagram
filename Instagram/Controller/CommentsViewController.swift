@@ -19,7 +19,7 @@ class CommentsViewController: UIViewController {
     private var ref: DatabaseReference!
     
     
-    var selectedImage = Photos(comment: [CommentsModel]())
+//    var selectedImage = Photos(comment: [CommentsModel]())
     
     private let tableView: UITableView = {
         let tableView = UITableView()
@@ -108,13 +108,14 @@ class CommentsViewController: UIViewController {
 extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return selectedImage.comment.count
+        1
+  //      return selectedImage.comment.count
         
         
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "CommentsViewCell", for: indexPath) as? CommentsViewCell else { return UITableViewCell() }
-        cell.configure(indexPath: indexPath.row, comment: selectedImage.comment)
+   //     cell.configure(indexPath: indexPath.row, comment: selectedImage.comment)
         return cell
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -167,15 +168,15 @@ extension CommentsViewController: UITextFieldDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         if  let message = textField.text {
             let email  = auth.setName()
-            let id = selectedImage.comment.count
-            let postId = selectedImage.id
-            let newcomment = CommentsModel(body: message, email: email, id: id, postId: postId)
-            selectedImage.comment.append(newcomment)
+  //          let id = selectedImage.comment.count
+  //          let postId = selectedImage.id
+          //  let newcomment = CommentsModel(body: message, email: email, id: id, postId: postId)
+          //  selectedImage.comment.append(newcomment)
             
             // save to FB
-            self.ref =  Database.database().reference().child("photos/\(postId)/comments/\(id)")
-            let dictionary = ["email": newcomment.email,"body": newcomment.body,"id": newcomment.id,"postId": newcomment.postId] as [String : Any]
-            ref.setValue(dictionary)
+     //       self.ref =  Database.database().reference().child("photos/\(postId)/comments/\(id)")
+        //    let dictionary = ["email": newcomment.email,"body": newcomment.body,"id": newcomment.id,"postId": newcomment.postId] as [String : Any]
+         //   ref.setValue(dictionary)
             tableView.reloadData()
             self.textField.text = ""
             self.textField.endEditing(true)

@@ -10,13 +10,16 @@ import FirebaseAuth
 import Firebase
 import FirebaseDatabase
 import FirebaseStorage
+import RealmSwift
 
 class MainViewController: UIViewController {
     private var dataManager = DataManager()
-    var dataModel = DataModel(photos: [Photos]())
+    var dataModel: Results<Photos>?
     private var firebaseManager = FirebaseManager()
     private var activityController: UIActivityViewController? = nil
     private var ref: DatabaseReference!
+    private var realmManager = RealmManager()
+    private let realm = try! Realm()
     
     private let tableView: UITableView = {
         let tableView = UITableView()
@@ -31,9 +34,12 @@ class MainViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         tableViewsSetup()
-        firebaseManager.delegate = self
+        dataModel = realmManager.loadRealm()
+        print("postArray\(dataModel)")
+    //    tableView.reloadData()
+        // firebaseManager.delegate = self
         
-       // firebaseManager.fetchData()
+        // firebaseManager.fetchData()
         setupNavItems()
     }
     
@@ -67,76 +73,81 @@ class MainViewController: UIViewController {
     }
     @objc func addNewPost(_ sender: Any) {
         
-        let vc = NewPhotoViewController()
-        vc.dataModel = self.dataModel
-        self.navigationController?.pushViewController(vc, animated: true)
+        // let vc = NewPhotoViewController()
+        // vc.dataModel = self.dataModel
+        //  self.navigationController?.pushViewController(vc, animated: true)
         
-        print("---------------- new data \(self.dataModel.photos.count)")
     }
     
     // MARK: - RefreshImages
     @objc func callPullToRefresh() {
-     //   firebaseManager.fetchData()
+        //   firebaseManager.fetchData()
     }
 }
 // MARK: - UITableViewDataSource
 extension MainViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        dataModel.photos.count
+        dataModel?.count ?? 1
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "MainTableViewCell", for: indexPath) as? MainTableViewCell else { return UITableViewCell() }
-        
-        
-        
-        cell.likeButtomTap = {
-            self.dataModel.photos[indexPath.row].liked.toggle()
-            if self.dataModel.photos[indexPath.row].liked == true {
-                cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-                
-                cell.heartView.alpha = 0.5
-                let seconds = 0.3
-                cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: self.dataModel.photos[indexPath.row].likes)
-                DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
-                    cell.heartView.alpha = 0
-                }
-            } else {
-                cell.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
-            }
+        if let posts = self.dataModel {
             
-            cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: self.dataModel.photos[indexPath.row].likes)
-            self.ref = Database.database().reference().child("photos/\(indexPath.row)")
-            let  dict = ["liked":self.dataModel.photos[indexPath.row].liked, "likes":self.dataModel.photos[indexPath.row].likes] as [String : Any]
-            self.ref.updateChildValues(dict)
-        }
-        
-        cell.configure(dataModel: dataModel, indexPath: indexPath)
-        
-        cell.commentButtonPressed = { [weak self] in
-            let vc = CommentsViewController()
-            vc.selectedImage = (self?.dataModel.photos[indexPath.row])!
-            print("!!!!! dataModel.photos.count \(self?.dataModel.photos.count)")
-            self?.navigationController?.pushViewController(vc, animated: true)
+            
+            cell.likeButtomTap = {
+                do {
+                    try self.realm.write({
+                        posts[indexPath.row].liked.toggle()
+                        if posts[indexPath.row].liked == true {
+                            cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+                            
+                            cell.heartView.alpha = 0.5
+                            let seconds = 0.3
+                            cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: posts[indexPath.row].likes)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
+                                cell.heartView.alpha = 0
+                            }
+                        } else {
+                            cell.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
+                        }
+                        
+                        cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: posts[indexPath.row].likes)
+                        self.ref = Database.database().reference().child("photos/\(indexPath.row)")
+                        let  dict = ["liked":posts[indexPath.row].liked, "likes":posts[indexPath.row].likes] as [String : Any]
+                        self.ref.updateChildValues(dict)
+                        
+                    })
+                } catch {
+                    print("Error saving Data context \(error)")
+                }
+            }
+            cell.configure(dataModel: posts, indexPath: indexPath)
+            
+//            cell.commentButtonPressed = { [weak self] in
+//                let vc = CommentsViewController()
+//                // vc.selectedImage = (self?.dataModel.photos[indexPath.row])!
+//                self?.navigationController?.pushViewController(vc, animated: true)
+//            }
         }
         return cell
     }
 }
 // MARK: - FirebaseManagerDelegate
 
-extension MainViewController : FirebaseManagerDelegate {
-    func didUpdateComments(_ firebaseManager: FirebaseManager, comment: [CommentsModel]) {
-        
-    }
-    
-    
-    func didUpdateImages(_ firebaseManager:FirebaseManager, image: DataModel) {
-        DispatchQueue.main.async {
-            self.dataModel.photos = image.photos.reversed() + self.dataModel.photos
-            self.tableView.refreshControl?.endRefreshing()
-            self.tableView.reloadData()
-        }
-    }
-    
-}
-
+//extension MainViewController : FirebaseManagerDelegate {
+//    func didUpdateComments(_ firebaseManager: FirebaseManager, comment: [CommentsModel]) {
+//
+//    }
+//
+//
+//    func didUpdateImages(_ firebaseManager:FirebaseManager, image: DataModel) {
+//        DispatchQueue.main.async {
+//            self.dataModel.photos = image.photos.reversed() + self.dataModel.photos
+//            self.tableView.refreshControl?.endRefreshing()
+//            self.tableView.reloadData()
+//        }
+//    }
+//
+//}
+//
 
