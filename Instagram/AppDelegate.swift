@@ -6,16 +6,31 @@
 //
 
 import UIKit
+import Firebase
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
+    lazy var appViewController = UINavigationController(rootViewController: MainViewController())
 
-    private lazy var appViewController = UINavigationController(rootViewController: MainViewController())
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        setupWindow()
+        
+        
+        FirebaseApp.configure()
+               Auth.auth().addStateDidChangeListener {(auth,user) in
+                   if user == nil {
+                      lazy var appViewController = UINavigationController(rootViewController: AuthorizationViewController())
+                       self.setupWindow(rootVC: appViewController)
+                }
+                   else {
+                       lazy var appViewController = UINavigationController(rootViewController: MainViewController())
+                       self.setupWindow(rootVC: appViewController)
+                   }
+               }
+        
+    
         return true
     }
 
@@ -23,9 +38,9 @@ func application(_ application: UIApplication, supportedInterfaceOrientationsFor
     .init(rawValue: UIInterfaceOrientationMask.portrait.rawValue)
 }
 
-func setupWindow() {
+    func setupWindow(rootVC: UINavigationController) {
     window = UIWindow(frame: UIScreen.main.bounds)
-    window?.rootViewController = appViewController
+    window?.rootViewController = rootVC
     window?.makeKeyAndVisible()
 }
 

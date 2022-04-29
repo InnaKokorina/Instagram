@@ -7,28 +7,30 @@
 
 import UIKit
 
-open class SpinnerViewController {
+class SpinnerViewController: UIActivityIndicatorView {
     
-    public static var spinner: UIActivityIndicatorView?
-    public static var style: UIActivityIndicatorView.Style = .medium
-    public static var baseBackColor = UIColor(white: 0, alpha: 0.1)
-    public static var baseColor = UIColor.darkGray
-    
-    public static func start(style: UIActivityIndicatorView.Style = style, backColor: UIColor = baseBackColor, baseColor: UIColor = baseColor, window: UIImageView) {
-            let frame = window.bounds
-            spinner = UIActivityIndicatorView(frame: frame)
-            spinner!.backgroundColor = backColor
-            spinner!.style = style
-            spinner?.color = baseColor
-            window.addSubview(spinner!)
-            spinner!.startAnimating()
-            spinner?.isHidden = false 
+    private var spinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView(style: .medium)
+        spinner.color = UIColor.darkGray
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        return spinner
+    }()
+    private  func setConstraints(view: UIImageView) {
+        NSLayoutConstraint.activate([
+            spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+    }
+    func start(view: UIImageView) {
+        view.addSubview(spinner)
+        setConstraints(view: view)
+        spinner.startAnimating()
+        spinner.isHidden = false
     }
     
     
-    public static func stop() {
-          spinner?.isHidden = true
-          spinner!.stopAnimating()
+    func stop() {
+        spinner.isHidden = true
     }
 }
-    
+
