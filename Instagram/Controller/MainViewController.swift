@@ -35,7 +35,7 @@ class MainViewController: UIViewController {
         view.backgroundColor = .systemBackground
         tableViewsSetup()
         dataModel = realmManager.loadRealm()
-        print("postArray\(dataModel)")
+   //     print("postArray\(dataModel)")
     //    tableView.reloadData()
         // firebaseManager.delegate = self
         
@@ -123,14 +123,15 @@ extension MainViewController: UITableViewDataSource {
             }
             cell.configure(dataModel: posts, indexPath: indexPath)
             
-//            cell.commentButtonPressed = { [weak self] in
-//                let vc = CommentsViewController()
-//                // vc.selectedImage = (self?.dataModel.photos[indexPath.row])!
-//                self?.navigationController?.pushViewController(vc, animated: true)
-//            }
+            cell.commentButtonPressed = { [weak self] in
+                let vc = CommentsViewController()
+                vc.selectedImage = posts[indexPath.row]
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }
         }
         return cell
     }
+   
 }
 // MARK: - FirebaseManagerDelegate
 

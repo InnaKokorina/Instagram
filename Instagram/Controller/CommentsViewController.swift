@@ -10,6 +10,7 @@ import FirebaseAuth
 import Firebase
 import FirebaseDatabase
 import FirebaseStorage
+import RealmSwift
 
 class CommentsViewController: UIViewController {
     
@@ -17,8 +18,15 @@ class CommentsViewController: UIViewController {
     var activeTextField : UITextField? = nil
     private var firebaseManager = FirebaseManager()
     private var ref: DatabaseReference!
+    let realm = try! Realm()
+    var comments: Results<CommentsModel>?
+   // var realmMAnager = RealmManager()
     
-    
+    var selectedImage: Photos? {
+         didSet {
+            loadComments()
+         }
+     }
 //    var selectedImage = Photos(comment: [CommentsModel]())
     
     private let tableView: UITableView = {
@@ -53,7 +61,7 @@ class CommentsViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        firebaseManager.fetchData()
+       // firebaseManager.fetchData()
     }
     override func viewDidLoad() {
         view.backgroundColor = .systemBackground
@@ -101,21 +109,28 @@ class CommentsViewController: UIViewController {
             print(error)
         }
     }
-    
+    func loadComments() {
+            
+            comments = selectedImage?.comment.sorted(byKeyPath: "id", ascending: true)
+            
+            tableView.reloadData()
+        }
     
 }
 // MARK: - UITableViewDataSource, UITableViewDelegate
 extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        1
-  //      return selectedImage.comment.count
+      //  1
+     return comments?.count ?? 1
         
         
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "CommentsViewCell", for: indexPath) as? CommentsViewCell else { return UITableViewCell() }
-   //     cell.configure(indexPath: indexPath.row, comment: selectedImage.comment)
+        if let comments = comments {
+        cell.configure(indexPath: indexPath.row, comment: comments)
+        }
         return cell
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -144,6 +159,7 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
             
         ])
     }
+    
 }
 // MARK: - UITextFieldDelegate
 extension CommentsViewController: UITextFieldDelegate {

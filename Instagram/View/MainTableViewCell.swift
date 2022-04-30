@@ -100,10 +100,10 @@ class MainTableViewCell: UITableViewCell {
         likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel[indexPath.row].likes)
         likeButton.setImage(UIImage(systemName: dataModel[indexPath.row].liked ? "heart.fill" : "heart"), for: .normal)
         self.spinner.start(view: self.bandImage)
-        firebaseManager.getImage(picName: dataModel[indexPath.row].imageName) { pic in
-            self.setImage(image: pic)
+        //firebaseManager.getImage(picName: dataModel[indexPath.row].imageName) { pic in
+      //  self.setImage(image: Data(referencing: dataModel[indexPath.row].image!))
             self.spinner.stop()
-        }
+      //  }
         selectionStyle = .none
         commentsButton.tintColor = .black
     }

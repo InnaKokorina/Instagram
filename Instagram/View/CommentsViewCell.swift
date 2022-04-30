@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import RealmSwift
 
 class CommentsViewCell: UITableViewCell {
     
@@ -40,7 +41,7 @@ class CommentsViewCell: UITableViewCell {
         contentView.addSubview(horStackView)
 }
     
-    func configure(indexPath: Int, comment: [CommentsModel]) {
+    func configure(indexPath: Int, comment: Results<CommentsModel>) {
         let author = "\(comment[indexPath].email): "
         let comment = comment[indexPath].body
         commentLabel.attributedText = attributedText(normStr: comment, boldStr: author)
