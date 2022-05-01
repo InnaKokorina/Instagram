@@ -23,6 +23,7 @@ class AuthorizationViewController: UIViewController {
             }
         }
     }
+    // MARK: - View
     private var backImage:UIImageView = {
         let backImage = UIImageView()
         backImage.image = UIImage(named: Constants.Auth.backImageName)
@@ -98,8 +99,7 @@ class AuthorizationViewController: UIViewController {
         return signInButton
     }()
     private lazy var verStackView = UIStackView(arrangedSubviews: [titleLabel, infoLabel, emailField, passwordField, signInButton, switchButton], axis: .vertical, spacing: 20)
-    
-    //lifeCycle
+    // MARK: - lifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(backImage)

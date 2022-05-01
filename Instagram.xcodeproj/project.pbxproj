@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C32C98BC281BE4A20016D612 /* RealmManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C32C98BB281BE4A20016D612 /* RealmManager.swift */; };
 		C3730DB827FF34CC00BDF0C5 /* SpinnerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3730DB727FF34CC00BDF0C5 /* SpinnerViewController.swift */; };
 		C37D60F427F4D921002E39CB /* BezierHeartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37D60F327F4D921002E39CB /* BezierHeartView.swift */; };
 		C3855B022816E497002C7CDA /* ExtensionKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3855B012816E496002C7CDA /* ExtensionKeyboard.swift */; };
@@ -35,7 +34,6 @@
 		2080031EC3441507FAAEF64B /* Pods-Instagram.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Instagram.release.xcconfig"; path = "Target Support Files/Pods-Instagram/Pods-Instagram.release.xcconfig"; sourceTree = "<group>"; };
 		4523A2CD6D00EB24A7B177F5 /* Pods_Instagram.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Instagram.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5CB4162244BB3E1118FDA11A /* Pods-Instagram.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Instagram.debug.xcconfig"; path = "Target Support Files/Pods-Instagram/Pods-Instagram.debug.xcconfig"; sourceTree = "<group>"; };
-		C32C98BB281BE4A20016D612 /* RealmManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmManager.swift; sourceTree = "<group>"; };
 		C3730DB727FF34CC00BDF0C5 /* SpinnerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpinnerViewController.swift; sourceTree = "<group>"; };
 		C37D60F327F4D921002E39CB /* BezierHeartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezierHeartView.swift; sourceTree = "<group>"; };
 		C3855B012816E496002C7CDA /* ExtensionKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionKeyboard.swift; sourceTree = "<group>"; };
@@ -139,7 +137,6 @@
 				C3E4EA4727EB5FA7003815D2 /* DataModel.swift */,
 				C3E4EA4927EB5FB4003815D2 /* DataManager.swift */,
 				C38826872812952A00E02CE8 /* FirebaseManager.swift */,
-				C32C98BB281BE4A20016D612 /* RealmManager.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -291,7 +288,6 @@
 				C3E4EA4E27EB5FF9003815D2 /* StackViewExtensions.swift in Sources */,
 				C387BA922814188300167213 /* ImagePicker.swift in Sources */,
 				C3730DB827FF34CC00BDF0C5 /* SpinnerViewController.swift in Sources */,
-				C32C98BC281BE4A20016D612 /* RealmManager.swift in Sources */,
 				C38826862812902F00E02CE8 /* Constants.swift in Sources */,
 				C3E4EA4A27EB5FB4003815D2 /* DataManager.swift in Sources */,
 				C37D60F427F4D921002E39CB /* BezierHeartView.swift in Sources */,

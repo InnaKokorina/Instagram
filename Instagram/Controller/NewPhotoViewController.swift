@@ -20,7 +20,7 @@ class NewPhotoViewController: UIViewController {
     var dataModel: Results<Photos>?
     private let dataManager = DataManager()
     private let realm = try! Realm()
-
+// MARK: - View
     private var userLabel: UILabel = {
         let userLabel = UILabel()
         userLabel.font = UIFont(name: Constants.Font.font, size: 17)
@@ -33,7 +33,7 @@ class NewPhotoViewController: UIViewController {
         newImage.translatesAutoresizingMaskIntoConstraints = false
         newImage.clipsToBounds = true
         newImage.layer.cornerRadius = 15
-        newImage.image = UIImage(named: "addImage")
+        newImage.image = UIImage(named: "add")
         newImage.contentMode = .scaleAspectFill
         newImage.isUserInteractionEnabled = true
         newImage.tintColor = .gray
@@ -47,18 +47,27 @@ class NewPhotoViewController: UIViewController {
         photoTextField.layer.cornerRadius = 15
         photoTextField.isEditable = true
         photoTextField.layer.borderWidth = 1
-        photoTextField.layer.borderColor = UIColor.systemGray5.cgColor
+        photoTextField.layer.borderColor = UIColor.systemGray4.cgColor
         photoTextField.textColor = .gray
         return photoTextField
     }()
-
-    private lazy var verStackView = UIStackView(arrangedSubviews: [userLabel, newImage, photoTextField], axis: .vertical, spacing: 4)
-
-
+    private let addButton:UIButton = {
+        let addButton = UIButton()
+        addButton.backgroundColor = .black
+        addButton.tintColor = .white
+        addButton.setTitle("Поделиться", for: .normal)
+        addButton.layer.cornerRadius = 15
+        addButton.translatesAutoresizingMaskIntoConstraints = false
+        return addButton
+    }()
+    
+    private lazy var verStackView = UIStackView(arrangedSubviews: [userLabel, newImage, photoTextField, addButton], axis: .vertical, spacing: 8)
+    
+    
     // MARK: - lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemGray6
         view.addSubview(verStackView)
         userLabel.text = auth.setName()
         setConstraints()
@@ -66,7 +75,7 @@ class NewPhotoViewController: UIViewController {
         addNewPhoto()
         setupNavItems()
         tapImage()
-
+        addButton.addTarget(self, action: #selector(sharePressed), for: .touchUpInside)
         NotificationCenter.default.addObserver(self, selector: #selector(NewPhotoViewController.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(NewPhotoViewController.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
@@ -74,10 +83,9 @@ class NewPhotoViewController: UIViewController {
     @objc func addNewPhoto() {
         self.imagePicker = ImagePicker(presentationController: self, delegate: self)
         self.imagePicker.present(from: view)
-
     }
-
-
+    
+    
     // MARK: - navigationItems
     func setupNavItems() {
         let addPhoto = UIBarButtonItem(image: UIImage(systemName: "arrow.up.circle.fill"), style: .plain, target: self, action: #selector(sharePressed))
@@ -88,17 +96,15 @@ class NewPhotoViewController: UIViewController {
         self.navigationItem.leftBarButtonItem = back
         navigationItem.title = Constants.App.title
     }
-
+    
     @objc func backPressed() {
         let vc = MainViewController()
         self.navigationController?.pushViewController(vc, animated: true)
-
+        
     }
-  // MARK: - sharePressed
+    // MARK: - sharePressed
     @objc func sharePressed(_ sender: Any) {
-
-
-
+        addButton.setTitle("Повторить", for: .normal)
         // save image to FBStorage
         var urlString = ""
         var filePath = ""
@@ -112,96 +118,87 @@ class NewPhotoViewController: UIViewController {
                 urlString = downloadURL
             }
         }
-        
-      
-                let post = Photos(comment: List<CommentsModel>(), id: dataModel?.count ?? 0, imageName: filePath, likes: 0, link: urlString, user: userLabel.text ?? "user", liked: false, descriptionImage: photoTextField.text)
-                firebaseManager.getImage(picName: filePath) { data in
-                    post.image = data
-                    do {
-                        try self.realm.write {
+        // save to Realm
+        let post = Photos(comment: List<CommentsModel>(), id: dataModel?.count ?? 0, imageName: filePath, likes: 0, link: urlString, user: userLabel.text ?? "user", liked: false, descriptionImage: photoTextField.text)
+        firebaseManager.getImage(picName: filePath) { data in
+            post.image = data
+            do {
+                try self.realm.write {
                     self.realm.add(post)
                     let index:Int = (self.dataModel?.count ?? 1) - 1
-                self.ref = Database.database().reference().child("photos/\(index)")
-              //  let post = dataModel.photos[dataModel.photos.count - 1]
-
-                let  dict = [
-                    "user": post.user,
-                    "description": post.descriptionImage,
-                    "id": post.id,
-                    "image": post.imageName,
-                    "liked": post.liked,
-                    "likes": post.likes,
-                    "link": post.link,
-                    "comments": Array(post.comment)
-                ] as [String : Any]
-                self.ref.setValue(dict)
-
-                DispatchQueue.main.async {
-                let vc = MainViewController()
-                self.navigationController?.pushViewController(vc, animated: true)
+                    self.ref = Database.database().reference().child("photos/\(index)")
+                    // save to FB
+                    let  dict = [
+                        "user": post.user,
+                        "description": post.descriptionImage,
+                        "id": post.id,
+                        "image": post.imageName,
+                        "liked": post.liked,
+                        "likes": post.likes,
+                        "link": post.link,
+                        "comments": Array(post.comment)
+                    ] as [String : Any]
+                    self.ref.setValue(dict)
+                    // Navigation
+                    DispatchQueue.main.async {
+                        let vc = MainViewController()
+                        self.navigationController?.pushViewController(vc, animated: false)
+                    }
                 }
-                }
-  
-        } catch {
-            print("Error saving Data context \(error)")
+            } catch {
+                print("Error saving Data context \(error)")
+            }
         }
-                }
-      //   safe to FB
-//        dataModel.append(Photos(comment: [CommentsModel](), description: photoTextField.text, id: dataModel.photos.count, image: filePath, likes: 0, link: urlString, user: userLabel.text ?? "user", liked: false))
-
-
-        
     }
-
 }
 // MARK: - ImagePickerDelegate
 extension NewPhotoViewController: ImagePickerDelegate {
-
     func didSelect(image: UIImage?) {
         self.newImage.image = image
     }
 }
 // MARK: - setConstraints
 extension NewPhotoViewController {
-
     private func setConstraints() {
         NSLayoutConstraint.activate([
             verStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 8),
             verStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
             view.safeAreaLayoutGuide.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 8),
-
+            view.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: verStackView.bottomAnchor, constant: 16),
+            
             photoTextField.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
             userLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
-
+            addButton.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
+            addButton.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 0),
             newImage.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
             newImage.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 0),
-
+            addButton.bottomAnchor.constraint(equalTo: verStackView.bottomAnchor, constant: 0),
+            
             userLabel.heightAnchor.constraint(equalToConstant: 70),
             newImage.heightAnchor.constraint(equalToConstant: 400),
-            photoTextField.heightAnchor.constraint(equalToConstant: 100)
+            addButton.heightAnchor.constraint(equalToConstant: 70)
         ])
     }
 }
 // MARK: - NewPhotoViewController
 extension NewPhotoViewController: UITextViewDelegate {
+    
     func textViewDidBeginEditing(_ textView: UITextView) {
         self.activeTextField = self.photoTextField
         textView.text = ""
         photoTextField.textColor = .black
     }
-
-
+    
     func textViewDidChangeSelection(_ textView: UITextView) {
         self.activeTextField = self.photoTextField
     }
-
-
+    
     func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
         textView.resignFirstResponder()
+        self.photoTextField.endEditing(true)
         return true
     }
-
-
+    
     func textViewDidEndEditing(_ textView: UITextView) {
         self.photoTextField.endEditing(true)
     }
@@ -209,8 +206,6 @@ extension NewPhotoViewController: UITextViewDelegate {
         self.photoTextField.endEditing(true)
     }
 }
-
-
 
 //MARK: - keyboardWillShow
 extension NewPhotoViewController {
@@ -228,7 +223,7 @@ extension NewPhotoViewController {
             }
         }
     }
-
+    
     @objc func keyboardWillHide(notification: NSNotification) {
         self.view.frame.origin.y = 0
     }

@@ -48,9 +48,7 @@ open class ImagePicker: NSObject {
         if let action = self.action(for: .camera, title: Constants.ImagePicker.takePhoto) {
             alertController.addAction(action)
         }
-//        if let action = self.action(for: .savedPhotosAlbum, title: "Camera roll") {
-//            alertController.addAction(action)
-//        }
+
         if let action = self.action(for: .photoLibrary, title: Constants.ImagePicker.photoLib) {
             alertController.addAction(action)
         }

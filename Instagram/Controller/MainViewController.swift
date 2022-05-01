@@ -18,39 +18,44 @@ class MainViewController: UIViewController {
     private var firebaseManager = FirebaseManager()
     private var activityController: UIActivityViewController? = nil
     private var ref: DatabaseReference!
-    private var realmManager = RealmManager()
     private let realm = try! Realm()
+    private let spinner = SpinnerViewController()
     
     private let tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(MainTableViewCell.self, forCellReuseIdentifier: "MainTableViewCell")
         return tableView
     }()
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.loadPosts()
-             print("viewDidLoad() - \(self.dataModel)") //пусто
-    }
-//        if realm.isEmpty {
-//        firebaseManager.fetchData()
-//        }
-//        loadPosts()
-//        print("loadPosts()")
-//    }
+    private let spinnerImage: UIImageView = {
+        let image = UIImageView()
+        return image
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        tableViewsSetup()
         setupNavItems()
-     //   DispatchQueue.main.async {
-            if self.realm.isEmpty {
-                self.firebaseManager.fetchData()
-//        } else {
-//            loadPosts()
-  //      }
-            
-  
-    }
+        view.addSubview(self.spinnerImage)
+        spinnerImage.frame = self.view.bounds
+        spinnerImage.isHidden = true
+
+        if self.realm.isEmpty {
+            self.spinnerImage.isHidden = false
+            self.firebaseManager.fetchData()
+            self.spinner.start(view: self.spinnerImage)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                self.spinner.stop()
+                self.tableViewsSetup()
+                self.spinnerImage.isHidden = true
+                self.loadPosts()
+            }
+        }
+        
+        else {
+            self.spinnerImage.isHidden = true
+            self.tableViewsSetup()
+            self.loadPosts()
+        }
     }
     
     func tableViewsSetup() {
@@ -82,23 +87,39 @@ class MainViewController: UIViewController {
         }
     }
     @objc func addNewPost(_ sender: Any) {
-        
-         let vc = NewPhotoViewController()
-         vc.dataModel = self.dataModel
-     self.navigationController?.pushViewController(vc, animated: true)
+        let vc = NewPhotoViewController()
+        vc.dataModel = self.dataModel
+        self.navigationController?.pushViewController(vc, animated: true)
         
     }
     
     // MARK: - RefreshImages
     @objc func callPullToRefresh() {
-        //   firebaseManager.fetchData()
+        do {
+            try self.realm.write {
+                realm.deleteAll()
+            }
+        } catch {
+            print("error in deleting category \(error)")
+        }
+ 
+        DispatchQueue.main.async  {
+            
+          if self.realm.isEmpty {
+            self.firebaseManager.fetchData()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                self.tableView.refreshControl?.endRefreshing()
+                self.tableView.reloadData()
+//                self.loadPosts()
+            }
+            }
+        }
     }
     
     
     func loadPosts () {
         dataModel = realm.objects(Photos.self).sorted(byKeyPath: "id", ascending: false)
-        print("dataModel = realm.objects(Photos.self)\(dataModel)")
-        tableView.reloadData()
+     //   tableView.reloadData()
     }
 }
 // MARK: - UITableViewDataSource
@@ -148,26 +169,7 @@ extension MainViewController: UITableViewDataSource {
         }
         return cell
     }
-   
+    
 }
-// MARK: - FirebaseManagerDelegate
 
-//extension MainViewController : FirebaseManagerDelegate {
-////    func didUpdateComments(_ firebaseManager: FirebaseManager, comment: [CommentsModel]) {
-////
-////    }
-//
-////
-//  func didUpdateImages(_ firebaseManager:FirebaseManager, image: Photos) {
-//    DispatchQueue.main.async {
-//        self.dataModel.append(image)// self.realm.objects(Photos.self).sorted(byKeyPath: "id", ascending: false)
-//        print("dataModel = realm.objects(Photos.self)\(self.dataModel)")
-//        self.tableView.reloadData()
-////            self.dataModel.photos = image.photos.reversed() + self.dataModel.photos
-////           // self.tableView.refreshControl?.endRefreshing()
-////            self.tableView.reloadData()
-//        }
-//    }
-//}
-//
 

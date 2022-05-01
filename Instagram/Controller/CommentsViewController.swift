@@ -26,7 +26,7 @@ class CommentsViewController: UIViewController {
             loadComments()
         }
     }
-    
+    // MARK: - View
     private let tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(CommentsViewCell.self, forCellReuseIdentifier: "CommentsViewCell")
@@ -56,11 +56,7 @@ class CommentsViewController: UIViewController {
     }()
     
     private lazy var horStackView = UIStackView(arrangedSubviews: [textField, addComment], axis: .horizontal, spacing: 4)
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        // firebaseManager.fetchData()
-    }
+    // MARK: - lifecycle
     override func viewDidLoad() {
         view.backgroundColor = .systemBackground
         horStackView.backgroundColor = .systemIndigo
@@ -68,16 +64,13 @@ class CommentsViewController: UIViewController {
         view.addSubview(horStackView)
         setConstraints()
         textField.delegate = self
-        // firebaseManager.delegate = self
         addComment.addTarget(self, action: #selector(addCommentTap), for: .touchUpInside)
         setupNavItems()
         // keyboard
         NotificationCenter.default.addObserver(self, selector: #selector(CommentsViewController.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(CommentsViewController.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-        
-        
     }
-    
+    // MARK: - tableViewsSetup()
     func tableViewsSetup() {
         view.addSubview(tableView)
         tableView.dataSource = self
@@ -107,7 +100,7 @@ class CommentsViewController: UIViewController {
             print(error)
         }
     }
-    
+    // MARK: - loadComments()
     func loadComments() {
         comments = selectedImage?.comment.sorted(byKeyPath: "id", ascending: true)
         tableView.reloadData()
@@ -132,7 +125,7 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         60
     }
-    
+    // MARK: - setConstraints()
     func setConstraints() {
         NSLayoutConstraint.activate([
             
@@ -227,23 +220,3 @@ extension CommentsViewController {
         self.view.frame.origin.y = 0
     }
 }
-
-// MARK: - FirebaseManagerDelegate
-
-//extension CommentsViewController : FirebaseManagerDelegate {
-//
-//    func didUpdateImages(_ firebaseManager: FirebaseManager, image: DataModel) {
-//        DispatchQueue.main.async {
-//            self.dataModel.photos = image.photos.reversed() + self.dataModel.photos
-//            self.tableView.refreshControl?.endRefreshing()
-//            self.tableView.reloadData()
-//        }
-//    }
-//
-//    func didUpdateComments(_ firebaseManager: FirebaseManager, comment: [CommentsModel]) {
-//        DispatchQueue.main.async() {
-//            self.comments = comment
-//            self.tableView.reloadData()
-//        }
-//    }
-//}

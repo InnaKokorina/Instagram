@@ -12,20 +12,12 @@ import FirebaseDatabase
 import FirebaseStorage
 import RealmSwift
 
-//protocol FirebaseManagerDelegate {
-//  func didUpdateImages(_ firebaseManager: FirebaseManager, image: Photos)
-////    // func didUpdateComments(_ firebaseManager: FirebaseManager, comment: [CommentsModel])
-//}
-
 class FirebaseManager {
-    
-  // var delegate: FirebaseManagerDelegate?
     private var ref: DatabaseReference!
     private var dataModel: Results<Photos>?
     private var comments = List<CommentsModel>()
-    private var realmManager = RealmManager()
     let photosArray = List<Photos>()
-    
+  // MARK: - fetch data from FireBAse and save to Realm
     func fetchData() {
         // fetching from Firebase
         ref = Database.database().reference().child("photos")
@@ -67,23 +59,18 @@ class FirebaseManager {
                         do {
                             try realm.write({
                                 realm.add(post)
-                           //   self.delegate?.didUpdateImages(self, image: post)
-                                //  print(" realm.add(self.photosArray) ---\(photosArray)")
                             })
                         } catch {
                             print("Error saving Data context \(error)")
                         }
-                        
                     }
-                  
                 }
             }
         }
     }
     
     
-    
-    
+ // MARK: - get Image from FireBase Storage
     func getImage(picName: String, completion: @escaping (Data) -> Void) {
         let storage = Storage.storage()
         var result = Data()
@@ -98,31 +85,11 @@ class FirebaseManager {
             }
         }
     }
-    
-    func saveImage() {
-        let storage = Storage.storage()
-        let storageRef = storage.reference()
-        // File located on disk
-        let localFile = URL(string: "path/to/image")!
-        
-        // Create a reference to the file you want to upload
-        let picRef = storageRef.child("pictures")
-        
-        // Upload the file to the path "images/rivers.jpg"
-        let uploadTask = picRef.putFile(from: localFile, metadata: nil) { metadata, error in
-            guard let metadata = metadata else { return }
-            picRef.downloadURL { (url, error) in
-                guard let downloadURL = url else { return }
-            }
-        }
-    }
-    
+   // MARK: - uploadImage
     func uploadImage(_ image: UIImage, at reference: StorageReference, completion: @escaping (URL?) -> Void) {
-        
         guard let imageData = image.jpegData(compressionQuality: 0.1) else {
             return completion(nil)
         }
-        
         let metaData = StorageMetadata()
         metaData.contentType = "image/jpeg"
         reference.putData(imageData, metadata: metaData, completion: { (metadata, error) in
@@ -131,8 +98,6 @@ class FirebaseManager {
                 print("Upload failed :: ",error.localizedDescription)
                 return completion(nil)
             }
-            
-            
             reference.downloadURL { (url, error) in
                 guard let downloadURL = url else {
                     return
