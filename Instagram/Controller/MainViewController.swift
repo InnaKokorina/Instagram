@@ -38,12 +38,12 @@ class MainViewController: UIViewController {
         view.addSubview(self.spinnerImage)
         spinnerImage.frame = self.view.bounds
         spinnerImage.isHidden = true
-
+        
         if self.realm.isEmpty {
             self.spinnerImage.isHidden = false
             self.firebaseManager.fetchData()
             self.spinner.start(view: self.spinnerImage)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                 self.spinner.stop()
                 self.tableViewsSetup()
                 self.spinnerImage.isHidden = true
@@ -102,16 +102,16 @@ class MainViewController: UIViewController {
         } catch {
             print("error in deleting category \(error)")
         }
- 
+        
         DispatchQueue.main.async  {
             
-          if self.realm.isEmpty {
-            self.firebaseManager.fetchData()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                self.tableView.refreshControl?.endRefreshing()
-                self.tableView.reloadData()
-//                self.loadPosts()
-            }
+            if self.realm.isEmpty {
+                self.firebaseManager.fetchData()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                    self.tableView.refreshControl?.endRefreshing()
+                    self.tableView.reloadData()
+                    //                self.loadPosts()
+                }
             }
         }
     }
@@ -119,7 +119,7 @@ class MainViewController: UIViewController {
     
     func loadPosts () {
         dataModel = realm.objects(Photos.self).sorted(byKeyPath: "id", ascending: false)
-     //   tableView.reloadData()
+        tableView.reloadData()
     }
 }
 // MARK: - UITableViewDataSource
