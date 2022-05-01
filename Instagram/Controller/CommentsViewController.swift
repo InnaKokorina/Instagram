@@ -20,14 +20,12 @@ class CommentsViewController: UIViewController {
     private var ref: DatabaseReference!
     let realm = try! Realm()
     var comments: Results<CommentsModel>?
-   // var realmMAnager = RealmManager()
     
     var selectedImage: Photos? {
-         didSet {
+        didSet {
             loadComments()
-         }
-     }
-//    var selectedImage = Photos(comment: [CommentsModel]())
+        }
+    }
     
     private let tableView: UITableView = {
         let tableView = UITableView()
@@ -61,7 +59,7 @@ class CommentsViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-       // firebaseManager.fetchData()
+        // firebaseManager.fetchData()
     }
     override func viewDidLoad() {
         view.backgroundColor = .systemBackground
@@ -109,27 +107,25 @@ class CommentsViewController: UIViewController {
             print(error)
         }
     }
+    
     func loadComments() {
-            
-            comments = selectedImage?.comment.sorted(byKeyPath: "id", ascending: true)
-            
-            tableView.reloadData()
-        }
+        comments = selectedImage?.comment.sorted(byKeyPath: "id", ascending: true)
+        tableView.reloadData()
+    }
     
 }
 // MARK: - UITableViewDataSource, UITableViewDelegate
 extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-      //  1
-     return comments?.count ?? 1
+        return comments?.count ?? 1
         
         
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "CommentsViewCell", for: indexPath) as? CommentsViewCell else { return UITableViewCell() }
         if let comments = comments {
-        cell.configure(indexPath: indexPath.row, comment: comments)
+            cell.configure(indexPath: indexPath.row, comment: comments)
         }
         return cell
     }
@@ -182,24 +178,31 @@ extension CommentsViewController: UITextFieldDelegate {
         return true
     }
     func textFieldDidEndEditing(_ textField: UITextField) {
-        if  let message = textField.text {
-            let email  = auth.setName()
-  //          let id = selectedImage.comment.count
-  //          let postId = selectedImage.id
-          //  let newcomment = CommentsModel(body: message, email: email, id: id, postId: postId)
-          //  selectedImage.comment.append(newcomment)
-            
-            // save to FB
-     //       self.ref =  Database.database().reference().child("photos/\(postId)/comments/\(id)")
-        //    let dictionary = ["email": newcomment.email,"body": newcomment.body,"id": newcomment.id,"postId": newcomment.postId] as [String : Any]
-         //   ref.setValue(dictionary)
-            tableView.reloadData()
-            self.textField.text = ""
-            self.textField.endEditing(true)
-            self.activeTextField = nil
+        if let currentImage = self.selectedImage {
+            if  let message = textField.text {
+                let email  = auth.setName()
+                let id = currentImage.comment.count
+                let postId = currentImage.id
+                do {
+                    try realm.write{
+                        let newcomment = CommentsModel(body: message, email: email, id: id , postId: postId)
+                        currentImage.comment.append(newcomment)
+                        self.ref =  Database.database().reference().child("photos/\(postId)/comments/\(id)")
+                        let dictionary = ["email": newcomment.email,"body": newcomment.body,"id": newcomment.id,"postId": newcomment.postId] as [String : Any]
+                        ref.setValue(dictionary)
+                    }
+                } catch {
+                    print("Error saving Data context \(error)")
+                }
+                tableView.reloadData()
+                self.textField.text = ""
+                self.textField.endEditing(true)
+                self.activeTextField = nil
+            }
         }
     }
 }
+
 
 
 

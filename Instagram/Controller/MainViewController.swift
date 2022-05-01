@@ -28,18 +28,15 @@ class MainViewController: UIViewController {
     }()
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        if realm.isEmpty {
         firebaseManager.fetchData()
+        }
     }
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         tableViewsSetup()
-        dataModel = realmManager.loadRealm()
-   //     print("postArray\(dataModel)")
-    //    tableView.reloadData()
-        // firebaseManager.delegate = self
-        
-        // firebaseManager.fetchData()
+        loadPosts()
         setupNavItems()
     }
     
@@ -83,6 +80,12 @@ class MainViewController: UIViewController {
     @objc func callPullToRefresh() {
         //   firebaseManager.fetchData()
     }
+    
+    
+    func loadPosts () {
+        dataModel = realm.objects(Photos.self).sorted(byKeyPath: "id", ascending: false)
+        tableView.reloadData()
+    }
 }
 // MARK: - UITableViewDataSource
 extension MainViewController: UITableViewDataSource {
@@ -96,30 +99,31 @@ extension MainViewController: UITableViewDataSource {
             
             cell.likeButtomTap = {
                 do {
-                    try self.realm.write({
+                    try self.realm.write{
                         posts[indexPath.row].liked.toggle()
                         if posts[indexPath.row].liked == true {
                             cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-                            
+                            posts[indexPath.row].likes += 1
                             cell.heartView.alpha = 0.5
                             let seconds = 0.3
-                            cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: posts[indexPath.row].likes)
                             DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
                                 cell.heartView.alpha = 0
                             }
                         } else {
                             cell.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
+                            posts[indexPath.row].likes -= 1
                         }
                         
                         cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: posts[indexPath.row].likes)
                         self.ref = Database.database().reference().child("photos/\(indexPath.row)")
                         let  dict = ["liked":posts[indexPath.row].liked, "likes":posts[indexPath.row].likes] as [String : Any]
+                        print("dict -----\(dict)")
                         self.ref.updateChildValues(dict)
-                        
-                    })
+                    }
                 } catch {
                     print("Error saving Data context \(error)")
                 }
+                
             }
             cell.configure(dataModel: posts, indexPath: indexPath)
             

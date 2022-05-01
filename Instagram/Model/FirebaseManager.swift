@@ -68,7 +68,8 @@ class FirebaseManager {
                 let realm = try! Realm()
                 do {
                     try realm.write({
-                            realm.add(self.photosArray)
+                            realm.add(post)
+                      //  print(" realm.add(self.photosArray) ---\(photosArray)")
                     })
                 } catch {
                     print("Error saving Data context \(error)")
