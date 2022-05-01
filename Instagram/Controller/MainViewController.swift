@@ -28,16 +28,29 @@ class MainViewController: UIViewController {
     }()
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if realm.isEmpty {
-        firebaseManager.fetchData()
-        }
+        self.loadPosts()
+             print("viewDidLoad() - \(self.dataModel)") //пусто
     }
+//        if realm.isEmpty {
+//        firebaseManager.fetchData()
+//        }
+//        loadPosts()
+//        print("loadPosts()")
+//    }
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         tableViewsSetup()
-        loadPosts()
         setupNavItems()
+     //   DispatchQueue.main.async {
+            if self.realm.isEmpty {
+                self.firebaseManager.fetchData()
+//        } else {
+//            loadPosts()
+  //      }
+            
+  
+    }
     }
     
     func tableViewsSetup() {
@@ -70,9 +83,9 @@ class MainViewController: UIViewController {
     }
     @objc func addNewPost(_ sender: Any) {
         
-        // let vc = NewPhotoViewController()
-        // vc.dataModel = self.dataModel
-        //  self.navigationController?.pushViewController(vc, animated: true)
+         let vc = NewPhotoViewController()
+         vc.dataModel = self.dataModel
+     self.navigationController?.pushViewController(vc, animated: true)
         
     }
     
@@ -84,6 +97,7 @@ class MainViewController: UIViewController {
     
     func loadPosts () {
         dataModel = realm.objects(Photos.self).sorted(byKeyPath: "id", ascending: false)
+        print("dataModel = realm.objects(Photos.self)\(dataModel)")
         tableView.reloadData()
     }
 }
@@ -115,9 +129,8 @@ extension MainViewController: UITableViewDataSource {
                         }
                         
                         cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: posts[indexPath.row].likes)
-                        self.ref = Database.database().reference().child("photos/\(indexPath.row)")
+                        self.ref = Database.database().reference().child("photos/\(posts[indexPath.row].id)")
                         let  dict = ["liked":posts[indexPath.row].liked, "likes":posts[indexPath.row].likes] as [String : Any]
-                        print("dict -----\(dict)")
                         self.ref.updateChildValues(dict)
                     }
                 } catch {
@@ -140,19 +153,21 @@ extension MainViewController: UITableViewDataSource {
 // MARK: - FirebaseManagerDelegate
 
 //extension MainViewController : FirebaseManagerDelegate {
-//    func didUpdateComments(_ firebaseManager: FirebaseManager, comment: [CommentsModel]) {
+////    func didUpdateComments(_ firebaseManager: FirebaseManager, comment: [CommentsModel]) {
+////
+////    }
 //
-//    }
-//
-//
-//    func didUpdateImages(_ firebaseManager:FirebaseManager, image: DataModel) {
-//        DispatchQueue.main.async {
-//            self.dataModel.photos = image.photos.reversed() + self.dataModel.photos
-//            self.tableView.refreshControl?.endRefreshing()
-//            self.tableView.reloadData()
+////
+//  func didUpdateImages(_ firebaseManager:FirebaseManager, image: Photos) {
+//    DispatchQueue.main.async {
+//        self.dataModel.append(image)// self.realm.objects(Photos.self).sorted(byKeyPath: "id", ascending: false)
+//        print("dataModel = realm.objects(Photos.self)\(self.dataModel)")
+//        self.tableView.reloadData()
+////            self.dataModel.photos = image.photos.reversed() + self.dataModel.photos
+////           // self.tableView.refreshControl?.endRefreshing()
+////            self.tableView.reloadData()
 //        }
 //    }
-//
 //}
 //
 

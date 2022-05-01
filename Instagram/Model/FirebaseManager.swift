@@ -13,13 +13,13 @@ import FirebaseStorage
 import RealmSwift
 
 //protocol FirebaseManagerDelegate {
-//   func didUpdateImages(_ firebaseManager: FirebaseManager, image: Photos)
-//  func didUpdateComments(_ firebaseManager: FirebaseManager, comment: [CommentsModel])
+//  func didUpdateImages(_ firebaseManager: FirebaseManager, image: Photos)
+////    // func didUpdateComments(_ firebaseManager: FirebaseManager, comment: [CommentsModel])
 //}
 
 class FirebaseManager {
     
-    //  var delegate: FirebaseManagerDelegate?
+  // var delegate: FirebaseManagerDelegate?
     private var ref: DatabaseReference!
     private var dataModel: Results<Photos>?
     private var comments = List<CommentsModel>()
@@ -54,31 +54,31 @@ class FirebaseManager {
                     }
                     // save to Model
                     let post = Photos(comment: self.comments, id: id, imageName: image,  likes: likes, link: link, user: user, liked: liked, descriptionImage: description)
-                   
+                    
                     self.comments = List<CommentsModel>()
                     // get Image
-                                            self.getImage(picName: image) { data in
-                                                post.image = data
-                                        
-                    
-                    self.photosArray.append(post)
-                   
-                
-                // save to Realm
-                let realm = try! Realm()
-                do {
-                    try realm.write({
-                            realm.add(post)
-                      //  print(" realm.add(self.photosArray) ---\(photosArray)")
-                    })
-                } catch {
-                    print("Error saving Data context \(error)")
+                    self.getImage(picName: image) { data in
+                        post.image = data
+                        self.photosArray.append(post)
+                        
+                        
+                        // save to Realm
+                        let realm = try! Realm()
+                        do {
+                            try realm.write({
+                                realm.add(post)
+                           //   self.delegate?.didUpdateImages(self, image: post)
+                                //  print(" realm.add(self.photosArray) ---\(photosArray)")
+                            })
+                        } catch {
+                            print("Error saving Data context \(error)")
+                        }
+                        
+                    }
+                  
                 }
             }
-            //  self.delegate?.didUpdateImages(self, image: self.dataModel)
         }
-        }
-    }
     }
     
     
@@ -92,10 +92,9 @@ class FirebaseManager {
         let fileRef = pathRef.child(picName)
         fileRef.getData(maxSize: 1080*1080) { data, error in
             if let safeData = data {
-                    result = safeData
-                    print("result in closure \(result)")
-                    completion(safeData)
-               
+                result = safeData
+                completion(safeData)
+                
             }
         }
     }

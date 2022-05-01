@@ -100,7 +100,7 @@ class MainTableViewCell: UITableViewCell {
         likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel[indexPath.row].likes)
         likeButton.setImage(UIImage(systemName: dataModel[indexPath.row].liked ? "heart.fill" : "heart"), for: .normal)
         self.spinner.start(view: self.bandImage)
-       self.setImage(image: dataModel[indexPath.row].image!)
+       self.setImage(image: dataModel[indexPath.row].image)
             self.spinner.stop()
         selectionStyle = .none
         commentsButton.tintColor = .black
@@ -121,14 +121,14 @@ class MainTableViewCell: UITableViewCell {
     }
     
     // MARK: - set image from Api or failImage
-    func setImage(image: Data) {
-        // if image == UIImage(systemName: "xmark.circle") {
+    func setImage(image: Data?) {
+        if image == nil {
+            bandImage.image = UIImage(systemName: "xmark.circle")
              bandImage.contentMode = .center
              bandImage.tintColor = .red
-             self.bandImage.image = UIImage(data: image)
- //        } else {
- //            self.bandImage.image = image
- //        }
+       } else {
+           self.bandImage.image = UIImage(data: image!)
+      }
      }
     // MARK: - constraints
     private func setConstraints() {
