@@ -20,7 +20,8 @@ class NewPhotoViewController: UIViewController {
     var dataModel: Results<Photos>?
     private let dataManager = DataManager()
     private let realm = try! Realm()
-// MARK: - View
+    private let spinner = SpinnerViewController()
+    // MARK: - View
     private var userLabel: UILabel = {
         let userLabel = UILabel()
         userLabel.font = UIFont(name: Constants.Font.font, size: 17)
@@ -51,7 +52,7 @@ class NewPhotoViewController: UIViewController {
         photoTextField.textColor = .gray
         return photoTextField
     }()
-    private let addButton:UIButton = {
+    private let addButton: UIButton = {
         let addButton = UIButton()
         addButton.backgroundColor = .black
         addButton.tintColor = .white
@@ -59,6 +60,12 @@ class NewPhotoViewController: UIViewController {
         addButton.layer.cornerRadius = 15
         addButton.translatesAutoresizingMaskIntoConstraints = false
         return addButton
+    }()
+    private let spinnerImage: UIImageView = {
+        let spinnerImage = UIImageView()
+        spinnerImage.contentMode = .center
+        spinnerImage.translatesAutoresizingMaskIntoConstraints = false
+        return spinnerImage
     }()
     
     private lazy var verStackView = UIStackView(arrangedSubviews: [userLabel, newImage, photoTextField, addButton], axis: .vertical, spacing: 8)
@@ -69,6 +76,8 @@ class NewPhotoViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemGray6
         view.addSubview(verStackView)
+        addButton.addSubview(spinnerImage)
+        spinnerImage.frame = addButton.frame
         userLabel.text = auth.setName()
         setConstraints()
         photoTextField.delegate = self
@@ -81,8 +90,8 @@ class NewPhotoViewController: UIViewController {
     }
     // MARK: - addNewPhoto
     @objc func addNewPhoto() {
-        self.imagePicker = ImagePicker(presentationController: self, delegate: self)
-        self.imagePicker.present(from: view)
+        imagePicker = ImagePicker(presentationController: self, delegate: self)
+        imagePicker.present(from: view)
     }
     
     
@@ -90,63 +99,68 @@ class NewPhotoViewController: UIViewController {
     func setupNavItems() {
         let addPhoto = UIBarButtonItem(image: UIImage(systemName: "arrow.up.circle.fill"), style: .plain, target: self, action: #selector(sharePressed))
         addPhoto.tintColor = .black
-        self.navigationItem.rightBarButtonItem = addPhoto
+        navigationItem.rightBarButtonItem = addPhoto
         let back = UIBarButtonItem(image: UIImage(systemName: "chevron.compact.left"), style: .plain, target: self, action: #selector(backPressed))
         back.tintColor = .black
-        self.navigationItem.leftBarButtonItem = back
+        navigationItem.leftBarButtonItem = back
         navigationItem.title = Constants.App.title
     }
     
     @objc func backPressed() {
-        let vc = MainViewController()
-        self.navigationController?.pushViewController(vc, animated: true)
+        self.navigationController?.popViewController(animated: true)
         
     }
     // MARK: - sharePressed
     @objc func sharePressed(_ sender: Any) {
-        addButton.setTitle("Повторить", for: .normal)
+        spinner.start(view: spinnerImage)
+        addButton.setTitle("", for: .normal)
         // save image to FBStorage
         var urlString = ""
         var filePath = ""
-        if let image = newImage.image {
-            filePath = "\(dataManager.dateFormatter()).jpg"
-            firebaseManager.create(for: image, path: filePath) { (downloadURL) in
-                guard let downloadURL = downloadURL else {
-                    print("Download url not found")
-                    return
-                }
-                urlString = downloadURL
-            }
-        }
-        // save to Realm
-        let post = Photos(comment: List<CommentsModel>(), id: dataModel?.count ?? 0, imageName: filePath, likes: 0, link: urlString, user: userLabel.text ?? "user", liked: false, descriptionImage: photoTextField.text)
-        firebaseManager.getImage(picName: filePath) { data in
-            post.image = data
-            do {
-                try self.realm.write {
-                    self.realm.add(post)
-                    let index:Int = (self.dataModel?.count ?? 1) - 1
-                    self.ref = Database.database().reference().child("photos/\(index)")
-                    // save to FB
-                    let  dict = [
-                        "user": post.user,
-                        "description": post.descriptionImage,
-                        "id": post.id,
-                        "image": post.imageName,
-                        "liked": post.liked,
-                        "likes": post.likes,
-                        "link": post.link,
-                        "comments": Array(post.comment)
-                    ] as [String : Any]
-                    self.ref.setValue(dict)
-                    // Navigation
-                    DispatchQueue.main.async {
-                        let vc = MainViewController()
-                        self.navigationController?.pushViewController(vc, animated: false)
+        if let image = self.newImage.image {
+            filePath = "\(self.dataManager.dateFormatter()).jpg"
+            DispatchQueue.global().async {
+                self.firebaseManager.create(for: image, path: filePath) { [self] (downloadURL) in
+                    guard let downloadURL = downloadURL else {
+                        print("Download url not found")
+                        return
+                    }
+                    urlString = downloadURL
+
+                    // save to Realm
+                    let post = Photos(comment: List<CommentsModel>(), id: self.dataModel?.count ?? 0, imageName: filePath, likes: 0, link: urlString, user: userLabel.text ?? "user", liked: false, descriptionImage: self.photoTextField.text)
+                    self.firebaseManager.getImage(picName: filePath) { data in
+                        post.image = data
+                        do {
+                            try self.realm.write {
+                                self.realm.add(post)
+                                let index:Int = (self.dataModel?.count ?? 1) - 1
+                                self.ref = Database.database().reference().child("photos/\(index)")
+                                // save to FB
+                                let  dict = [
+                                    "user": post.user,
+                                    "description": post.descriptionImage,
+                                    "id": post.id,
+                                    "image": post.imageName,
+                                    "liked": post.liked,
+                                    "likes": post.likes,
+                                    "link": post.link,
+                                    "comments": Array(post.comment)
+                                ] as [String : Any]
+                                self.ref.setValue(dict)
+                                // Navigation
+                                
+                                DispatchQueue.main.async {
+                                    self.navigationController?.popViewController(animated: false)
+                                    self.spinner.stop()
+                                    self.addButton.setTitle("Повторить", for: .normal)
+                                }
+                            }
+                        } catch {
+                            print("Error saving Data context \(error)")
+                        }
                     }
                 }
-            } catch {
-                print("Error saving Data context \(error)")
             }
         }
     }
@@ -173,7 +187,8 @@ extension NewPhotoViewController {
             newImage.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
             newImage.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 0),
             addButton.bottomAnchor.constraint(equalTo: verStackView.bottomAnchor, constant: 0),
-            
+            spinnerImage.centerXAnchor.constraint(equalTo: addButton.centerXAnchor),
+            spinnerImage.centerYAnchor.constraint(equalTo: addButton.centerYAnchor),
             userLabel.heightAnchor.constraint(equalToConstant: 70),
             newImage.heightAnchor.constraint(equalToConstant: 400),
             addButton.heightAnchor.constraint(equalToConstant: 70)

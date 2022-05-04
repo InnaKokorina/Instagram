@@ -82,15 +82,14 @@ class CommentsViewController: UIViewController {
     // MARK: - NavigationItems
     func setupNavItems() {
         let logOutButton = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(logOutButtonPressed))
-        self.navigationItem.rightBarButtonItem  = logOutButton
+        navigationItem.rightBarButtonItem  = logOutButton
         let back = UIBarButtonItem(image: UIImage(systemName: "chevron.compact.left"), style: .plain, target: self, action: #selector(backPressed))
         back.tintColor = .black
-        self.navigationItem.leftBarButtonItem = back
+        navigationItem.leftBarButtonItem = back
     }
     
     @objc func backPressed() {
-        let vc = MainViewController()
-        self.navigationController?.pushViewController(vc, animated: true)
+        self.navigationController?.popViewController(animated: true)
     }
     
     @objc func logOutButtonPressed(_ sender: Any) {

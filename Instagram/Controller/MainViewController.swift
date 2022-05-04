@@ -31,33 +31,47 @@ class MainViewController: UIViewController {
         return image
     }()
     
+    // MARK: - lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         setupNavItems()
-        view.addSubview(self.spinnerImage)
-        spinnerImage.frame = self.view.bounds
+        view.addSubview(spinnerImage)
+        spinnerImage.frame = view.bounds
         spinnerImage.isHidden = true
-        
-        if self.realm.isEmpty {
-            self.spinnerImage.isHidden = false
-            self.firebaseManager.fetchData()
-            self.spinner.start(view: self.spinnerImage)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                self.spinner.stop()
-                self.tableViewsSetup()
+        spinner.start(view: spinnerImage)
+        if realm.isEmpty {
+            spinnerImage.isHidden = false
+            firebaseManager.fetchData { post in
+                //save to Realm
+                DispatchQueue.global().async {
+                    let realm = try! Realm()
+                    do {
+                        try realm.write({
+                            realm.add(post)
+                        })
+                    } catch {
+                        print("Error saving Data context \(error)")
+                    }
+                    //load from Realm
+                    DispatchQueue.main.async {
+                        self.spinner.stop()
+                        self.tableViewsSetup()
+                        self.spinnerImage.isHidden = true
+                        self.loadPosts()
+                    }
+                }
+            }
+        }
+        else {
+            DispatchQueue.main.async {
                 self.spinnerImage.isHidden = true
+                self.tableViewsSetup()
                 self.loadPosts()
             }
         }
-        
-        else {
-            self.spinnerImage.isHidden = true
-            self.tableViewsSetup()
-            self.loadPosts()
-        }
     }
-    
+    // MARK: - tableViewSetup
     func tableViewsSetup() {
         view.addSubview(tableView)
         tableView.dataSource = self
@@ -96,27 +110,34 @@ class MainViewController: UIViewController {
     // MARK: - RefreshImages
     @objc func callPullToRefresh() {
         do {
-            try self.realm.write {
+            try realm.write {
                 realm.deleteAll()
             }
         } catch {
             print("error in deleting category \(error)")
         }
-        
-        DispatchQueue.main.async  {
-            
+        DispatchQueue.main.async {
             if self.realm.isEmpty {
-                self.firebaseManager.fetchData()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                    self.tableView.refreshControl?.endRefreshing()
-                    self.tableView.reloadData()
-                    //                self.loadPosts()
+                self.firebaseManager.fetchData { post in
+                    DispatchQueue.global().async {
+                        let realm = try! Realm()
+                        do {
+                            try realm.write({
+                                realm.add(post)
+                            })
+                        } catch {
+                            print("Error saving Data context \(error)")
+                        }
+                        DispatchQueue.main.async {
+                            self.tableView.refreshControl?.endRefreshing()
+                            self.tableView.reloadData()
+                        }
+                    }
                 }
             }
         }
     }
-    
-    
+    // MARK: - loadPosts from Realm
     func loadPosts () {
         dataModel = realm.objects(Photos.self).sorted(byKeyPath: "id", ascending: false)
         tableView.reloadData()
@@ -130,7 +151,6 @@ extension MainViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "MainTableViewCell", for: indexPath) as? MainTableViewCell else { return UITableViewCell() }
         if let posts = self.dataModel {
-            
             
             cell.likeButtomTap = {
                 do {
@@ -157,7 +177,6 @@ extension MainViewController: UITableViewDataSource {
                 } catch {
                     print("Error saving Data context \(error)")
                 }
-                
             }
             cell.configure(dataModel: posts, indexPath: indexPath)
             
@@ -169,7 +188,6 @@ extension MainViewController: UITableViewDataSource {
         }
         return cell
     }
-    
 }
 
 

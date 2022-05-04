@@ -18,7 +18,7 @@ class FirebaseManager {
     private var comments = List<CommentsModel>()
     let photosArray = List<Photos>()
   // MARK: - fetch data from FireBAse and save to Realm
-    func fetchData() {
+    func fetchData(completion: @escaping(Photos) -> Void) {
         // fetching from Firebase
         ref = Database.database().reference().child("photos")
         ref.observeSingleEvent(of: DataEventType.value) { snapshot in
@@ -53,16 +53,10 @@ class FirebaseManager {
                         post.image = data
                         self.photosArray.append(post)
                         
-                        
+                       completion(post)
                         // save to Realm
-                        let realm = try! Realm()
-                        do {
-                            try realm.write({
-                                realm.add(post)
-                            })
-                        } catch {
-                            print("Error saving Data context \(error)")
-                        }
+                       
+                        
                     }
                 }
             }
@@ -73,15 +67,12 @@ class FirebaseManager {
  // MARK: - get Image from FireBase Storage
     func getImage(picName: String, completion: @escaping (Data) -> Void) {
         let storage = Storage.storage()
-        var result = Data()
         let reference = storage.reference()
         let pathRef = reference.child("")
         let fileRef = pathRef.child(picName)
         fileRef.getData(maxSize: 1080*1080) { data, error in
             if let safeData = data {
-                result = safeData
                 completion(safeData)
-                
             }
         }
     }
@@ -95,7 +86,7 @@ class FirebaseManager {
         reference.putData(imageData, metadata: metaData, completion: { (metadata, error) in
             if let error = error {
                 assertionFailure(error.localizedDescription)
-                print("Upload failed :: ",error.localizedDescription)
+                print("Upload failed",error.localizedDescription)
                 return completion(nil)
             }
             reference.downloadURL { (url, error) in
