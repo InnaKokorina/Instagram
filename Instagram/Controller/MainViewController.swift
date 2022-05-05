@@ -13,13 +13,14 @@ import FirebaseStorage
 import RealmSwift
 
 class MainViewController: UIViewController {
-    private var dataManager = DataManager()
     var dataModel: Results<Photos>?
+    private var dataManager = DataManager()
     private var firebaseManager = FirebaseManager()
     private var activityController: UIActivityViewController? = nil
     private var ref: DatabaseReference!
     private let realm = try! Realm()
     private let spinner = SpinnerViewController()
+    
     
     private let tableView: UITableView = {
         let tableView = UITableView()
@@ -92,8 +93,8 @@ class MainViewController: UIViewController {
         logOutButton.tintColor = .black
         let addPhoto = UIBarButtonItem(image: UIImage(systemName: "plus.app"), style: .plain, target: self, action: #selector(addNewPost))
         addPhoto.tintColor = .black
-        self.navigationItem.leftBarButtonItem  = logOutButton
-        self.navigationItem.rightBarButtonItem = addPhoto
+        navigationItem.leftBarButtonItem  = logOutButton
+        navigationItem.rightBarButtonItem = addPhoto
         navigationItem.title = Constants.App.title
     }
     
@@ -107,7 +108,7 @@ class MainViewController: UIViewController {
     @objc func addNewPost(_ sender: Any) {
         let vc = NewPhotoViewController()
         vc.dataModel = self.dataModel
-        self.navigationController?.pushViewController(vc, animated: true)
+        navigationController?.pushViewController(vc, animated: true)
         
     }
     
@@ -154,8 +155,8 @@ extension MainViewController: UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "MainTableViewCell", for: indexPath) as? MainTableViewCell else { return UITableViewCell() }
-        if let posts = self.dataModel {
-            
+        if let posts = dataModel {
+            // set like
             cell.likeButtomTap = {
                 do {
                     try self.realm.write{
@@ -183,7 +184,7 @@ extension MainViewController: UITableViewDataSource {
                 }
             }
             cell.configure(dataModel: posts, indexPath: indexPath)
-            
+            // navigation to comments
             cell.commentButtonPressed = { [weak self] in
                 let vc = CommentsViewController()
                 vc.selectedImage = posts[indexPath.row]

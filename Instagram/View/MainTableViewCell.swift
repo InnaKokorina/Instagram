@@ -11,10 +11,10 @@ import RealmSwift
 class MainTableViewCell: UITableViewCell {
     var likeButtomTap: (() -> Void)?
     var commentButtonPressed: (() -> Void)?
-    static var identifier = "MainTableViewCell"
+    private let spinner = SpinnerViewController()
     private var dataManager = DataManager()
-    let spinner = SpinnerViewController()
     private let firebaseManager = FirebaseManager()
+    static var identifier = "MainTableViewCell"
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -99,9 +99,9 @@ class MainTableViewCell: UITableViewCell {
         descriptionLabel.text = "\(dataModel[indexPath.row].user ):  \(dataModel[indexPath.row].descriptionImage)"
         likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel[indexPath.row].likes)
         likeButton.setImage(UIImage(systemName: dataModel[indexPath.row].liked ? "heart.fill" : "heart"), for: .normal)
-        self.spinner.start(view: self.bandImage)
-        self.setImage(image: dataModel[indexPath.row].image)
-        self.spinner.stop()
+        spinner.start(view: self.bandImage)
+        setImage(image: dataModel[indexPath.row].image)
+        spinner.stop()
         selectionStyle = .none
         commentsButton.tintColor = .black
     }
@@ -109,7 +109,7 @@ class MainTableViewCell: UITableViewCell {
     // prepare for reuse
     override func prepareForReuse() {
         super.prepareForReuse()
-        self.bandImage.image = nil
+        bandImage.image = nil
         
     }
     // MARK: - buttons pressed
@@ -127,7 +127,7 @@ class MainTableViewCell: UITableViewCell {
              bandImage.contentMode = .center
              bandImage.tintColor = .red
        } else {
-           self.bandImage.image = UIImage(data: image!)
+           bandImage.image = UIImage(data: image!)
       }
      }
     // MARK: - constraints

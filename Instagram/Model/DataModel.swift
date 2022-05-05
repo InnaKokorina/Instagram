@@ -20,14 +20,6 @@ class Photos: Object {
     @objc dynamic var link: String = ""
     @objc dynamic var user: String = ""
     @objc dynamic var liked: Bool = false
-    //        didSet {
-    //            if liked {
-    //                likes += 1
-    //            } else {
-    //                likes -= 1
-    //            }
-    //        }
-    //    }
     
     convenience init(comment: List<CommentsModel>, id: Int, imageName: String, likes: Int = 0,  link: String, user: String, liked: Bool, descriptionImage: String) {
         self.init()
@@ -35,7 +27,6 @@ class Photos: Object {
         self.descriptionImage = descriptionImage
         self.id = id
         self.imageName = imageName
-       // self.image = image
         self.likes = likes
         self.link = link
         self.user = user
@@ -50,8 +41,7 @@ class CommentsModel: Object {
     @objc dynamic var id: Int = 0
     @objc dynamic var postId: Int = 0
     dynamic var parentImage = LinkingObjects(fromType: Photos.self, property: "comment")
-    
-    
+       
   convenience init(body:String, email: String, id: Int, postId: Int) {
       self.init()
         self.body = body

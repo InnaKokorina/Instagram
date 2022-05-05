@@ -30,7 +30,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                        self.setupWindow(rootVC: appViewController)
                    }
                }
-        print(Realm.Configuration.defaultConfiguration.fileURL)
+        print(Realm.Configuration.defaultConfiguration.fileURL ?? " no realm link")
 
                  do {
                  _ = try Realm()

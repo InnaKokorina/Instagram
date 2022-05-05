@@ -18,8 +18,8 @@ class CommentsViewController: UIViewController {
     var activeTextField : UITextField? = nil
     private var firebaseManager = FirebaseManager()
     private var ref: DatabaseReference!
-    let realm = try! Realm()
-    var comments: Results<CommentsModel>?
+    private let realm = try! Realm()
+    private var comments: Results<CommentsModel>?
     
     var selectedImage: Photos? {
         didSet {
@@ -89,13 +89,13 @@ class CommentsViewController: UIViewController {
     }
     
     @objc func backPressed() {
-        self.navigationController?.popViewController(animated: true)
+        navigationController?.popViewController(animated: true)
     }
     
     @objc func logOutButtonPressed(_ sender: Any) {
         do{
             try Auth.auth().signOut()
-        }catch{
+        } catch {
             print(error)
         }
     }
@@ -153,18 +153,15 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
 extension CommentsViewController: UITextFieldDelegate {
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        self.activeTextField = self.textField
+        activeTextField = textField
         print(activeTextField?.text ?? "nil")
     }
     func textFieldDidChangeSelection(_ textField: UITextField) {
-        self.activeTextField = self.textField
+        activeTextField = self.textField
     }
-    
-    
     @objc func addCommentTap() {
         textField.endEditing(true)
     }
-    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
@@ -187,9 +184,9 @@ extension CommentsViewController: UITextFieldDelegate {
                     print("Error saving Data context \(error)")
                 }
                 tableView.reloadData()
-                self.textField.text = ""
-                self.textField.endEditing(true)
-                self.activeTextField = nil
+                textField.text = ""
+                textField.endEditing(true)
+                activeTextField = nil
             }
         }
     }
@@ -216,6 +213,6 @@ extension CommentsViewController {
     }
     
     @objc func keyboardWillHide(notification: NSNotification) {
-        self.view.frame.origin.y = 0
+        view.frame.origin.y = 0
     }
 }

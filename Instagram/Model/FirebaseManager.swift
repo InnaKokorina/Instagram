@@ -54,9 +54,6 @@ class FirebaseManager {
                         self.photosArray.append(post)
                         
                        completion(post)
-                        // save to Realm
-                       
-                        
                     }
                 }
             }
@@ -78,8 +75,8 @@ class FirebaseManager {
             }
         }
     }
-   // MARK: - uploadImage
-    func create(for image: UIImage,path: String, completion: @escaping (String?) -> ()) {
+   // MARK: - uploadImage to Storage
+    func uploadImage(for image: UIImage,path: String, completion: @escaping (String?) -> ()) {
         let filePath = path
         let imageRef = Storage.storage().reference().child(filePath)
         guard let imageData = image.jpegData(compressionQuality: 0.1) else {

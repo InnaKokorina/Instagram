@@ -17,10 +17,10 @@ class NewPhotoViewController: UIViewController {
     private var auth = AuthorizationViewController()
     private var firebaseManager = FirebaseManager()
     private var ref: DatabaseReference!
-    var dataModel: Results<Photos>?
     private let dataManager = DataManager()
     private let realm = try! Realm()
     private let spinner = SpinnerViewController()
+    var dataModel: Results<Photos>?
     // MARK: - View
     private var userLabel: UILabel = {
         let userLabel = UILabel()
@@ -67,7 +67,6 @@ class NewPhotoViewController: UIViewController {
         spinnerImage.translatesAutoresizingMaskIntoConstraints = false
         return spinnerImage
     }()
-    
     private lazy var verStackView = UIStackView(arrangedSubviews: [userLabel, newImage, photoTextField, addButton], axis: .vertical, spacing: 8)
     
     
@@ -94,7 +93,6 @@ class NewPhotoViewController: UIViewController {
         imagePicker.present(from: view)
     }
     
-    
     // MARK: - navigationItems
     func setupNavItems() {
         let addPhoto = UIBarButtonItem(image: UIImage(systemName: "arrow.up.circle.fill"), style: .plain, target: self, action: #selector(sharePressed))
@@ -107,8 +105,7 @@ class NewPhotoViewController: UIViewController {
     }
     
     @objc func backPressed() {
-        self.navigationController?.popViewController(animated: true)
-        
+        navigationController?.popViewController(animated: true)
     }
     // MARK: - sharePressed
     @objc func sharePressed(_ sender: Any) {
@@ -120,13 +117,11 @@ class NewPhotoViewController: UIViewController {
         if let image = self.newImage.image {
             filePath = "\(self.dataManager.dateFormatter()).jpg"
             DispatchQueue.global().async {
-                self.firebaseManager.create(for: image, path: filePath) { [self] (downloadURL) in
+                self.firebaseManager.uploadImage(for: image, path: filePath) { [self] (downloadURL) in
                     if  downloadURL == nil {
-                        DispatchQueue.main.async {
                             self.addButton.imageView?.isHidden = true
                             self.spinner.stop()
                             self.addButton.setTitle("Повторить", for: .normal)
-                        }
                         print("Download url not found")
                         return
                     } else {
@@ -206,26 +201,25 @@ extension NewPhotoViewController {
 extension NewPhotoViewController: UITextViewDelegate {
     
     func textViewDidBeginEditing(_ textView: UITextView) {
-        self.activeTextField = self.photoTextField
+        activeTextField = photoTextField
         textView.text = ""
         photoTextField.textColor = .black
     }
     
     func textViewDidChangeSelection(_ textView: UITextView) {
-        self.activeTextField = self.photoTextField
+        activeTextField = photoTextField
     }
     
     func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
         textView.resignFirstResponder()
-        self.photoTextField.endEditing(true)
         return true
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
-        self.photoTextField.endEditing(true)
+        photoTextField.endEditing(true)
     }
     func textFieldDidEndEditing(_ textField: UITextField) {
-        self.photoTextField.endEditing(true)
+        photoTextField.endEditing(true)
     }
 }
 
@@ -235,19 +229,19 @@ extension NewPhotoViewController {
         guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
         var shouldMoveViewUp = false
         if let activeTextField = activeTextField {
-            let bottomOfTextField = activeTextField.convert(activeTextField.bounds, to: self.view).maxY;
-            let topOfKeyboard = self.view.frame.height - keyboardSize.height
+            let bottomOfTextField = activeTextField.convert(activeTextField.bounds, to: view).maxY;
+            let topOfKeyboard = view.frame.height - keyboardSize.height
             if bottomOfTextField > topOfKeyboard {
                 shouldMoveViewUp = true
             }
             if shouldMoveViewUp {
-                self.view.frame.origin.y = 0 - keyboardSize.height
+                view.frame.origin.y = 0 - keyboardSize.height
             }
         }
     }
     
     @objc func keyboardWillHide(notification: NSNotification) {
-        self.view.frame.origin.y = 0
+        view.frame.origin.y = 0
     }
 }
 
