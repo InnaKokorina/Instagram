@@ -65,7 +65,7 @@ class FirebaseManager {
     
     
  // MARK: - get Image from FireBase Storage
-    func getImage(picName: String, completion: @escaping (Data) -> Void) {
+    func getImage(picName: String, completion: @escaping (Data?) -> Void) {
         let storage = Storage.storage()
         let reference = storage.reference()
         let pathRef = reference.child("")
@@ -73,6 +73,8 @@ class FirebaseManager {
         fileRef.getData(maxSize: 1080*1080) { data, error in
             if let safeData = data {
                 completion(safeData)
+            } else{
+                completion(nil)
             }
         }
     }
@@ -85,7 +87,6 @@ class FirebaseManager {
         metaData.contentType = "image/jpeg"
         reference.putData(imageData, metadata: metaData, completion: { (metadata, error) in
             if let error = error {
-                assertionFailure(error.localizedDescription)
                 print("Upload failed",error.localizedDescription)
                 return completion(nil)
             }

@@ -121,43 +121,50 @@ class NewPhotoViewController: UIViewController {
             filePath = "\(self.dataManager.dateFormatter()).jpg"
             DispatchQueue.global().async {
                 self.firebaseManager.create(for: image, path: filePath) { [self] (downloadURL) in
-                    guard let downloadURL = downloadURL else {
+                    print("downloadURL -----\(downloadURL)")
+                    if  downloadURL == nil {
+                        DispatchQueue.main.async {
+                            self.spinner.stop()
+                            self.addButton.setTitle("Повторить", for: .normal)
+                        }
                         print("Download url not found")
                         return
-                    }
-                    urlString = downloadURL
-
-                    // save to Realm
-                    let post = Photos(comment: List<CommentsModel>(), id: self.dataModel?.count ?? 0, imageName: filePath, likes: 0, link: urlString, user: userLabel.text ?? "user", liked: false, descriptionImage: self.photoTextField.text)
-                    self.firebaseManager.getImage(picName: filePath) { data in
-                        post.image = data
-                        do {
-                            try self.realm.write {
-                                self.realm.add(post)
-                                let index:Int = (self.dataModel?.count ?? 1) - 1
-                                self.ref = Database.database().reference().child("photos/\(index)")
-                                // save to FB
-                                let  dict = [
-                                    "user": post.user,
-                                    "description": post.descriptionImage,
-                                    "id": post.id,
-                                    "image": post.imageName,
-                                    "liked": post.liked,
-                                    "likes": post.likes,
-                                    "link": post.link,
-                                    "comments": Array(post.comment)
-                                ] as [String : Any]
-                                self.ref.setValue(dict)
-                                // Navigation
-                                
-                                DispatchQueue.main.async {
-                                    self.navigationController?.popViewController(animated: false)
-                                    self.spinner.stop()
-                                    self.addButton.setTitle("Повторить", for: .normal)
+                    } else {
+                        urlString = downloadURL!
+                        
+                        // save to Realm
+                        let post = Photos(comment: List<CommentsModel>(), id: self.dataModel?.count ?? 0, imageName: filePath, likes: 0, link: urlString, user: userLabel.text ?? "user", liked: false, descriptionImage: self.photoTextField.text)
+                        self.firebaseManager.getImage(picName: filePath) { data in
+                            post.image = data
+                            do {
+                                try self.realm.write {
+                                    self.realm.add(post)
+                                    let index:Int = (self.dataModel?.count ?? 1) - 1
+                                    self.ref = Database.database().reference().child("photos/\(index)")
+                                    // save to FB
+                                    let  dict = [
+                                        "user": post.user,
+                                        "description": post.descriptionImage,
+                                        "id": post.id,
+                                        "image": post.imageName,
+                                        "liked": post.liked,
+                                        "likes": post.likes,
+                                        "link": post.link,
+                                        "comments": Array(post.comment)
+                                    ] as [String : Any]
+                                    self.ref.setValue(dict)
+                                    // Navigation
+                                    
+                                    DispatchQueue.main.async {
+                                        self.navigationController?.popViewController(animated: false)
+                                        self.spinner.stop()
+                                        
+                                    }
                                 }
+                            } catch {    
+                                print("Error saving Data context \(error)")
+                                
                             }
-                        } catch {
-                            print("Error saving Data context \(error)")
                         }
                     }
                 }

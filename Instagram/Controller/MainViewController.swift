@@ -71,6 +71,10 @@ class MainViewController: UIViewController {
             }
         }
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tableView.reloadData()
+    }
     // MARK: - tableViewSetup
     func tableViewsSetup() {
         view.addSubview(tableView)
