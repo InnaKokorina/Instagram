@@ -10,34 +10,28 @@ import FirebaseAuth
 import Firebase
 import FirebaseDatabase
 import FirebaseStorage
-
-protocol FirebaseManagerDelegate {
-    func didUpdateImages(_ firebaseManager: FirebaseManager, image: DataModel)
-    func didUpdateComments(_ firebaseManager: FirebaseManager, comment: [CommentsModel])
-}
+import RealmSwift
 
 class FirebaseManager {
-    
-    static let shared = FirebaseManager()
-    var delegate: FirebaseManagerDelegate?
     private var ref: DatabaseReference!
-    private var dataModel = DataModel(photos: [Photos]())
-    private var comments = [CommentsModel]()
-    
-    func fetchData(countImages: Int = 11) {
+    private var dataModel: Results<Photos>?
+    private var comments = List<CommentsModel>()
+    let photosArray = List<Photos>()
+  // MARK: - fetch data from FireBAse and save to Realm
+    func fetchData(completion: @escaping(Photos) -> Void) {
+        // fetching from Firebase
         ref = Database.database().reference().child("photos")
         ref.observeSingleEvent(of: DataEventType.value) { snapshot in
             if snapshot.childrenCount > 0 {
                 for data in snapshot.children.allObjects as! [DataSnapshot] {
                     let object =  data.value as? [String: AnyObject]
-                    let user = object?["user"]
-                    let description = object?["description"]
-                    let id = object?["id"]
-                    let image = object?["image"]
-                    let liked = object?["liked"]
-                    let likes = object?["likes"]
-                    let link = object?["link"]
-                    var commentsModel  = CommentsModel()
+                    let user = object?["user"] as! String
+                    let description = object?["description"] as! String
+                    let id = object?["id"] as! Int
+                    let image = object?["image"] as! String
+                    let liked = object?["liked"] as! Bool
+                    let likes = object?["likes"] as! Int
+                    let link = object?["link"] as! String
                     for comment in data .children.allObjects as! [DataSnapshot] {
                         if let commentsArray  = comment.value as? [Any]  {
                             for i in commentsArray {
@@ -46,42 +40,62 @@ class FirebaseManager {
                                 let email = oneCom?["email"] as? String ?? ""
                                 let id = oneCom?["id"] as? Int ?? 0
                                 let postId = oneCom?["postId"] as? Int ?? 0
-                                commentsModel = CommentsModel(body: body, email: email, id: id, postId: postId)
-                                self.comments.append(commentsModel)
-                                self.delegate?.didUpdateComments(self, comment: self.comments)
+                                self.comments.append(CommentsModel(body: body, email: email, id: id, postId: postId))
                             }
                         }
                     }
-                    let model = Photos(comment: self.comments, description: description as! String, id: id as! Int , image: image as! String, likes: likes as! Int, link: link as! String, user: user as! String, liked: liked as! Bool)
-                    if self.dataModel.photos.count < countImages {
-                        self.dataModel.photos.append(model)
+                    // save to Model
+                    let post = Photos(comment: self.comments, id: id, imageName: image,  likes: likes, link: link, user: user, liked: liked, descriptionImage: description)
+                    
+                    self.comments = List<CommentsModel>()
+                    // get Image
+                    self.getImage(picName: image) { data in
+                        post.image = data
+                        self.photosArray.append(post)
+                        
+                       completion(post)
                     }
                 }
-                self.delegate?.didUpdateImages(self, image: self.dataModel)
-                self.comments = []
-                self.dataModel.photos = []
-                
             }
         }
     }
     
     
-    func getImage(picName: String, completion: @escaping (UIImage) -> Void) {
+ // MARK: - get Image from FireBase Storage
+    func getImage(picName: String, completion: @escaping (Data?) -> Void) {
         let storage = Storage.storage()
         let reference = storage.reference()
-        let pathRef = reference.child("pictures")
-        let fileRef = pathRef.child(picName + ".png")
-        fileRef.getData(maxSize: 3048*3048, completion: { data, error in
-            if let result = data {
-                let image = UIImage(data: result)
-                completion(image!)
-            } else {
-                print("error \(error)")
-                let imageNil = UIImage(systemName: "xmark.circle")
-                completion(imageNil!)
+        let pathRef = reference.child("")
+        let fileRef = pathRef.child(picName)
+        fileRef.getData(maxSize: 1080*1080) { data, error in
+            if let safeData = data {
+                completion(safeData)
+            } else{
+                completion(nil)
             }
         }
-        )
+    }
+   // MARK: - uploadImage to Storage
+    func uploadImage(for image: UIImage,path: String, completion: @escaping (String?) -> ()) {
+        let filePath = path
+        let imageRef = Storage.storage().reference().child(filePath)
+        guard let imageData = image.jpegData(compressionQuality: 0.1) else {
+            return completion(nil)
+        }
+        let metaData = StorageMetadata()
+        metaData.contentType = "image/jpeg"
+        imageRef.putData(imageData, metadata: metaData) { (metadata, error) in
+            if let error = error {
+                print("Upload failed",error.localizedDescription)
+                return completion(nil)
+            }
+            imageRef.downloadURL { (url, error) in
+                guard let downloadURL = url else {
+                    return
+                }
+                completion(downloadURL.absoluteString)
+            }
+        }
     }
 }
 

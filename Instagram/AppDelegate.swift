@@ -7,6 +7,7 @@
 
 import UIKit
 import Firebase
+import RealmSwift
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -29,7 +30,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                        self.setupWindow(rootVC: appViewController)
                    }
                }
-        
+        print(Realm.Configuration.defaultConfiguration.fileURL ?? " no realm link")
+
+                 do {
+                 _ = try Realm()
+                     
+                 } catch {
+                     print ("error instalation realm \(error)")
+                 }
     
         return true
     }

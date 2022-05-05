@@ -6,17 +6,18 @@
 //
 
 import UIKit
+import RealmSwift
 
 class MainTableViewCell: UITableViewCell {
     var likeButtomTap: (() -> Void)?
     var commentButtonPressed: (() -> Void)?
-    static var identifier = "MainTableViewCell"
+    private let spinner = SpinnerViewController()
     private var dataManager = DataManager()
-    let spinner = SpinnerViewController()
+    private let firebaseManager = FirebaseManager()
+    static var identifier = "MainTableViewCell"
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        //   networkManager.delegateCell = self
         addViews()
         setConstraints()
         likeButton.addTarget(self, action: #selector(likePressed), for: .touchUpInside)
@@ -92,17 +93,15 @@ class MainTableViewCell: UITableViewCell {
         scrollView.addSubview(bandImage)
         bandImage.addSubview(heartView)
     }
-    func configure (dataModel:DataModel, indexPath: IndexPath) {
+    func configure (dataModel: Results<Photos>, indexPath: IndexPath) {
         verStackView.alignment = .leading
-        authorNameLabel.text = dataModel.photos[indexPath.row].user
-        descriptionLabel.text = "\(dataModel.photos[indexPath.row].user ):  \(dataModel.photos[indexPath.row].description)"
-        likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel.photos[indexPath.row].likes)
-        likeButton.setImage(UIImage(systemName: dataModel.photos[indexPath.row].liked ? "heart.fill" : "heart"), for: .normal)
-        self.spinner.start(view: self.bandImage)
-        FirebaseManager.shared.getImage(picName: dataModel.photos[indexPath.row].image) { pic in
-            self.setImage(image: pic)
-            self.spinner.stop()
-        }
+        authorNameLabel.text = dataModel[indexPath.row].user
+        descriptionLabel.text = "\(dataModel[indexPath.row].user ):  \(dataModel[indexPath.row].descriptionImage)"
+        likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel[indexPath.row].likes)
+        likeButton.setImage(UIImage(systemName: dataModel[indexPath.row].liked ? "heart.fill" : "heart"), for: .normal)
+        spinner.start(view: self.bandImage)
+        setImage(image: dataModel[indexPath.row].image)
+        spinner.stop()
         selectionStyle = .none
         commentsButton.tintColor = .black
     }
@@ -110,7 +109,7 @@ class MainTableViewCell: UITableViewCell {
     // prepare for reuse
     override func prepareForReuse() {
         super.prepareForReuse()
-        self.bandImage.image = nil
+        bandImage.image = nil
         
     }
     // MARK: - buttons pressed
@@ -122,15 +121,15 @@ class MainTableViewCell: UITableViewCell {
     }
     
     // MARK: - set image from Api or failImage
-    func setImage(image: UIImage) {
-        if image == UIImage(systemName: "xmark.circle") {
-            bandImage.contentMode = .center
-            bandImage.tintColor = .red
-            self.bandImage.image = image
-        } else {
-            self.bandImage.image = image
-        }
-    }
+    func setImage(image: Data?) {
+        if image == nil {
+            bandImage.image = UIImage(systemName: "xmark.circle")
+             bandImage.contentMode = .center
+             bandImage.tintColor = .red
+       } else {
+           bandImage.image = UIImage(data: image!)
+      }
+     }
     // MARK: - constraints
     private func setConstraints() {
         NSLayoutConstraint.activate([

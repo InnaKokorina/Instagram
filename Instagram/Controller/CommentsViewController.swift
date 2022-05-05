@@ -10,22 +10,23 @@ import FirebaseAuth
 import Firebase
 import FirebaseDatabase
 import FirebaseStorage
+import RealmSwift
 
 class CommentsViewController: UIViewController {
     
-    private var comments = [CommentsModel]()
     private var auth = AuthorizationViewController()
     var activeTextField : UITextField? = nil
     private var firebaseManager = FirebaseManager()
     private var ref: DatabaseReference!
+    private let realm = try! Realm()
+    private var comments: Results<CommentsModel>?
     
     var selectedImage: Photos? {
-        didSet{
-           firebaseManager.fetchData()
-             tableView.reloadData()
+        didSet {
+            loadComments()
         }
     }
-    
+    // MARK: - View
     private let tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(CommentsViewCell.self, forCellReuseIdentifier: "CommentsViewCell")
@@ -55,11 +56,7 @@ class CommentsViewController: UIViewController {
     }()
     
     private lazy var horStackView = UIStackView(arrangedSubviews: [textField, addComment], axis: .horizontal, spacing: 4)
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        firebaseManager.fetchData()
-    }
+    // MARK: - lifecycle
     override func viewDidLoad() {
         view.backgroundColor = .systemBackground
         horStackView.backgroundColor = .systemIndigo
@@ -67,18 +64,13 @@ class CommentsViewController: UIViewController {
         view.addSubview(horStackView)
         setConstraints()
         textField.delegate = self
-        firebaseManager.delegate = self
         addComment.addTarget(self, action: #selector(addCommentTap), for: .touchUpInside)
-        
+        setupNavItems()
         // keyboard
         NotificationCenter.default.addObserver(self, selector: #selector(CommentsViewController.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(CommentsViewController.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-        
-        // logout
-        let logOutButton = UIBarButtonItem(title: "Выйти", style: .plain, target: self, action: #selector(logOutButtonPressed))
-        self.navigationItem.rightBarButtonItem  = logOutButton
     }
-    
+    // MARK: - tableViewsSetup()
     func tableViewsSetup() {
         view.addSubview(tableView)
         tableView.dataSource = self
@@ -87,43 +79,57 @@ class CommentsViewController: UIViewController {
         tableView.separatorStyle = .none
         tableView.allowsSelection = false
     }
-    // MARK: - Logout
+    // MARK: - NavigationItems
+    func setupNavItems() {
+        let logOutButton = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(logOutButtonPressed))
+        navigationItem.rightBarButtonItem  = logOutButton
+        let back = UIBarButtonItem(image: UIImage(systemName: "chevron.compact.left"), style: .plain, target: self, action: #selector(backPressed))
+        back.tintColor = .black
+        navigationItem.leftBarButtonItem = back
+    }
+    
+    @objc func backPressed() {
+        navigationController?.popViewController(animated: true)
+    }
+    
     @objc func logOutButtonPressed(_ sender: Any) {
         do{
             try Auth.auth().signOut()
-        }catch{
+        } catch {
             print(error)
         }
     }
-    
+    // MARK: - loadComments()
+    func loadComments() {
+        comments = selectedImage?.comment.sorted(byKeyPath: "id", ascending: true)
+        tableView.reloadData()
+    }
     
 }
 // MARK: - UITableViewDataSource, UITableViewDelegate
 extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let newArray = comments.filter { model in
-            selectedImage?.id == model.postId }
-        return newArray.count
+        return comments?.count ?? 1
+        
         
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "CommentsViewCell", for: indexPath) as? CommentsViewCell else { return UITableViewCell() }
-        let newArray = comments.filter { model in
-            selectedImage?.id == model.postId
+        if let comments = comments {
+            cell.configure(indexPath: indexPath.row, comment: comments)
         }
-        cell.configure(indexPath: indexPath.row, comment: newArray)
         return cell
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         60
     }
-    
+    // MARK: - setConstraints()
     func setConstraints() {
         NSLayoutConstraint.activate([
             
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-            tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
             view.trailingAnchor.constraint(equalTo: tableView.trailingAnchor, constant: 0),
             
             horStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
@@ -141,55 +147,51 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
             
         ])
     }
+    
 }
 // MARK: - UITextFieldDelegate
 extension CommentsViewController: UITextFieldDelegate {
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        self.activeTextField = self.textField
+        activeTextField = textField
         print(activeTextField?.text ?? "nil")
     }
     func textFieldDidChangeSelection(_ textField: UITextField) {
-        self.activeTextField = self.textField
+        activeTextField = self.textField
     }
-    
-    
     @objc func addCommentTap() {
         textField.endEditing(true)
     }
-    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
     }
     func textFieldDidEndEditing(_ textField: UITextField) {
-        if  let message = textField.text {
-            var selectedcomments = comments.filter { model in
-                selectedImage?.id == model.postId
-            }
-           
-            let email  = auth.setName()
-            let id = selectedcomments.count
-            let postId = (selectedImage?.id)!
-            let newcomment = CommentsModel(body: message, email: email, id: id, postId: postId)
-            selectedcomments.append(newcomment)
-            comments.append(newcomment)
-            if let index = selectedImage?.id  {
-                let indexPath = index - 1
-               // save to FB
-                self.ref =  Database.database().reference().child("photos/\(indexPath)/comments/\(id)")
-                print(newcomment)
-                let dictionary = ["email": newcomment.email,"body": newcomment.body,"id": newcomment.id,"postId": newcomment.postId] as [String : Any]
-                ref.setValue(dictionary)
+        if let currentImage = self.selectedImage {
+            if  let message = textField.text {
+                let email  = auth.setName()
+                let id = currentImage.comment.count
+                let postId = currentImage.id
+                do {
+                    try realm.write{
+                        let newcomment = CommentsModel(body: message, email: email, id: id , postId: postId)
+                        currentImage.comment.append(newcomment)
+                        self.ref =  Database.database().reference().child("photos/\(postId)/comments/\(id)")
+                        let dictionary = ["email": newcomment.email,"body": newcomment.body,"id": newcomment.id,"postId": newcomment.postId] as [String : Any]
+                        ref.setValue(dictionary)
+                    }
+                } catch {
+                    print("Error saving Data context \(error)")
+                }
                 tableView.reloadData()
-                self.textField.text = ""
-                self.textField.endEditing(true)
+                textField.text = ""
+                textField.endEditing(true)
+                activeTextField = nil
             }
-            
-            self.activeTextField = nil
         }
     }
 }
+
 
 
 
@@ -211,22 +213,6 @@ extension CommentsViewController {
     }
     
     @objc func keyboardWillHide(notification: NSNotification) {
-        self.view.frame.origin.y = 0
-    }
-}
-
-// MARK: - FirebaseManagerDelegate
-
-extension CommentsViewController : FirebaseManagerDelegate {
-    
-    func didUpdateImages(_ firebaseManager: FirebaseManager, image: DataModel) {
-        
-    }
-    
-    func didUpdateComments(_ firebaseManager: FirebaseManager, comment: [CommentsModel]) {
-        DispatchQueue.main.async() {
-            self.comments = comment
-            self.tableView.reloadData()
-        }
+        view.frame.origin.y = 0
     }
 }

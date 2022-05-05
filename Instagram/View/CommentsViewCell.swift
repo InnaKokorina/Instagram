@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import RealmSwift
 
 class CommentsViewCell: UITableViewCell {
     
@@ -40,12 +41,12 @@ class CommentsViewCell: UITableViewCell {
         contentView.addSubview(horStackView)
 }
     
-    func configure(indexPath: Int, comment: [CommentsModel]) {
+    func configure(indexPath: Int, comment: Results<CommentsModel>) {
         let author = "\(comment[indexPath].email): "
         let comment = comment[indexPath].body
         commentLabel.attributedText = attributedText(normStr: comment, boldStr: author)
     }
-    
+    // MARK: - setConstraints
     private func setConstraints() {
         NSLayoutConstraint.activate([
             horStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
@@ -58,7 +59,7 @@ class CommentsViewCell: UITableViewCell {
         ])
     }
 }
-
+// MARK: - attributedText
 extension CommentsViewCell {
     func attributedText(normStr: String, boldStr: String) -> NSMutableAttributedString {
         let attributedString = NSMutableAttributedString(string: normStr)
