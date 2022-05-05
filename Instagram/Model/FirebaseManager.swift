@@ -79,35 +79,25 @@ class FirebaseManager {
         }
     }
    // MARK: - uploadImage
-    func uploadImage(_ image: UIImage, at reference: StorageReference, completion: @escaping (URL?) -> Void) {
+    func create(for image: UIImage,path: String, completion: @escaping (String?) -> ()) {
+        let filePath = path
+        let imageRef = Storage.storage().reference().child(filePath)
         guard let imageData = image.jpegData(compressionQuality: 0.1) else {
             return completion(nil)
         }
         let metaData = StorageMetadata()
         metaData.contentType = "image/jpeg"
-        reference.putData(imageData, metadata: metaData, completion: { (metadata, error) in
+        imageRef.putData(imageData, metadata: metaData) { (metadata, error) in
             if let error = error {
                 print("Upload failed",error.localizedDescription)
                 return completion(nil)
             }
-            reference.downloadURL { (url, error) in
+            imageRef.downloadURL { (url, error) in
                 guard let downloadURL = url else {
                     return
                 }
-                completion(downloadURL)
+                completion(downloadURL.absoluteString)
             }
-        })
-    }
-    
-    func create(for image: UIImage,path: String, completion: @escaping (String?) -> ()) {
-        let filePath = path
-        let imageRef = Storage.storage().reference().child(filePath)
-        uploadImage(image, at: imageRef) { (downloadURL) in
-            guard let downloadURL = downloadURL else {
-                print("Download url not found or error to upload")
-                return completion(nil)
-            }
-            completion(downloadURL.absoluteString)
         }
     }
 }

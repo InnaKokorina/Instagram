@@ -121,9 +121,9 @@ class NewPhotoViewController: UIViewController {
             filePath = "\(self.dataManager.dateFormatter()).jpg"
             DispatchQueue.global().async {
                 self.firebaseManager.create(for: image, path: filePath) { [self] (downloadURL) in
-                    print("downloadURL -----\(downloadURL)")
                     if  downloadURL == nil {
                         DispatchQueue.main.async {
+                            self.addButton.imageView?.isHidden = true
                             self.spinner.stop()
                             self.addButton.setTitle("Повторить", for: .normal)
                         }
