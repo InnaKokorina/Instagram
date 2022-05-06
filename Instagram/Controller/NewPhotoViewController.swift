@@ -10,9 +10,11 @@ import Firebase
 import FirebaseDatabase
 import FirebaseStorage
 import RealmSwift
+import YPImagePicker
+import UIKit
 
 class NewPhotoViewController: UIViewController {
-    private var imagePicker: ImagePicker!
+    
     private var activeTextField : UITextView? = nil
     private var auth = AuthorizationViewController()
     private var firebaseManager = FirebaseManager()
@@ -21,6 +23,7 @@ class NewPhotoViewController: UIViewController {
     private let realm = try! Realm()
     private let spinner = SpinnerViewController()
     var dataModel: Results<Photos>?
+    var selectedItems = [YPMediaItem]()
     // MARK: - View
     private var userLabel: UILabel = {
         let userLabel = UILabel()
@@ -28,7 +31,7 @@ class NewPhotoViewController: UIViewController {
         userLabel.textAlignment = .left
         return userLabel
     }()
-    private var newImage: UIImageView = {
+    var newImage: UIImageView = {
         let newImage = UIImageView()
         newImage.contentMode = .scaleAspectFit
         newImage.translatesAutoresizingMaskIntoConstraints = false
@@ -87,12 +90,7 @@ class NewPhotoViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(NewPhotoViewController.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(NewPhotoViewController.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
-    // MARK: - addNewPhoto
-    @objc func addNewPhoto() {
-        imagePicker = ImagePicker(presentationController: self, delegate: self)
-        imagePicker.present(from: view)
-    }
-    
+ 
     // MARK: - navigationItems
     func setupNavItems() {
         let addPhoto = UIBarButtonItem(image: UIImage(systemName: "arrow.up.circle.fill"), style: .plain, target: self, action: #selector(sharePressed))
@@ -119,9 +117,9 @@ class NewPhotoViewController: UIViewController {
             DispatchQueue.global().async {
                 self.firebaseManager.uploadImage(for: image, path: filePath) { [self] (downloadURL) in
                     if  downloadURL == nil {
-                            self.addButton.imageView?.isHidden = true
-                            self.spinner.stop()
-                            self.addButton.setTitle("Повторить", for: .normal)
+                        self.addButton.imageView?.isHidden = true
+                        self.spinner.stop()
+                        self.addButton.setTitle("Повторить", for: .normal)
                         print("Download url not found")
                         return
                     } else {
@@ -156,7 +154,7 @@ class NewPhotoViewController: UIViewController {
                                         
                                     }
                                 }
-                            } catch {    
+                            } catch {
                                 print("Error saving Data context \(error)")
                                 
                             }
@@ -166,13 +164,60 @@ class NewPhotoViewController: UIViewController {
             }
         }
     }
-}
-// MARK: - ImagePickerDelegate
-extension NewPhotoViewController: ImagePickerDelegate {
-    func didSelect(image: UIImage?) {
-        self.newImage.image = image
+    
+    // MARK: - YPImagePicker
+    
+ @objc func showResults() {
+        if !selectedItems.isEmpty {
+            let gallery = YPSelectionsGalleryVC(items: selectedItems) { g, _ in
+                g.dismiss(animated: true, completion: nil)
+            }
+            let navC = UINavigationController(rootViewController: gallery)
+            self.present(navC, animated: true, completion: nil)
+        } else {
+            print("No items selected yet.")
+        }
+    }
+  @objc func addNewPhoto() {
+        var config = YPImagePickerConfiguration()
+        config.library.onlySquare = true
+        config.onlySquareImagesFromCamera = true
+        config.library.mediaType = .photo
+        config.library.itemOverlayType = .grid
+        config.shouldSaveNewPicturesToAlbum = false
+        config.startOnScreen = .library
+        config.screens = [.library, .photo]
+        config.library.minWidthForItem = UIScreen.main.bounds.width * 0.8
+        config.showsCrop = .rectangle(ratio: 1)
+        config.wordings.libraryTitle = "Альбом"
+        config.hidesStatusBar = false
+        config.hidesBottomBar = false
+        config.maxCameraZoomFactor = 2.0
+        config.library.maxNumberOfItems = 5
+        config.gallery.hidesRemoveButton = false
+        config.library.preselectedItems = selectedItems
+        let picker = YPImagePicker(configuration: config)
+        picker.imagePickerDelegate = self
+        picker.didFinishPicking { [weak picker] items, _ in
+            self.selectedItems = items
+            self.newImage.image = items.singlePhoto?.image
+            picker?.dismiss(animated: true, completion: nil)
+        }
+        
+        present(picker, animated: true, completion: nil)
     }
 }
+
+// YPImagePickerDelegate
+extension NewPhotoViewController: YPImagePickerDelegate {
+    func imagePickerHasNoItemsInLibrary(_ picker: YPImagePicker) {
+    }
+
+    func shouldAddToSelection(indexPath: IndexPath, numSelections: Int) -> Bool {
+        return true // indexPath.row != 2
+    }
+}
+
 // MARK: - setConstraints
 extension NewPhotoViewController {
     private func setConstraints() {
