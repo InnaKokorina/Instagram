@@ -22,6 +22,7 @@ class NewPhotoViewController: UIViewController {
     private let realm = try! Realm()
     private let spinner = SpinnerViewController()
     var dataModel: Results<Photos>?
+    let imagePicker = YPImagePickerView()
     var selectedItems = [YPMediaItem]()
     // MARK: - View
     private var userLabel: UILabel = {
@@ -176,23 +177,8 @@ class NewPhotoViewController: UIViewController {
             print("No items selected yet.")
         }
     }
-  @objc func addNewPhoto() {
-        var config = YPImagePickerConfiguration()
-        config.library.onlySquare = true
-        config.onlySquareImagesFromCamera = true
-        config.library.mediaType = .photo
-        config.library.itemOverlayType = .grid
-        config.shouldSaveNewPicturesToAlbum = false
-        config.startOnScreen = .library
-        config.screens = [.library, .photo]
-        config.library.minWidthForItem = UIScreen.main.bounds.width * 0.8
-        config.showsCrop = .rectangle(ratio: 1)
-        config.wordings.libraryTitle = "Альбом"
-        config.hidesStatusBar = false
-        config.hidesBottomBar = false
-        config.maxCameraZoomFactor = 2.0
-        config.library.maxNumberOfItems = 5
-        config.gallery.hidesRemoveButton = false
+    @objc func addNewPhoto() {
+        var config = imagePicker.setConfig()
         config.library.preselectedItems = selectedItems
         let picker = YPImagePicker(configuration: config)
         picker.imagePickerDelegate = self
@@ -201,7 +187,6 @@ class NewPhotoViewController: UIViewController {
             self.newImage.image = items.singlePhoto?.image
             picker?.dismiss(animated: true, completion: nil)
         }
-
         present(picker, animated: true, completion: nil)
     }
 }
@@ -224,7 +209,6 @@ extension NewPhotoViewController {
             verStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
             view.safeAreaLayoutGuide.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 8),
             view.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: verStackView.bottomAnchor, constant: 16),
-
             photoTextField.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
             userLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
             addButton.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
