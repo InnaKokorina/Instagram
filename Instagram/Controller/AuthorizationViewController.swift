@@ -60,6 +60,8 @@ class AuthorizationViewController: UIViewController {
         emailField.borderStyle = .roundedRect
         emailField.textContentType = .emailAddress
         emailField.translatesAutoresizingMaskIntoConstraints = false
+        emailField.keyboardType = .emailAddress
+        emailField.autocorrectionType = .yes
         return emailField
     }()
 
@@ -144,8 +146,15 @@ extension AuthorizationViewController: UITextFieldDelegate {
         passwordField.text = ""
         emailField.text = ""
     }
-    func showAlert() {
-        let alert = UIAlertController(title: "Ошибка", message: "Пожалуйста, заполните все поля", preferredStyle: .alert)
+    func showAlert(choice: Int) {
+        var message = ""
+        switch choice {
+        case 1 : message = "Пожалуйста, заполните все поля"
+        case 2 : message = "Email адрес или пароль введены некорректно"
+        case 3 : message = "Такой учетной записи не существует. Проверьте email адрес или пароль"
+        default: message = "ошибка"
+        }
+        let alert = UIAlertController(title: "Ошибка", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
     }
@@ -166,28 +175,28 @@ extension AuthorizationViewController: UITextFieldDelegate {
                 Auth.auth().createUser(withEmail: email, password: password) { _, err in
                     guard err == nil
                     else {
-                        print(err!)
+                        self.showAlert(choice: 2)
                         return
                     }
                     let viewController = MainViewController()
                     self.navigationController?.pushViewController(viewController, animated: true)
                 }
             } else {
-                showAlert()
+                showAlert(choice: 1)
             }
         } else {
             if !email.isEmpty && !password.isEmpty {
                 Auth.auth().signIn(withEmail: email, password: password) { (_, err) in
                     guard err == nil
                     else {
-                        print(err!)
+                        self.showAlert(choice: 3)
                         return
                     }
                         let viewController = MainViewController()
                         self.navigationController?.pushViewController(viewController, animated: true)
                 }
             } else {
-                showAlert()
+                showAlert(choice: 1)
             }
         }
 

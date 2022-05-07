@@ -174,6 +174,7 @@ class NewPhotoViewController: UIViewController {
             let navC = UINavigationController(rootViewController: gallery)
             self.present(navC, animated: true, completion: nil)
         } else {
+            self.navigationController?.popViewController(animated: false)
             print("No items selected yet.")
         }
     }
@@ -187,6 +188,12 @@ class NewPhotoViewController: UIViewController {
             self.newImage.image = items.singlePhoto?.image
             picker?.dismiss(animated: true, completion: nil)
         }
+        picker.didFinishPicking { [unowned picker] _, cancelled in
+            if cancelled {
+            picker.dismiss(animated: true, completion: nil)
+            self.navigationController?.popViewController(animated: false)
+            }
+        }
         present(picker, animated: true, completion: nil)
     }
 }
@@ -197,7 +204,7 @@ extension NewPhotoViewController: YPImagePickerDelegate {
     }
 
     func shouldAddToSelection(indexPath: IndexPath, numSelections: Int) -> Bool {
-        return true // indexPath.row != 2
+        return true
     }
 }
 
