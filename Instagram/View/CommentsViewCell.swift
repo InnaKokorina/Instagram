@@ -9,17 +9,17 @@ import UIKit
 import RealmSwift
 
 class CommentsViewCell: UITableViewCell {
-    
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         addViews()
         setConstraints()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     var authorLabel: UILabel = {
         var authorLabel = UILabel()
         authorLabel.font = UIFont(name: Constants.Font.font, size: 17)
@@ -27,7 +27,7 @@ class CommentsViewCell: UITableViewCell {
         authorLabel.translatesAutoresizingMaskIntoConstraints = false
         return authorLabel
     }()
-    
+
     var commentLabel: UILabel = {
         var textLabel = UILabel()
         textLabel.font = UIFont(name: Constants.Font.font, size: 15)
@@ -35,12 +35,12 @@ class CommentsViewCell: UITableViewCell {
         textLabel.translatesAutoresizingMaskIntoConstraints = false
         return textLabel
     }()
-    
+
     private lazy var horStackView = UIStackView(arrangedSubviews: [commentLabel], axis: .horizontal, spacing: 4)
     func addViews() {
         contentView.addSubview(horStackView)
 }
-    
+
     func configure(indexPath: Int, comment: Results<CommentsModel>) {
         let author = "\(comment[indexPath].email): "
         let comment = comment[indexPath].body
@@ -53,7 +53,7 @@ class CommentsViewCell: UITableViewCell {
             horStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
             contentView.trailingAnchor.constraint(equalTo: horStackView.trailingAnchor, constant: 8),
             contentView.bottomAnchor.constraint(equalTo: horStackView.bottomAnchor, constant: 10),
-            
+
             commentLabel.leadingAnchor.constraint(equalTo: horStackView.leadingAnchor, constant: 6),
             commentLabel.trailingAnchor.constraint(equalTo: commentLabel.leadingAnchor, constant: -6)
         ])
@@ -63,8 +63,8 @@ class CommentsViewCell: UITableViewCell {
 extension CommentsViewCell {
     func attributedText(normStr: String, boldStr: String) -> NSMutableAttributedString {
         let attributedString = NSMutableAttributedString(string: normStr)
-        let attrs = [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15)]
-        let boldString = NSMutableAttributedString(string: boldStr, attributes:attrs)
+        let attrs = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 15)]
+        let boldString = NSMutableAttributedString(string: boldStr, attributes: attrs)
         boldString.append(attributedString)
         return boldString
     }

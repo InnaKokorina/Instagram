@@ -12,4 +12,5 @@ pod 'Firebase/Storage'
 pod 'Firebase/Firestore'
 pod 'RealmSwift'
 pod 'YPImagePicker'
+pod 'SwiftLint'
 end

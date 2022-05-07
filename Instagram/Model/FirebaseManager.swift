@@ -25,17 +25,17 @@ class FirebaseManager {
             if snapshot.childrenCount > 0 {
                 for data in snapshot.children.allObjects as! [DataSnapshot] {
                     let object =  data.value as? [String: AnyObject]
-                    let user = object?["user"] as! String
-                    let description = object?["description"] as! String
-                    let id = object?["id"] as! Int
-                    let image = object?["image"] as! String
-                    let liked = object?["liked"] as! Bool
-                    let likes = object?["likes"] as! Int
-                    let link = object?["link"] as! String
+                    let user = object?["user"] as? String ?? ""
+                    let description = object?["description"] as? String ?? ""
+                    let id = object?["id"] as? Int ?? 0
+                    let image = object?["image"] as? String ?? ""
+                    let liked = object?["liked"] as? Bool ?? false
+                    let likes = object?["likes"] as? Int ?? 0
+                    let link = object?["link"] as? String ?? ""
                     for comment in data .children.allObjects as! [DataSnapshot] {
-                        if let commentsArray  = comment.value as? [Any]  {
-                            for i in commentsArray {
-                                let oneCom = i as? [String: AnyObject]
+                        if let commentsArray  = comment.value as? [Any] {
+                            for one in commentsArray {
+                                let oneCom = one as? [String: AnyObject]
                                 let body = oneCom?["body"] as? String ?? ""
                                 let email = oneCom?["email"] as? String ?? ""
                                 let id = oneCom?["id"] as? Int ?? 0
@@ -45,38 +45,37 @@ class FirebaseManager {
                         }
                     }
                     // save to Model
-                    let post = Photos(comment: self.comments, id: id, imageName: image,  likes: likes, link: link, user: user, liked: liked, descriptionImage: description)
-                    
+                    let post = Photos(comment: self.comments, id: id, imageName: image, likes: likes, link: link, user: user, liked: liked, descriptionImage: description)
+
                     self.comments = List<CommentsModel>()
                     // get Image
                     self.getImage(picName: image) { data in
                         post.image = data
                         self.photosArray.append(post)
-                        
+
                        completion(post)
                     }
                 }
             }
         }
     }
-    
-    
+
  // MARK: - get Image from FireBase Storage
     func getImage(picName: String, completion: @escaping (Data?) -> Void) {
         let storage = Storage.storage()
         let reference = storage.reference()
         let pathRef = reference.child("")
         let fileRef = pathRef.child(picName)
-        fileRef.getData(maxSize: 1080*1080) { data, error in
+        fileRef.getData(maxSize: 1080*1080) { data, _ in
             if let safeData = data {
                 completion(safeData)
-            } else{
+            } else {
                 completion(nil)
             }
         }
     }
    // MARK: - uploadImage to Storage
-    func uploadImage(for image: UIImage,path: String, completion: @escaping (String?) -> ()) {
+    func uploadImage(for image: UIImage, path: String, completion: @escaping (String?) -> Void) {
         let filePath = path
         let imageRef = Storage.storage().reference().child(filePath)
         guard let imageData = image.jpegData(compressionQuality: 0.1) else {
@@ -84,12 +83,12 @@ class FirebaseManager {
         }
         let metaData = StorageMetadata()
         metaData.contentType = "image/jpeg"
-        imageRef.putData(imageData, metadata: metaData) { (metadata, error) in
+        imageRef.putData(imageData, metadata: metaData) { (_, error) in
             if let error = error {
-                print("Upload failed",error.localizedDescription)
+                print("Upload failed", error.localizedDescription)
                 return completion(nil)
             }
-            imageRef.downloadURL { (url, error) in
+            imageRef.downloadURL { (url, _) in
                 guard let downloadURL = url else {
                     return
                 }
@@ -98,5 +97,3 @@ class FirebaseManager {
         }
     }
 }
-
-

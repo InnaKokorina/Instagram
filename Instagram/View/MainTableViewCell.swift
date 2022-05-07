@@ -15,7 +15,7 @@ class MainTableViewCell: UITableViewCell {
     private var dataManager = DataManager()
     private let firebaseManager = FirebaseManager()
     static var identifier = "MainTableViewCell"
-    
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         addViews()
@@ -25,11 +25,11 @@ class MainTableViewCell: UITableViewCell {
         doubleTapImage()
         scrollViewSet()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     // MARK: - UIViews
     private var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -85,7 +85,7 @@ class MainTableViewCell: UITableViewCell {
         return commentsButton
     }()
     private lazy var verStackView = UIStackView(arrangedSubviews: [authorNameLabel, scrollView, likeButton, likesCountLabel, descriptionLabel, commentsButton ], axis: .vertical, spacing: 4)
-    
+
     // MARK: - cell setup and configure
     private func addViews() {
         contentView.addSubview(verStackView)
@@ -105,12 +105,12 @@ class MainTableViewCell: UITableViewCell {
         selectionStyle = .none
         commentsButton.tintColor = .black
     }
-    
+
     // prepare for reuse
     override func prepareForReuse() {
         super.prepareForReuse()
         bandImage.image = nil
-        
+
     }
     // MARK: - buttons pressed
     @objc  func likePressed() {
@@ -119,7 +119,7 @@ class MainTableViewCell: UITableViewCell {
     @objc  func  commentButtonpTap (_ sender: UIButton) {
         commentButtonPressed?()
     }
-    
+
     // MARK: - set image from Api or failImage
     func setImage(image: Data?) {
         if image == nil {
@@ -137,26 +137,26 @@ class MainTableViewCell: UITableViewCell {
             verStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
             contentView.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 8),
             contentView.bottomAnchor.constraint(equalTo: verStackView.bottomAnchor, constant: 10),
-            
+
             descriptionLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 6),
             authorNameLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 6),
             likesCountLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 6),
             likeButton.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 6),
             likeButton.widthAnchor.constraint(equalToConstant: 22),
-            
+
             scrollView.topAnchor.constraint(equalTo: authorNameLabel.bottomAnchor, constant: 4),
             scrollView.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
             scrollView.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 0),
-            likeButton.topAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 4),
+            likeButton.topAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 4)
         ])
-        
+
         NSLayoutConstraint.activate([
             bandImage.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 0),
             bandImage.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 0),
             scrollView.trailingAnchor.constraint(equalTo: bandImage.trailingAnchor, constant: 0),
-            scrollView.bottomAnchor.constraint(equalTo: bandImage.bottomAnchor, constant: 0),
+            scrollView.bottomAnchor.constraint(equalTo: bandImage.bottomAnchor, constant: 0)
         ])
-        
+
         NSLayoutConstraint.activate([
             scrollView.heightAnchor.constraint(equalToConstant: 400),
             bandImage.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
@@ -180,7 +180,7 @@ extension MainTableViewCell: UIScrollViewDelegate {
         scrollView.bouncesZoom = false
         bandImage.isUserInteractionEnabled = true
     }
-    
+
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return bandImage
     }
@@ -196,9 +196,8 @@ extension MainTableViewCell {
         bandImage.addGestureRecognizer(tapGesture)
         tapGesture.delegate = self
     }
-    @objc func didDoubleTapImage(sender: UITapGestureRecognizer)
-    {
+    @objc func didDoubleTapImage(sender: UITapGestureRecognizer) {
         likePressed()
     }
-    
+
 }

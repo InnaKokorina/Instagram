@@ -16,12 +16,11 @@ class MainViewController: UIViewController {
     var dataModel: Results<Photos>?
     private var dataManager = DataManager()
     private var firebaseManager = FirebaseManager()
-    private var activityController: UIActivityViewController? = nil
+    private var activityController: UIActivityViewController?
     private var ref: DatabaseReference!
     private let realm = try! Realm()
     private let spinner = SpinnerViewController()
-    
-    
+
     private let tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(MainTableViewCell.self, forCellReuseIdentifier: "MainTableViewCell")
@@ -31,7 +30,7 @@ class MainViewController: UIViewController {
         let image = UIImageView()
         return image
     }()
-    
+
     // MARK: - lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,7 +43,7 @@ class MainViewController: UIViewController {
         if realm.isEmpty {
             spinnerImage.isHidden = false
             firebaseManager.fetchData { post in
-                //save to Realm
+                // save to Realm
                 DispatchQueue.global().async {
                     let realm = try! Realm()
                     do {
@@ -54,7 +53,7 @@ class MainViewController: UIViewController {
                     } catch {
                         print("Error saving Data context \(error)")
                     }
-                    //load from Realm
+                    // load from Realm
                     DispatchQueue.main.async {
                         self.spinner.stop()
                         self.tableViewsSetup()
@@ -63,8 +62,7 @@ class MainViewController: UIViewController {
                     }
                 }
             }
-        }
-        else {
+        } else {
             DispatchQueue.main.async {
                 self.spinnerImage.isHidden = true
                 self.tableViewsSetup()
@@ -97,21 +95,21 @@ class MainViewController: UIViewController {
         navigationItem.rightBarButtonItem = addPhoto
         navigationItem.title = Constants.App.title
     }
-    
+
     @objc func logOutButtonPressed(_ sender: Any) {
         do {
             try Auth.auth().signOut()
-        } catch{
+        } catch {
             print(error)
         }
     }
     @objc func addNewPost(_ sender: Any) {
-        let vc = NewPhotoViewController()
-        vc.dataModel = self.dataModel
-        navigationController?.pushViewController(vc, animated: true)
-        
+        let viewController = NewPhotoViewController()
+        viewController.dataModel = self.dataModel
+        navigationController?.pushViewController(viewController, animated: true)
+
     }
-    
+
     // MARK: - RefreshImages
     @objc func callPullToRefresh() {
         do {
@@ -159,7 +157,7 @@ extension MainViewController: UITableViewDataSource {
             // set like
             cell.likeButtomTap = {
                 do {
-                    try self.realm.write{
+                    try self.realm.write {
                         posts[indexPath.row].liked.toggle()
                         if posts[indexPath.row].liked == true {
                             cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
@@ -173,10 +171,10 @@ extension MainViewController: UITableViewDataSource {
                             cell.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
                             posts[indexPath.row].likes -= 1
                         }
-                        
+
                         cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: posts[indexPath.row].likes)
                         self.ref = Database.database().reference().child("photos/\(posts[indexPath.row].id)")
-                        let  dict = ["liked":posts[indexPath.row].liked, "likes":posts[indexPath.row].likes] as [String : Any]
+                        let  dict = ["liked": posts[indexPath.row].liked, "likes": posts[indexPath.row].likes] as [String: Any]
                         self.ref.updateChildValues(dict)
                     }
                 } catch {
@@ -186,13 +184,11 @@ extension MainViewController: UITableViewDataSource {
             cell.configure(dataModel: posts, indexPath: indexPath)
             // navigation to comments
             cell.commentButtonPressed = { [weak self] in
-                let vc = CommentsViewController()
-                vc.selectedImage = posts[indexPath.row]
-                self?.navigationController?.pushViewController(vc, animated: true)
+                let viewController = CommentsViewController()
+                viewController.selectedImage = posts[indexPath.row]
+                self?.navigationController?.pushViewController(viewController, animated: true)
             }
         }
         return cell
     }
 }
-
-

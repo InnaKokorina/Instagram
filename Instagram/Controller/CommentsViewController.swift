@@ -13,14 +13,14 @@ import FirebaseStorage
 import RealmSwift
 
 class CommentsViewController: UIViewController {
-    
+
     private var auth = AuthorizationViewController()
-    var activeTextField : UITextField? = nil
+    var activeTextField: UITextField?
     private var firebaseManager = FirebaseManager()
     private var ref: DatabaseReference!
     private let realm = try! Realm()
     private var comments: Results<CommentsModel>?
-    
+
     var selectedImage: Photos? {
         didSet {
             loadComments()
@@ -34,7 +34,7 @@ class CommentsViewController: UIViewController {
         tableView.setContentHuggingPriority(UILayoutPriority.init(249), for: .vertical)
         return tableView
     }()
-    
+
     private let textField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -46,7 +46,7 @@ class CommentsViewController: UIViewController {
         textField.viewWithTag(0)
         return textField
     }()
-    
+
     private let addComment: UIButton = {
         let addComment = UIButton()
         addComment.translatesAutoresizingMaskIntoConstraints = false
@@ -54,7 +54,7 @@ class CommentsViewController: UIViewController {
         addComment.imageView?.tintColor = .white
         return addComment
     }()
-    
+
     private lazy var horStackView = UIStackView(arrangedSubviews: [textField, addComment], axis: .horizontal, spacing: 4)
     // MARK: - lifecycle
     override func viewDidLoad() {
@@ -87,13 +87,13 @@ class CommentsViewController: UIViewController {
         back.tintColor = .black
         navigationItem.leftBarButtonItem = back
     }
-    
+
     @objc func backPressed() {
         navigationController?.popViewController(animated: true)
     }
-    
+
     @objc func logOutButtonPressed(_ sender: Any) {
-        do{
+        do {
             try Auth.auth().signOut()
         } catch {
             print(error)
@@ -104,15 +104,14 @@ class CommentsViewController: UIViewController {
         comments = selectedImage?.comment.sorted(byKeyPath: "id", ascending: true)
         tableView.reloadData()
     }
-    
+
 }
 // MARK: - UITableViewDataSource, UITableViewDelegate
 extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return comments?.count ?? 1
-        
-        
+
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "CommentsViewCell", for: indexPath) as? CommentsViewCell else { return UITableViewCell() }
@@ -127,31 +126,31 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
     // MARK: - setConstraints()
     func setConstraints() {
         NSLayoutConstraint.activate([
-            
+
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
             view.trailingAnchor.constraint(equalTo: tableView.trailingAnchor, constant: 0),
-            
+
             horStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             horStackView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 0),
             view.trailingAnchor.constraint(equalTo: horStackView.trailingAnchor, constant: 0),
             view.bottomAnchor.constraint(equalTo: horStackView.bottomAnchor, constant: 0),
-            
+
             textField.leadingAnchor.constraint(equalTo: horStackView.leadingAnchor, constant: 20),
             textField.topAnchor.constraint(equalTo: horStackView.topAnchor, constant: 20),
             view.trailingAnchor.constraint(equalTo: addComment.trailingAnchor, constant: 20),
             view.bottomAnchor.constraint(equalTo: textField.bottomAnchor, constant: 20),
-            
+
             horStackView.heightAnchor.constraint(equalToConstant: 100),
             addComment.widthAnchor.constraint(equalToConstant: 30)
-            
+
         ])
     }
-    
+
 }
 // MARK: - UITextFieldDelegate
 extension CommentsViewController: UITextFieldDelegate {
-    
+
     func textFieldDidBeginEditing(_ textField: UITextField) {
         activeTextField = textField
         print(activeTextField?.text ?? "nil")
@@ -173,11 +172,11 @@ extension CommentsViewController: UITextFieldDelegate {
                 let id = currentImage.comment.count
                 let postId = currentImage.id
                 do {
-                    try realm.write{
-                        let newcomment = CommentsModel(body: message, email: email, id: id , postId: postId)
+                    try realm.write {
+                        let newcomment = CommentsModel(body: message, email: email, id: id, postId: postId)
                         currentImage.comment.append(newcomment)
                         self.ref =  Database.database().reference().child("photos/\(postId)/comments/\(id)")
-                        let dictionary = ["email": newcomment.email,"body": newcomment.body,"id": newcomment.id,"postId": newcomment.postId] as [String : Any]
+                        let dictionary = ["email": newcomment.email, "body": newcomment.body, "id": newcomment.id, "postId": newcomment.postId] as [String: Any]
                         ref.setValue(dictionary)
                     }
                 } catch {
@@ -192,16 +191,13 @@ extension CommentsViewController: UITextFieldDelegate {
     }
 }
 
-
-
-
 // MARK: - keyboardWillShow
 extension CommentsViewController {
     @objc func keyboardWillShow(notification: NSNotification) {
         guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
         var shouldMoveViewUp = false
         if let activeTextField = activeTextField {
-            let bottomOfTextField = activeTextField.convert(activeTextField.bounds, to: self.view).maxY;
+            let bottomOfTextField = activeTextField.convert(activeTextField.bounds, to: self.view).maxY
             let topOfKeyboard = self.view.frame.height - keyboardSize.height
             if bottomOfTextField > topOfKeyboard {
                 shouldMoveViewUp = true
@@ -211,7 +207,7 @@ extension CommentsViewController {
             }
         }
     }
-    
+
     @objc func keyboardWillHide(notification: NSNotification) {
         view.frame.origin.y = 0
     }

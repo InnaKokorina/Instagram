@@ -167,6 +167,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C3E4EA4127EB5DE3003815D2 /* Build configuration list for PBXNativeTarget "Instagram" */;
 			buildPhases = (
+				C3C89BDD2825A1CB0093D8BD /* ShellScript */,
 				E22BB596917B15E467B3F078 /* [CP] Check Pods Manifest.lock */,
 				C3E4EA2927EB5DDE003815D2 /* Sources */,
 				C3E4EA2A27EB5DDE003815D2 /* Frameworks */,
@@ -231,6 +232,23 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		C3C89BDD2825A1CB0093D8BD /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "${PODS_ROOT}/SwiftLint/swiftlint\n";
+		};
 		C6A93898B59E4B3621239241 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

@@ -19,15 +19,15 @@ struct Constants {
         static let placeholderEmail = "Введите Email"
         static let backImageName = "backAuth"
     }
-    
+
     struct Font {
         static let font = "Times New Roman"
     }
-    
+
     struct App {
         static let title = "PhotoStory"
     }
-    
+
     struct ImagePicker {
         static let title = "Новая побликация"
         static let takePhoto = "Сделать фото"
@@ -35,6 +35,6 @@ struct Constants {
         static let cancel = "Отмена"
         static let textPhotoPlaceholder = "Поделитесь впечатлением..."
         static let share = "Поделиться"
-        
+
     }
 }

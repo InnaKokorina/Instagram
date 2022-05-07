@@ -11,11 +11,10 @@ import FirebaseDatabase
 import FirebaseStorage
 import RealmSwift
 import YPImagePicker
-import UIKit
 
 class NewPhotoViewController: UIViewController {
-    
-    private var activeTextField : UITextView? = nil
+
+    private var activeTextField: UITextView?
     private var auth = AuthorizationViewController()
     private var firebaseManager = FirebaseManager()
     private var ref: DatabaseReference!
@@ -71,8 +70,7 @@ class NewPhotoViewController: UIViewController {
         return spinnerImage
     }()
     private lazy var verStackView = UIStackView(arrangedSubviews: [userLabel, newImage, photoTextField, addButton], axis: .vertical, spacing: 8)
-    
-    
+
     // MARK: - lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -90,7 +88,7 @@ class NewPhotoViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(NewPhotoViewController.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(NewPhotoViewController.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
- 
+
     // MARK: - navigationItems
     func setupNavItems() {
         let addPhoto = UIBarButtonItem(image: UIImage(systemName: "arrow.up.circle.fill"), style: .plain, target: self, action: #selector(sharePressed))
@@ -101,7 +99,7 @@ class NewPhotoViewController: UIViewController {
         navigationItem.leftBarButtonItem = back
         navigationItem.title = Constants.App.title
     }
-    
+
     @objc func backPressed() {
         navigationController?.popViewController(animated: true)
     }
@@ -124,7 +122,7 @@ class NewPhotoViewController: UIViewController {
                         return
                     } else {
                         urlString = downloadURL!
-                        
+
                         // save to Realm
                         let post = Photos(comment: List<CommentsModel>(), id: self.dataModel?.count ?? 0, imageName: filePath, likes: 0, link: urlString, user: userLabel.text ?? "user", liked: false, descriptionImage: self.photoTextField.text)
                         self.firebaseManager.getImage(picName: filePath) { data in
@@ -132,7 +130,7 @@ class NewPhotoViewController: UIViewController {
                             do {
                                 try self.realm.write {
                                     self.realm.add(post)
-                                    let index:Int = (self.dataModel?.count ?? 1) - 1
+                                    let index: Int = (self.dataModel?.count ?? 1) - 1
                                     self.ref = Database.database().reference().child("photos/\(index)")
                                     // save to FB
                                     let  dict = [
@@ -144,19 +142,19 @@ class NewPhotoViewController: UIViewController {
                                         "likes": post.likes,
                                         "link": post.link,
                                         "comments": Array(post.comment)
-                                    ] as [String : Any]
+                                    ] as [String: Any]
                                     self.ref.setValue(dict)
                                     // Navigation
-                                    
+
                                     DispatchQueue.main.async {
                                         self.navigationController?.popViewController(animated: false)
                                         self.spinner.stop()
-                                        
+
                                     }
                                 }
                             } catch {
                                 print("Error saving Data context \(error)")
-                                
+
                             }
                         }
                     }
@@ -164,13 +162,13 @@ class NewPhotoViewController: UIViewController {
             }
         }
     }
-    
+
     // MARK: - YPImagePicker
-    
+
  @objc func showResults() {
         if !selectedItems.isEmpty {
-            let gallery = YPSelectionsGalleryVC(items: selectedItems) { g, _ in
-                g.dismiss(animated: true, completion: nil)
+            let gallery = YPSelectionsGalleryVC(items: selectedItems) { gallery, _ in
+                gallery.dismiss(animated: true, completion: nil)
             }
             let navC = UINavigationController(rootViewController: gallery)
             self.present(navC, animated: true, completion: nil)
@@ -203,7 +201,7 @@ class NewPhotoViewController: UIViewController {
             self.newImage.image = items.singlePhoto?.image
             picker?.dismiss(animated: true, completion: nil)
         }
-        
+
         present(picker, animated: true, completion: nil)
     }
 }
@@ -226,7 +224,7 @@ extension NewPhotoViewController {
             verStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
             view.safeAreaLayoutGuide.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 8),
             view.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: verStackView.bottomAnchor, constant: 16),
-            
+
             photoTextField.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
             userLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
             addButton.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
@@ -244,22 +242,22 @@ extension NewPhotoViewController {
 }
 // MARK: - NewPhotoViewController
 extension NewPhotoViewController: UITextViewDelegate {
-    
+
     func textViewDidBeginEditing(_ textView: UITextView) {
         activeTextField = photoTextField
         textView.text = ""
         photoTextField.textColor = .black
     }
-    
+
     func textViewDidChangeSelection(_ textView: UITextView) {
         activeTextField = photoTextField
     }
-    
+
     func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
         textView.resignFirstResponder()
         return true
     }
-    
+
     func textViewDidEndEditing(_ textView: UITextView) {
         photoTextField.endEditing(true)
     }
@@ -268,13 +266,13 @@ extension NewPhotoViewController: UITextViewDelegate {
     }
 }
 
-//MARK: - keyboardWillShow
+// MARK: - keyboardWillShow
 extension NewPhotoViewController {
     @objc func keyboardWillShow(notification: NSNotification) {
         guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
         var shouldMoveViewUp = false
         if let activeTextField = activeTextField {
-            let bottomOfTextField = activeTextField.convert(activeTextField.bounds, to: view).maxY;
+            let bottomOfTextField = activeTextField.convert(activeTextField.bounds, to: view).maxY
             let topOfKeyboard = view.frame.height - keyboardSize.height
             if bottomOfTextField > topOfKeyboard {
                 shouldMoveViewUp = true
@@ -284,14 +282,14 @@ extension NewPhotoViewController {
             }
         }
     }
-    
+
     @objc func keyboardWillHide(notification: NSNotification) {
         view.frame.origin.y = 0
     }
 }
 
 // MARK: - TapImage
-extension NewPhotoViewController: UIGestureRecognizerDelegate  {
+extension NewPhotoViewController: UIGestureRecognizerDelegate {
     func tapImage() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapImage))
         newImage.addGestureRecognizer(tapGesture)

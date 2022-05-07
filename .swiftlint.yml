@@ -1,0 +1,11 @@
+line_length:
+- 260 # warning
+- 300 # error
+excluded:
+- Pods
+force_cast: warning
+force_try:
+  severity: warning # explicitly
+disabled_rules:
+- force_cast
+- force_try

@@ -11,21 +11,18 @@ import RealmSwift
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    
+
     var window: UIWindow?
     lazy var appViewController = UINavigationController(rootViewController: MainViewController())
 
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
-        
+
         FirebaseApp.configure()
-               Auth.auth().addStateDidChangeListener {(auth,user) in
+               Auth.auth().addStateDidChangeListener {(_, user) in
                    if user == nil {
                       lazy var appViewController = UINavigationController(rootViewController: AuthorizationViewController())
                        self.setupWindow(rootVC: appViewController)
-                }
-                   else {
+                } else {
                        lazy var appViewController = UINavigationController(rootViewController: MainViewController())
                        self.setupWindow(rootVC: appViewController)
                    }
@@ -34,11 +31,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
                  do {
                  _ = try Realm()
-                     
+
                  } catch {
-                     print ("error instalation realm \(error)")
+                     print("error instalation realm \(error)")
                  }
-    
+
         return true
     }
 
@@ -51,6 +48,5 @@ func application(_ application: UIApplication, supportedInterfaceOrientationsFor
     window?.rootViewController = rootVC
     window?.makeKeyAndVisible()
 }
-
 
 }

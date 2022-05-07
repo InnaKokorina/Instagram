@@ -16,7 +16,7 @@ class AuthorizationViewController: UIViewController {
                 titleLabel.text = Constants.Auth.createUser
                 infoLabel.text = Constants.Auth.infoCreate
                 switchButton.setTitle(Constants.Auth.switchButtonSignIn, for: .normal)
-            } else{
+            } else {
                 titleLabel.text = Constants.Auth.signIn
                 infoLabel.text = Constants.Auth.infoSignIn
                 switchButton.setTitle(Constants.Auth.switchButtonCreate, for: .normal)
@@ -24,7 +24,7 @@ class AuthorizationViewController: UIViewController {
         }
     }
     // MARK: - View
-    private var backImage:UIImageView = {
+    private var backImage: UIImageView = {
         let backImage = UIImageView()
         backImage.image = UIImage(named: Constants.Auth.backImageName)
         backImage.contentMode = .scaleAspectFill
@@ -62,7 +62,7 @@ class AuthorizationViewController: UIViewController {
         emailField.translatesAutoresizingMaskIntoConstraints = false
         return emailField
     }()
-    
+
     private var passwordField: UITextField = {
         let passwordField = UITextField()
         passwordField.font = UIFont(name: Constants.Font.font, size: 17)
@@ -120,12 +120,12 @@ extension AuthorizationViewController {
             verStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             verStackView.topAnchor.constraint(equalTo: view.topAnchor, constant: 70),
             view.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 20),
-            
+
             backImage.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             backImage.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
             view.trailingAnchor.constraint(equalTo: backImage.trailingAnchor, constant: 0),
             view.bottomAnchor.constraint(equalTo: backImage.bottomAnchor, constant: 0),
-            
+
             signInButton.heightAnchor.constraint(equalToConstant: 40),
             titleLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
             titleLabel.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 0),
@@ -137,14 +137,14 @@ extension AuthorizationViewController {
 
 // MARK: - UITextFieldDelegate
 extension AuthorizationViewController: UITextFieldDelegate {
-    
+
     @objc func switchPressed() {
         self.signup.toggle()
         emailField.endEditing(true)
         passwordField.text = ""
         emailField.text = ""
     }
-    func showAlert(){
+    func showAlert() {
         let alert = UIAlertController(title: "Ошибка", message: "Пожалуйста, заполните все поля", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
@@ -152,51 +152,49 @@ extension AuthorizationViewController: UITextFieldDelegate {
     @objc func signInPressed() {
         checkAuth()
     }
-    
-    
+
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         checkAuth()
         return true
     }
-    
+
     func checkAuth() {
         let email = emailField.text!
         let password = passwordField.text!
         if signup {
             if !email.isEmpty && !password.isEmpty {
-                Auth.auth().createUser(withEmail: email, password: password) { result, err in
+                Auth.auth().createUser(withEmail: email, password: password) { _, err in
                     guard err == nil
                     else {
                         print(err!)
                         return
                     }
-                    let vc = MainViewController()
-                    self.navigationController?.pushViewController(vc, animated: true)
+                    let viewController = MainViewController()
+                    self.navigationController?.pushViewController(viewController, animated: true)
                 }
             } else {
                 showAlert()
             }
         } else {
             if !email.isEmpty && !password.isEmpty {
-                Auth.auth().signIn(withEmail:email, password: password) { (result,err) in
+                Auth.auth().signIn(withEmail: email, password: password) { (_, err) in
                     guard err == nil
                     else {
                         print(err!)
                         return
                     }
-                        let vc = MainViewController()
-                        self.navigationController?.pushViewController(vc, animated: true)
+                        let viewController = MainViewController()
+                        self.navigationController?.pushViewController(viewController, animated: true)
                 }
             } else {
                 showAlert()
             }
         }
-        
+
     }
-    
+
     func setName() -> String {
         let name = Auth.auth().currentUser?.email as? String
         return name ?? "User"
     }
 }
-
