@@ -33,7 +33,6 @@ class MainTableViewCell: UITableViewCell {
     // MARK: - UIViews
     private var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
         return scrollView
     }()
     private var authorNameLabel: UILabel = {
@@ -45,7 +44,6 @@ class MainTableViewCell: UITableViewCell {
     private var bandImage: UIImageView = {
         let bandImage = UIImageView()
         bandImage.contentMode = .scaleAspectFill
-        bandImage.translatesAutoresizingMaskIntoConstraints = false
         bandImage.clipsToBounds = true
         bandImage.layer.cornerRadius = 15
         bandImage.isUserInteractionEnabled = true
@@ -54,7 +52,6 @@ class MainTableViewCell: UITableViewCell {
     let likeButton: UIButton = {
         let likeButton = UIButton()
         likeButton.imageView?.tintColor = .systemPink
-        likeButton.translatesAutoresizingMaskIntoConstraints = false
         likeButton.contentHorizontalAlignment = .leading
         return likeButton
     }()
@@ -71,7 +68,6 @@ class MainTableViewCell: UITableViewCell {
     }()
     var heartView: BezierHeartView = {
         var heartView = BezierHeartView()
-        heartView.translatesAutoresizingMaskIntoConstraints = false
         heartView.alpha = 0
         return heartView
     }()
@@ -89,7 +85,6 @@ class MainTableViewCell: UITableViewCell {
     // MARK: - cell setup and configure
     private func addViews() {
         contentView.addSubview(verStackView)
-        contentView.addSubview(scrollView)
         scrollView.addSubview(bandImage)
         bandImage.addSubview(heartView)
     }
@@ -132,42 +127,36 @@ class MainTableViewCell: UITableViewCell {
      }
     // MARK: - constraints
     private func setConstraints() {
-        NSLayoutConstraint.activate([
-            verStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
-            verStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
-            contentView.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 8),
-            contentView.bottomAnchor.constraint(equalTo: verStackView.bottomAnchor, constant: 10),
-
-            descriptionLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 6),
-            authorNameLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 6),
-            likesCountLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 6),
-            likeButton.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 6),
-            likeButton.widthAnchor.constraint(equalToConstant: 22),
-
-            scrollView.topAnchor.constraint(equalTo: authorNameLabel.bottomAnchor, constant: 4),
-            scrollView.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
-            scrollView.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 0),
-            likeButton.topAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 4)
-        ])
-
-        NSLayoutConstraint.activate([
-            bandImage.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 0),
-            bandImage.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 0),
-            scrollView.trailingAnchor.constraint(equalTo: bandImage.trailingAnchor, constant: 0),
-            scrollView.bottomAnchor.constraint(equalTo: bandImage.bottomAnchor, constant: 0)
-        ])
-
-        NSLayoutConstraint.activate([
-            scrollView.heightAnchor.constraint(equalToConstant: 400),
-            bandImage.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            bandImage.heightAnchor.constraint(equalTo: scrollView.heightAnchor)
-        ])
-        NSLayoutConstraint.activate([
-            heartView.leadingAnchor.constraint(equalTo: bandImage.leadingAnchor, constant: 40),
-            heartView.topAnchor.constraint(equalTo: bandImage.topAnchor, constant: 100),
-            bandImage.trailingAnchor.constraint(equalTo: heartView.trailingAnchor, constant: 40),
-            bandImage.bottomAnchor.constraint(equalTo: heartView.bottomAnchor, constant: 100)
-        ])
+        verStackView.snp.makeConstraints { make in
+            make.left.right.equalTo(contentView).inset(8)
+            make.top.equalTo(contentView)
+            make.bottom.equalTo(contentView).offset(-8)
+        }
+        authorNameLabel.snp.makeConstraints { make in
+            make.left.right.equalTo(verStackView).inset(6)
+        }
+        scrollView.snp.makeConstraints { make in
+            make.left.right.equalTo(verStackView)
+            make.height.equalTo(400)
+        }
+        bandImage.snp.makeConstraints { make in
+            make.edges.equalTo(scrollView).inset(UIEdgeInsets.zero)
+            make.center.equalTo(scrollView)
+        }
+        heartView.snp.makeConstraints { make in
+            make.left.right.equalTo(bandImage).inset(40)
+            make.top.bottom.equalTo(bandImage).inset(100)
+        }
+        likeButton.snp.makeConstraints { make in
+            make.left.equalTo(verStackView).inset(6)
+            make.width.equalTo(22)
+        }
+        likesCountLabel.snp.makeConstraints { make in
+            make.left.equalTo(6)
+        }
+        descriptionLabel.snp.makeConstraints { make in
+            make.left.right.equalTo(verStackView).inset(6)
+        }
     }
 }
 

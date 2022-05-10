@@ -9,37 +9,33 @@ import UIKit
 import RealmSwift
 
 class CommentsViewCell: UITableViewCell {
-
+    var authorLabel: UILabel = {
+        var authorLabel = UILabel()
+        authorLabel.font = UIFont(name: Constants.Font.font, size: 17)
+        authorLabel.numberOfLines = 0
+        return authorLabel
+    }()
+    var commentLabel: UILabel = {
+        var textLabel = UILabel()
+        textLabel.font = UIFont(name: Constants.Font.font, size: 15)
+        textLabel.numberOfLines = 0
+        return textLabel
+    }()
+    private lazy var horStackView = UIStackView(arrangedSubviews: [commentLabel], axis: .horizontal, spacing: 4)
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         addViews()
-        setConstraints()
+        updateViewConstraints()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    var authorLabel: UILabel = {
-        var authorLabel = UILabel()
-        authorLabel.font = UIFont(name: Constants.Font.font, size: 17)
-        authorLabel.numberOfLines = 0
-        authorLabel.translatesAutoresizingMaskIntoConstraints = false
-        return authorLabel
-    }()
-
-    var commentLabel: UILabel = {
-        var textLabel = UILabel()
-        textLabel.font = UIFont(name: Constants.Font.font, size: 15)
-        textLabel.numberOfLines = 0
-        textLabel.translatesAutoresizingMaskIntoConstraints = false
-        return textLabel
-    }()
-
-    private lazy var horStackView = UIStackView(arrangedSubviews: [commentLabel], axis: .horizontal, spacing: 4)
     func addViews() {
         contentView.addSubview(horStackView)
-}
+    }
 
     func configure(indexPath: Int, comment: Results<CommentsModel>) {
         let author = "\(comment[indexPath].email): "
@@ -47,18 +43,17 @@ class CommentsViewCell: UITableViewCell {
         commentLabel.attributedText = attributedText(normStr: comment, boldStr: author)
     }
     // MARK: - setConstraints
-    private func setConstraints() {
-        NSLayoutConstraint.activate([
-            horStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
-            horStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
-            contentView.trailingAnchor.constraint(equalTo: horStackView.trailingAnchor, constant: 8),
-            contentView.bottomAnchor.constraint(equalTo: horStackView.bottomAnchor, constant: 10),
-
-            commentLabel.leadingAnchor.constraint(equalTo: horStackView.leadingAnchor, constant: 6),
-            commentLabel.trailingAnchor.constraint(equalTo: commentLabel.leadingAnchor, constant: -6)
-        ])
+    func updateViewConstraints() {
+            horStackView.snp.makeConstraints { make in
+                make.left.right.equalTo(contentView).inset(8)
+                make.top.equalTo(contentView)
+                make.bottom.equalTo(contentView).inset(10)
+            }
+            commentLabel.snp.makeConstraints { make in
+                make.left.right.equalTo(horStackView).inset(6)
+            }
+        }
     }
-}
 // MARK: - attributedText
 extension CommentsViewCell {
     func attributedText(normStr: String, boldStr: String) -> NSMutableAttributedString {

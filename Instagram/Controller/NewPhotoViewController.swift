@@ -11,6 +11,7 @@ import FirebaseDatabase
 import FirebaseStorage
 import RealmSwift
 import YPImagePicker
+import SnapKit
 
 class NewPhotoViewController: UIViewController {
 
@@ -21,6 +22,7 @@ class NewPhotoViewController: UIViewController {
     private let dataManager = DataManager()
     private let realm = try! Realm()
     private let spinner = SpinnerViewController()
+    var didSetupConstraints = false
     var dataModel: Results<Photos>?
     let imagePicker = YPImagePickerView()
     var selectedItems = [YPMediaItem]()
@@ -80,7 +82,7 @@ class NewPhotoViewController: UIViewController {
         addButton.addSubview(spinnerImage)
         spinnerImage.frame = addButton.frame
         userLabel.text = auth.setName()
-        setConstraints()
+        view.setNeedsUpdateConstraints()
         photoTextField.delegate = self
         addNewPhoto()
         setupNavItems()
@@ -183,15 +185,14 @@ class NewPhotoViewController: UIViewController {
         config.library.preselectedItems = selectedItems
         let picker = YPImagePicker(configuration: config)
         picker.imagePickerDelegate = self
-        picker.didFinishPicking { [weak picker] items, _ in
+        picker.didFinishPicking { [weak picker] items, cancelled in
+            if cancelled {
+            picker?.dismiss(animated: true, completion: nil)
+            self.navigationController?.popViewController(animated: false)
+            } else {
             self.selectedItems = items
             self.newImage.image = items.singlePhoto?.image
             picker?.dismiss(animated: true, completion: nil)
-        }
-        picker.didFinishPicking { [unowned picker] _, cancelled in
-            if cancelled {
-            picker.dismiss(animated: true, completion: nil)
-            self.navigationController?.popViewController(animated: false)
             }
         }
         present(picker, animated: true, completion: nil)
@@ -210,25 +211,34 @@ extension NewPhotoViewController: YPImagePickerDelegate {
 
 // MARK: - setConstraints
 extension NewPhotoViewController {
-    private func setConstraints() {
-        NSLayoutConstraint.activate([
-            verStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 8),
-            verStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
-            view.safeAreaLayoutGuide.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 8),
-            view.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: verStackView.bottomAnchor, constant: 16),
-            photoTextField.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
-            userLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
-            addButton.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
-            addButton.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 0),
-            newImage.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
-            newImage.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 0),
-            addButton.bottomAnchor.constraint(equalTo: verStackView.bottomAnchor, constant: 0),
-            spinnerImage.centerXAnchor.constraint(equalTo: addButton.centerXAnchor),
-            spinnerImage.centerYAnchor.constraint(equalTo: addButton.centerYAnchor),
-            userLabel.heightAnchor.constraint(equalToConstant: 70),
-            newImage.heightAnchor.constraint(equalToConstant: 400),
-            addButton.heightAnchor.constraint(equalToConstant: 70)
-        ])
+    override func updateViewConstraints() {
+        if !didSetupConstraints {
+        verStackView.snp.makeConstraints { make in
+            make.left.right.equalTo(view).inset(8)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(16)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-30)
+        }
+        userLabel.snp.makeConstraints { make in
+            make.left.right.equalTo(verStackView)
+            make.height.equalTo(60)
+        }
+        newImage.snp.makeConstraints { make in
+            make.left.right.equalTo(verStackView)
+            make.height.equalTo(400)
+        }
+        photoTextField.snp.makeConstraints { make in
+            make.left.right.equalTo(verStackView)
+        }
+        addButton.snp.makeConstraints { make in
+            make.left.right.bottom.equalTo(verStackView)
+            make.height.equalTo(70)
+        }
+        spinnerImage.snp.makeConstraints { make in
+            make.center.equalTo(addButton)
+        }
+            didSetupConstraints = true
+        }
+        super.updateViewConstraints()
     }
 }
 // MARK: - NewPhotoViewController

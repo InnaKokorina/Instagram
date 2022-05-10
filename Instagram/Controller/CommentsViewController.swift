@@ -11,9 +11,10 @@ import Firebase
 import FirebaseDatabase
 import FirebaseStorage
 import RealmSwift
+import SnapKit
 
 class CommentsViewController: UIViewController {
-
+    var didSetupConstraints = false
     private var auth = AuthorizationViewController()
     var activeTextField: UITextField?
     private var firebaseManager = FirebaseManager()
@@ -30,14 +31,12 @@ class CommentsViewController: UIViewController {
     private let tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(CommentsViewCell.self, forCellReuseIdentifier: "CommentsViewCell")
-        tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.setContentHuggingPriority(UILayoutPriority.init(249), for: .vertical)
         return tableView
     }()
 
     private let textField: UITextField = {
         let textField = UITextField()
-        textField.translatesAutoresizingMaskIntoConstraints = false
         textField.placeholder = "Введите комментарий"
         textField.backgroundColor = .white
         textField.borderStyle = .roundedRect
@@ -49,20 +48,19 @@ class CommentsViewController: UIViewController {
 
     private let addComment: UIButton = {
         let addComment = UIButton()
-        addComment.translatesAutoresizingMaskIntoConstraints = false
         addComment.setImage(UIImage(systemName: "paperplane.fill"), for: .normal)
         addComment.imageView?.tintColor = .white
         return addComment
     }()
 
-    private lazy var horStackView = UIStackView(arrangedSubviews: [textField, addComment], axis: .horizontal, spacing: 4)
+    private lazy var horStackView = UIStackView(arrangedSubviews: [textField, addComment], axis: .horizontal, spacing: 8)
     // MARK: - lifecycle
     override func viewDidLoad() {
         view.backgroundColor = .systemBackground
-        horStackView.backgroundColor = .systemIndigo
+        horStackView.backgroundColor = UIColor(red: 0.25, green: 0.16, blue: 0.58, alpha: 1)
         tableViewsSetup()
         view.addSubview(horStackView)
-        setConstraints()
+        view.setNeedsUpdateConstraints()
         textField.delegate = self
         addComment.addTarget(self, action: #selector(addCommentTap), for: .touchUpInside)
         setupNavItems()
@@ -124,30 +122,33 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
         60
     }
     // MARK: - setConstraints()
-    func setConstraints() {
-        NSLayoutConstraint.activate([
-
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
-            view.trailingAnchor.constraint(equalTo: tableView.trailingAnchor, constant: 0),
-
-            horStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-            horStackView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 0),
-            view.trailingAnchor.constraint(equalTo: horStackView.trailingAnchor, constant: 0),
-            view.bottomAnchor.constraint(equalTo: horStackView.bottomAnchor, constant: 0),
-
-            textField.leadingAnchor.constraint(equalTo: horStackView.leadingAnchor, constant: 20),
-            textField.topAnchor.constraint(equalTo: horStackView.topAnchor, constant: 20),
-            view.trailingAnchor.constraint(equalTo: addComment.trailingAnchor, constant: 20),
-            view.bottomAnchor.constraint(equalTo: textField.bottomAnchor, constant: 20),
-
-            horStackView.heightAnchor.constraint(equalToConstant: 100),
-            addComment.widthAnchor.constraint(equalToConstant: 30)
-
-        ])
+    override func updateViewConstraints() {
+        if !didSetupConstraints {
+            tableView.snp.makeConstraints { make in
+                make.left.right.top.equalTo(view)
+            }
+            horStackView.snp.makeConstraints { make in
+                make.left.right.bottom.equalTo(view)
+                make.top.equalTo(tableView.snp.bottom)
+                make.height.equalTo(100)
+            }
+            addComment.snp.makeConstraints { make in
+                make.top.equalTo(horStackView).offset(20)
+                make.right.equalTo(horStackView).offset(-20)
+                make.bottom.equalTo(horStackView.snp.bottom).offset(-20)
+                make.width.equalTo(40)
+            }
+            textField.snp.makeConstraints { make in
+                make.top.left.equalTo(horStackView).inset(20)
+                make.height.lessThanOrEqualTo(60)
+              //  make.bottom.equalTo(addComment.snp.bottom).offset(-60)
+            }
+            didSetupConstraints = true
+        }
+        super.updateViewConstraints()
     }
+ }
 
-}
 // MARK: - UITextFieldDelegate
 extension CommentsViewController: UITextFieldDelegate {
 

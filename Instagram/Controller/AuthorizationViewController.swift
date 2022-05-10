@@ -8,8 +8,10 @@
 import UIKit
 import Firebase
 import FirebaseAuth
+import SnapKit
 
 class AuthorizationViewController: UIViewController {
+    var didSetupConstraints = false
     var signup: Bool = true {
         willSet {
             if newValue {
@@ -108,7 +110,7 @@ class AuthorizationViewController: UIViewController {
         verStackView.contentMode = .center
         verStackView.distribution = .fillProportionally
         view.addSubview(verStackView)
-        setConstraints()
+        view.setNeedsUpdateConstraints()
         switchButton.addTarget(self, action: #selector(switchPressed), for: .touchUpInside)
         signInButton.addTarget(self, action: #selector(signInPressed), for: .touchUpInside)
         emailField.delegate = self
@@ -117,23 +119,30 @@ class AuthorizationViewController: UIViewController {
 }
 // MARK: - setConstraints
 extension AuthorizationViewController {
-    private func setConstraints() {
-        NSLayoutConstraint.activate([
-            verStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            verStackView.topAnchor.constraint(equalTo: view.topAnchor, constant: 70),
-            view.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 20),
-
-            backImage.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-            backImage.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
-            view.trailingAnchor.constraint(equalTo: backImage.trailingAnchor, constant: 0),
-            view.bottomAnchor.constraint(equalTo: backImage.bottomAnchor, constant: 0),
-
-            signInButton.heightAnchor.constraint(equalToConstant: 40),
-            titleLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
-            titleLabel.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 0),
-            infoLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
-            infoLabel.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 0)
-        ])
+    override func updateViewConstraints() {
+        if !didSetupConstraints {
+            verStackView.snp.makeConstraints { make in
+                make.top.equalTo(view).inset(70)
+                make.leading.equalTo(view).inset(20)
+                make.trailing.equalTo(view).inset(20)
+            }
+            backImage.snp.makeConstraints { make in
+                make.edges.equalTo(view).inset(UIEdgeInsets.zero)
+            }
+            titleLabel.snp.makeConstraints { make in
+                make.leading.equalTo(verStackView)
+                make.trailing.equalTo(verStackView)
+            }
+            infoLabel.snp.makeConstraints { make in
+                make.leading.equalTo(verStackView)
+                make.trailing.equalTo(verStackView)
+            }
+            signInButton.snp.makeConstraints { make in
+                make.height.equalTo(40)
+            }
+            didSetupConstraints = true
+        }
+        super.updateViewConstraints()
     }
 }
 
@@ -150,7 +159,7 @@ extension AuthorizationViewController: UITextFieldDelegate {
         var message = ""
         switch choice {
         case 1 : message = "Пожалуйста, заполните все поля"
-        case 2 : message = "Email адрес или пароль введены некорректно"
+        case 2 : message = "Email адрес или пароль введены некорректно, либо учетная запись с таким email уже существует"
         case 3 : message = "Такой учетной записи не существует. Проверьте email адрес или пароль"
         default: message = "ошибка"
         }
