@@ -22,7 +22,7 @@ class CommentsViewCell: UITableViewCell {
         return textLabel
     }()
     private lazy var horStackView = UIStackView(arrangedSubviews: [commentLabel], axis: .horizontal, spacing: 4)
-    
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         addViews()

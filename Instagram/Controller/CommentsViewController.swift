@@ -64,9 +64,6 @@ class CommentsViewController: UIViewController {
         textField.delegate = self
         addComment.addTarget(self, action: #selector(addCommentTap), for: .touchUpInside)
         setupNavItems()
-        // keyboard
-        NotificationCenter.default.addObserver(self, selector: #selector(CommentsViewController.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(CommentsViewController.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     // MARK: - tableViewsSetup()
     func tableViewsSetup() {
@@ -140,8 +137,7 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
             }
             textField.snp.makeConstraints { make in
                 make.top.left.equalTo(horStackView).inset(20)
-                make.height.lessThanOrEqualTo(60)
-              //  make.bottom.equalTo(addComment.snp.bottom).offset(-60)
+                make.bottom.equalTo(horStackView.snp.bottom).offset(-20)
             }
             didSetupConstraints = true
         }
@@ -151,23 +147,13 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
 
 // MARK: - UITextFieldDelegate
 extension CommentsViewController: UITextFieldDelegate {
-
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        activeTextField = textField
-        print(activeTextField?.text ?? "nil")
-    }
-    func textFieldDidChangeSelection(_ textField: UITextField) {
-        activeTextField = self.textField
-    }
-    @objc func addCommentTap() {
-        textField.endEditing(true)
-    }
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
     }
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        if let currentImage = self.selectedImage {
+
+    @objc func addCommentTap() {
+     if let currentImage = self.selectedImage {
             if  let message = textField.text {
                 let email  = auth.setName()
                 let id = currentImage.comment.count
@@ -186,7 +172,6 @@ extension CommentsViewController: UITextFieldDelegate {
                 tableView.reloadData()
                 textField.text = ""
                 textField.endEditing(true)
-                activeTextField = nil
             }
         }
     }
@@ -207,9 +192,5 @@ extension CommentsViewController {
                 self.view.frame.origin.y = 0 - keyboardSize.height
             }
         }
-    }
-
-    @objc func keyboardWillHide(notification: NSNotification) {
-        view.frame.origin.y = 0
     }
 }

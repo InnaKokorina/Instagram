@@ -8,6 +8,7 @@
 import UIKit
 import Firebase
 import RealmSwift
+import IQKeyboardManagerSwift
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -28,14 +29,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                    }
                }
         print(Realm.Configuration.defaultConfiguration.fileURL ?? " no realm link")
-
-                 do {
-                 _ = try Realm()
-
-                 } catch {
-                     print("error instalation realm \(error)")
-                 }
-
+        do {
+            _ = try Realm()
+        } catch {
+            print("error instalation realm \(error)")
+        }
+        IQKeyboardManager.shared.enable = true
+        IQKeyboardManager.shared.enableAutoToolbar = false
+        IQKeyboardManager.shared.shouldResignOnTouchOutside = true
         return true
     }
 

@@ -86,10 +86,7 @@ class NewPhotoViewController: UIViewController {
         photoTextField.delegate = self
         addNewPhoto()
         setupNavItems()
-        tapImage()
         addButton.addTarget(self, action: #selector(sharePressed), for: .touchUpInside)
-        NotificationCenter.default.addObserver(self, selector: #selector(NewPhotoViewController.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(NewPhotoViewController.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 
     // MARK: - navigationItems
@@ -245,58 +242,7 @@ extension NewPhotoViewController {
 extension NewPhotoViewController: UITextViewDelegate {
 
     func textViewDidBeginEditing(_ textView: UITextView) {
-        activeTextField = photoTextField
         textView.text = ""
         photoTextField.textColor = .black
-    }
-
-    func textViewDidChangeSelection(_ textView: UITextView) {
-        activeTextField = photoTextField
-    }
-
-    func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
-        textView.resignFirstResponder()
-        return true
-    }
-
-    func textViewDidEndEditing(_ textView: UITextView) {
-        photoTextField.endEditing(true)
-    }
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        photoTextField.endEditing(true)
-    }
-}
-
-// MARK: - keyboardWillShow
-extension NewPhotoViewController {
-    @objc func keyboardWillShow(notification: NSNotification) {
-        guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
-        var shouldMoveViewUp = false
-        if let activeTextField = activeTextField {
-            let bottomOfTextField = activeTextField.convert(activeTextField.bounds, to: view).maxY
-            let topOfKeyboard = view.frame.height - keyboardSize.height
-            if bottomOfTextField > topOfKeyboard {
-                shouldMoveViewUp = true
-            }
-            if shouldMoveViewUp {
-                view.frame.origin.y = 0 - keyboardSize.height
-            }
-        }
-    }
-
-    @objc func keyboardWillHide(notification: NSNotification) {
-        view.frame.origin.y = 0
-    }
-}
-
-// MARK: - TapImage
-extension NewPhotoViewController: UIGestureRecognizerDelegate {
-    func tapImage() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapImage))
-        newImage.addGestureRecognizer(tapGesture)
-        tapGesture.delegate = self
-    }
-    @objc func didTapImage(sender: UITapGestureRecognizer) {
-        addNewPhoto()
     }
 }
