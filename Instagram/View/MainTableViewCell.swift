@@ -88,7 +88,7 @@ class MainTableViewCell: UITableViewCell {
         scrollView.addSubview(bandImage)
         bandImage.addSubview(heartView)
     }
-    func configure (dataModel: Results<Photos>, indexPath: IndexPath) {
+    func configure (dataModel: [Posts], indexPath: IndexPath) {
         verStackView.alignment = .leading
         authorNameLabel.text = dataModel[indexPath.row].user
         descriptionLabel.text = "\(dataModel[indexPath.row].user ):  \(dataModel[indexPath.row].descriptionImage)"
@@ -116,13 +116,13 @@ class MainTableViewCell: UITableViewCell {
     }
 
     // MARK: - set image from Api or failImage
-    func setImage(image: Data?) {
+    func setImage(image: UIImage?) {
         if image == nil {
             bandImage.image = UIImage(systemName: "xmark.circle")
              bandImage.contentMode = .center
              bandImage.tintColor = .red
        } else {
-           bandImage.image = UIImage(data: image!)
+           bandImage.image = image
       }
      }
     // MARK: - constraints

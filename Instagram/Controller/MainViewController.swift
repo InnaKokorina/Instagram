@@ -14,6 +14,7 @@ import RealmSwift
 
 class MainViewController: UIViewController {
     var dataModel: Results<Photos>?
+    var posts = [Posts]()
     private var dataManager = DataManager()
     private var firebaseManager = FirebaseManager()
     private var activityController: UIActivityViewController?
@@ -44,7 +45,6 @@ class MainViewController: UIViewController {
             spinnerImage.isHidden = false
             firebaseManager.fetchData { post in
                 // save to Realm
-                DispatchQueue.global().async {
                     let realm = try! Realm()
                     do {
                         try realm.write({
@@ -59,7 +59,6 @@ class MainViewController: UIViewController {
                         self.tableViewsSetup()
                         self.spinnerImage.isHidden = true
                         self.loadPosts()
-                    }
                 }
             }
         } else {
@@ -72,7 +71,7 @@ class MainViewController: UIViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        tableView.reloadData()
+        loadPosts()
     }
     // MARK: - tableViewSetup
     func tableViewsSetup() {
@@ -115,53 +114,76 @@ class MainViewController: UIViewController {
         do {
             try realm.write {
                 realm.deleteAll()
-            }
-        } catch {
-            print("error in deleting category \(error)")
-        }
-        DispatchQueue.main.async {
-            if self.realm.isEmpty {
-                self.firebaseManager.fetchData { post in
-                    DispatchQueue.global().async {
-                        let realm = try! Realm()
-                        do {
-                            try realm.write({
-                                realm.add(post)
-                            })
-                        } catch {
-                            print("Error saving Data context \(error)")
-                        }
-                        DispatchQueue.main.async {
-                            self.tableView.refreshControl?.endRefreshing()
-                            self.tableView.reloadData()
+                DispatchQueue.main.async {
+                    if self.realm.isEmpty {
+                        self.firebaseManager.fetchData { post in
+                                let realm = try! Realm()
+                                do {
+                                    try realm.write({
+                                        realm.add(post)
+                                    })
+                                } catch {
+                                    print("Error saving Data context \(error)")
+                                }
+                                DispatchQueue.main.async {
+                                    self.tableView.refreshControl?.endRefreshing()
+                                    self.loadPosts()
+                                }
                         }
                     }
                 }
             }
+        } catch {
+            print("error in delete \(error)")
         }
     }
     // MARK: - loadPosts from Realm
     func loadPosts () {
         dataModel = realm.objects(Photos.self).sorted(byKeyPath: "id", ascending: false)
-        tableView.reloadData()
+        posts = []
+        if let photosRealm = dataModel {
+        for photo in photosRealm {
+            let id = photo.id
+            let descriptionImage = photo.descriptionImage
+            let user = photo.user
+            let imageName = photo.imageName
+            let image = UIImage(data: photo.image!)
+            let liked = photo.liked
+            let likes = photo.likes
+            var comments = [Comments]()
+            for comment in photo.comment {
+                let id = comment.id
+                let postId = comment.postId
+                let email = comment.email
+                let body = comment.body
+                let oneComment = Comments(body: body, email: email, id: id, postId: postId)
+                comments.append(oneComment)
+            }
+            let postElement = Posts(comment: comments, descriptionImage: descriptionImage, id: id, imageName: imageName, image: image, likes: likes, user: user, liked: liked)
+            posts.append(postElement)
+            comments = []
+        }
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
+        }
     }
 }
 // MARK: - UITableViewDataSource
 extension MainViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        dataModel?.count ?? 1
+       return posts.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "MainTableViewCell", for: indexPath) as? MainTableViewCell else { return UITableViewCell() }
-        if let posts = dataModel {
             // set like
             cell.likeButtomTap = {
                 do {
                     try self.realm.write {
-                        posts[indexPath.row].liked.toggle()
-                        if posts[indexPath.row].liked == true {
+                        self.posts[indexPath.row].liked.toggle()
+                        if self.posts[indexPath.row].liked == true {
                             cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-                            posts[indexPath.row].likes += 1
+                            self.posts[indexPath.row].likes += 1
                             cell.heartView.alpha = 0.5
                             let seconds = 0.3
                             DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
@@ -169,25 +191,26 @@ extension MainViewController: UITableViewDataSource {
                             }
                         } else {
                             cell.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
-                            posts[indexPath.row].likes -= 1
+                            self.posts[indexPath.row].likes -= 1
                         }
 
-                        cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: posts[indexPath.row].likes)
-                        self.ref = Database.database().reference().child("photos/\(posts[indexPath.row].id)")
-                        let  dict = ["liked": posts[indexPath.row].liked, "likes": posts[indexPath.row].likes] as [String: Any]
+                        cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: self.posts[indexPath.row].likes)
+                        self.ref = Database.database().reference().child("photos/\(self.posts[indexPath.row].id)")
+                        let dict = ["liked": self.posts[indexPath.row].liked, "likes": self.posts[indexPath.row].likes] as [String: Any]
                         self.ref.updateChildValues(dict)
                     }
                 } catch {
                     print("Error saving Data context \(error)")
-                }
+               }
             }
-            cell.configure(dataModel: posts, indexPath: indexPath)
+        cell.configure(dataModel: self.posts, indexPath: indexPath)
             // navigation to comments
-            cell.commentButtonPressed = { [weak self] in
+            cell.commentButtonPressed = { [unowned self] in
                 let viewController = CommentsViewController()
-                viewController.selectedImage = posts[indexPath.row]
-                self?.navigationController?.pushViewController(viewController, animated: true)
-            }
+                if let data = self.dataModel {
+                viewController.selectedImage = data[indexPath.row]
+                navigationController?.pushViewController(viewController, animated: true)
+           }
         }
         return cell
     }
