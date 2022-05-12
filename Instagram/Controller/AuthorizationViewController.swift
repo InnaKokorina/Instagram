@@ -148,21 +148,13 @@ extension AuthorizationViewController {
 
 // MARK: - UITextFieldDelegate
 extension AuthorizationViewController: UITextFieldDelegate {
-
     @objc func switchPressed() {
         self.signup.toggle()
         emailField.endEditing(true)
         passwordField.text = ""
         emailField.text = ""
     }
-    func showAlert(choice: Int) {
-        var message = ""
-        switch choice {
-        case 1 : message = "Пожалуйста, заполните все поля"
-        case 2 : message = "Email адрес или пароль введены некорректно, либо учетная запись с таким email уже существует"
-        case 3 : message = "Такой учетной записи не существует. Проверьте email адрес или пароль"
-        default: message = "ошибка"
-        }
+    func showAlert(message: String) {
         let alert = UIAlertController(title: "Ошибка", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
@@ -184,28 +176,29 @@ extension AuthorizationViewController: UITextFieldDelegate {
                 Auth.auth().createUser(withEmail: email, password: password) { _, err in
                     guard err == nil
                     else {
-                        self.showAlert(choice: 2)
+
+                        self.showAlert(message: ErrorReason.incorrectData.description)
                         return
                     }
                     let viewController = MainViewController()
                     self.navigationController?.pushViewController(viewController, animated: true)
                 }
             } else {
-                showAlert(choice: 1)
+                showAlert(message: ErrorReason.emptyFields.description)
             }
         } else {
             if !email.isEmpty && !password.isEmpty {
                 Auth.auth().signIn(withEmail: email, password: password) { (_, err) in
                     guard err == nil
                     else {
-                        self.showAlert(choice: 3)
+                        self.showAlert(message: ErrorReason.noAccount.description)
                         return
                     }
                         let viewController = MainViewController()
                         self.navigationController?.pushViewController(viewController, animated: true)
                 }
             } else {
-                showAlert(choice: 1)
+                showAlert(message: ErrorReason.emptyFields.description)
             }
         }
 
@@ -214,5 +207,19 @@ extension AuthorizationViewController: UITextFieldDelegate {
     func setName() -> String {
         let name = Auth.auth().currentUser?.email as? String
         return name ?? "User"
+    }
+}
+// MARK: - ErrorReason
+enum ErrorReason {
+    case emptyFields
+    case incorrectData
+    case noAccount
+
+    var description: String {
+        switch self {
+        case .emptyFields: return "Пожалуйста, заполните все поля"
+        case .incorrectData: return "Email адрес или пароль введены некорректно, либо учетная запись с таким email уже существует"
+        case .noAccount: return "Такой учетной записи не существует. Проверьте email адрес или пароль"
+        }
     }
 }

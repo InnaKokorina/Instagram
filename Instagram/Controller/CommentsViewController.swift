@@ -125,7 +125,8 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
                 make.left.right.top.equalTo(view)
             }
             horStackView.snp.makeConstraints { make in
-                make.left.right.bottom.equalTo(view)
+                make.left.right.equalTo(view)
+                make.bottom.equalTo(view)
                 make.top.equalTo(tableView.snp.bottom)
                 make.height.equalTo(100)
             }
@@ -137,7 +138,7 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
             }
             textField.snp.makeConstraints { make in
                 make.top.left.equalTo(horStackView).inset(20)
-                make.bottom.equalTo(horStackView.snp.bottom).offset(-20)
+                make.bottom.equalTo(view.safeAreaLayoutGuide)
             }
             didSetupConstraints = true
         }
