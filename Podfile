@@ -11,4 +11,8 @@ pod 'Firebase/Database'
 pod 'Firebase/Storage'
 pod 'Firebase/Firestore'
 pod 'RealmSwift'
+pod 'YPImagePicker'
+pod 'SwiftLint'
+pod 'SnapKit', '~> 5.0.0'
+pod 'IQKeyboardManagerSwift'
 end

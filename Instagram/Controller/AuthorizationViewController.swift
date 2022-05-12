@@ -8,15 +8,17 @@
 import UIKit
 import Firebase
 import FirebaseAuth
+import SnapKit
 
 class AuthorizationViewController: UIViewController {
+    var didSetupConstraints = false
     var signup: Bool = true {
         willSet {
             if newValue {
                 titleLabel.text = Constants.Auth.createUser
                 infoLabel.text = Constants.Auth.infoCreate
                 switchButton.setTitle(Constants.Auth.switchButtonSignIn, for: .normal)
-            } else{
+            } else {
                 titleLabel.text = Constants.Auth.signIn
                 infoLabel.text = Constants.Auth.infoSignIn
                 switchButton.setTitle(Constants.Auth.switchButtonCreate, for: .normal)
@@ -24,7 +26,7 @@ class AuthorizationViewController: UIViewController {
         }
     }
     // MARK: - View
-    private var backImage:UIImageView = {
+    private var backImage: UIImageView = {
         let backImage = UIImageView()
         backImage.image = UIImage(named: Constants.Auth.backImageName)
         backImage.contentMode = .scaleAspectFill
@@ -60,9 +62,11 @@ class AuthorizationViewController: UIViewController {
         emailField.borderStyle = .roundedRect
         emailField.textContentType = .emailAddress
         emailField.translatesAutoresizingMaskIntoConstraints = false
+        emailField.keyboardType = .emailAddress
+        emailField.autocorrectionType = .yes
         return emailField
     }()
-    
+
     private var passwordField: UITextField = {
         let passwordField = UITextField()
         passwordField.font = UIFont(name: Constants.Font.font, size: 17)
@@ -106,7 +110,7 @@ class AuthorizationViewController: UIViewController {
         verStackView.contentMode = .center
         verStackView.distribution = .fillProportionally
         view.addSubview(verStackView)
-        setConstraints()
+        view.setNeedsUpdateConstraints()
         switchButton.addTarget(self, action: #selector(switchPressed), for: .touchUpInside)
         signInButton.addTarget(self, action: #selector(signInPressed), for: .touchUpInside)
         emailField.delegate = self
@@ -115,88 +119,107 @@ class AuthorizationViewController: UIViewController {
 }
 // MARK: - setConstraints
 extension AuthorizationViewController {
-    private func setConstraints() {
-        NSLayoutConstraint.activate([
-            verStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            verStackView.topAnchor.constraint(equalTo: view.topAnchor, constant: 70),
-            view.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 20),
-            
-            backImage.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-            backImage.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
-            view.trailingAnchor.constraint(equalTo: backImage.trailingAnchor, constant: 0),
-            view.bottomAnchor.constraint(equalTo: backImage.bottomAnchor, constant: 0),
-            
-            signInButton.heightAnchor.constraint(equalToConstant: 40),
-            titleLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
-            titleLabel.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 0),
-            infoLabel.leadingAnchor.constraint(equalTo: verStackView.leadingAnchor, constant: 0),
-            infoLabel.trailingAnchor.constraint(equalTo: verStackView.trailingAnchor, constant: 0)
-        ])
+    override func updateViewConstraints() {
+        if !didSetupConstraints {
+            verStackView.snp.makeConstraints { make in
+                make.top.equalTo(view).inset(70)
+                make.leading.equalTo(view).inset(20)
+                make.trailing.equalTo(view).inset(20)
+            }
+            backImage.snp.makeConstraints { make in
+                make.edges.equalTo(view).inset(UIEdgeInsets.zero)
+            }
+            titleLabel.snp.makeConstraints { make in
+                make.leading.equalTo(verStackView)
+                make.trailing.equalTo(verStackView)
+            }
+            infoLabel.snp.makeConstraints { make in
+                make.leading.equalTo(verStackView)
+                make.trailing.equalTo(verStackView)
+            }
+            signInButton.snp.makeConstraints { make in
+                make.height.equalTo(40)
+            }
+            didSetupConstraints = true
+        }
+        super.updateViewConstraints()
     }
 }
 
 // MARK: - UITextFieldDelegate
 extension AuthorizationViewController: UITextFieldDelegate {
-    
     @objc func switchPressed() {
         self.signup.toggle()
         emailField.endEditing(true)
         passwordField.text = ""
         emailField.text = ""
     }
-    func showAlert(){
-        let alert = UIAlertController(title: "Ошибка", message: "Пожалуйста, заполните все поля", preferredStyle: .alert)
+    func showAlert(message: String) {
+        let alert = UIAlertController(title: "Ошибка", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
     }
     @objc func signInPressed() {
         checkAuth()
     }
-    
-    
+
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         checkAuth()
         return true
     }
-    
+
     func checkAuth() {
         let email = emailField.text!
         let password = passwordField.text!
         if signup {
             if !email.isEmpty && !password.isEmpty {
-                Auth.auth().createUser(withEmail: email, password: password) { result, err in
+                Auth.auth().createUser(withEmail: email, password: password) { _, err in
                     guard err == nil
                     else {
-                        print(err!)
+
+                        self.showAlert(message: ErrorReason.incorrectData.description)
                         return
                     }
-                    let vc = MainViewController()
-                    self.navigationController?.pushViewController(vc, animated: true)
+                    let viewController = MainViewController()
+                    self.navigationController?.pushViewController(viewController, animated: true)
                 }
             } else {
-                showAlert()
+                showAlert(message: ErrorReason.emptyFields.description)
             }
         } else {
             if !email.isEmpty && !password.isEmpty {
-                Auth.auth().signIn(withEmail:email, password: password) { (result,err) in
+                Auth.auth().signIn(withEmail: email, password: password) { (_, err) in
                     guard err == nil
                     else {
-                        print(err!)
+                        self.showAlert(message: ErrorReason.noAccount.description)
                         return
                     }
-                        let vc = MainViewController()
-                        self.navigationController?.pushViewController(vc, animated: true)
+                        let viewController = MainViewController()
+                        self.navigationController?.pushViewController(viewController, animated: true)
                 }
             } else {
-                showAlert()
+                showAlert(message: ErrorReason.emptyFields.description)
             }
         }
-        
+
     }
-    
+
     func setName() -> String {
         let name = Auth.auth().currentUser?.email as? String
         return name ?? "User"
     }
 }
+// MARK: - ErrorReason
+enum ErrorReason {
+    case emptyFields
+    case incorrectData
+    case noAccount
 
+    var description: String {
+        switch self {
+        case .emptyFields: return "Пожалуйста, заполните все поля"
+        case .incorrectData: return "Email адрес или пароль введены некорректно, либо учетная запись с таким email уже существует"
+        case .noAccount: return "Такой учетной записи не существует. Проверьте email адрес или пароль"
+        }
+    }
+}

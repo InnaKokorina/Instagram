@@ -8,7 +8,7 @@
 import UIKit
 
 class SpinnerViewController: UIActivityIndicatorView {
-    
+
     private var spinner: UIActivityIndicatorView = {
         let spinner = UIActivityIndicatorView(style: .medium)
         spinner.color = UIColor.darkGray
@@ -27,10 +27,8 @@ class SpinnerViewController: UIActivityIndicatorView {
         spinner.startAnimating()
         spinner.isHidden = false
     }
-    
-    
+
     func stop() {
         spinner.isHidden = true
     }
 }
-
