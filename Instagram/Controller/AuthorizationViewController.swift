@@ -180,7 +180,7 @@ extension AuthorizationViewController: UITextFieldDelegate {
                         self.showAlert(message: ErrorReason.incorrectData.description)
                         return
                     }
-                    let viewController = MainViewController()
+                    let viewController = TabBarController()
                     self.navigationController?.pushViewController(viewController, animated: true)
                 }
             } else {
@@ -194,7 +194,7 @@ extension AuthorizationViewController: UITextFieldDelegate {
                         self.showAlert(message: ErrorReason.noAccount.description)
                         return
                     }
-                        let viewController = MainViewController()
+                        let viewController = HomeViewController()
                         self.navigationController?.pushViewController(viewController, animated: true)
                 }
             } else {

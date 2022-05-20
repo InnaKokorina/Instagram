@@ -1,5 +1,5 @@
 //
-//  MainViewController.swift
+//  HomeViewController.swift
 //  Instagram
 //
 //  Created by Inna Kokorina on 20.03.2022.
@@ -12,7 +12,7 @@ import FirebaseDatabase
 import FirebaseStorage
 import RealmSwift
 
-class MainViewController: UIViewController {
+class HomeViewController: UIViewController {
     var dataModel: Results<Photos>?
     var posts = [Posts]()
     private var dataManager = DataManager()
@@ -77,12 +77,14 @@ class MainViewController: UIViewController {
     func tableViewsSetup() {
         view.addSubview(tableView)
         tableView.dataSource = self
-        tableView.frame = view.bounds
         tableView.separatorStyle = .none
         tableView.allowsSelection = false
         tableView.separatorColor = .clear
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl?.addTarget(self, action: #selector(callPullToRefresh), for: .valueChanged)
+        tableView.snp.makeConstraints { make in
+            make.edges.equalTo(view.safeAreaLayoutGuide)
+        }
     }
     // MARK: - navigationItems
     func setupNavItems() {
@@ -170,7 +172,7 @@ class MainViewController: UIViewController {
     }
 }
 // MARK: - UITableViewDataSource
-extension MainViewController: UITableViewDataSource {
+extension HomeViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
        return posts.count
     }
