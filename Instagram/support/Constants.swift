@@ -18,6 +18,7 @@ struct Constants {
         static let placeholderPassword = "Введите пароль"
         static let placeholderEmail = "Введите Email"
         static let backImageName = "backAuth"
+        static let buttonTitle = "GO!"
     }
 
     struct Font {
@@ -26,6 +27,7 @@ struct Constants {
 
     struct App {
         static let title = "PhotoStory"
+        static let titleComments = "Комментарии"
     }
 
     struct ImagePicker {

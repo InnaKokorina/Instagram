@@ -60,6 +60,7 @@ class CommentsViewController: UIViewController {
         horStackView.backgroundColor = UIColor(red: 0.25, green: 0.16, blue: 0.58, alpha: 1)
         tableViewsSetup()
         view.addSubview(horStackView)
+      //  horStackView.layer.borderColor  = CGColor(red: 0.25, green: 0.16, blue: 0.58, alpha: 1)
         view.setNeedsUpdateConstraints()
         textField.delegate = self
         addComment.addTarget(self, action: #selector(addCommentTap), for: .touchUpInside)
@@ -81,6 +82,7 @@ class CommentsViewController: UIViewController {
         let back = UIBarButtonItem(image: UIImage(systemName: "chevron.compact.left"), style: .plain, target: self, action: #selector(backPressed))
         back.tintColor = .black
         navigationItem.leftBarButtonItem = back
+        navigationItem.title = Constants.App.titleComments
     }
 
     @objc func backPressed() {
@@ -89,6 +91,7 @@ class CommentsViewController: UIViewController {
 
     @objc func logOutButtonPressed(_ sender: Any) {
         do {
+            navigationController?.popViewController(animated: true)
             try Auth.auth().signOut()
         } catch {
             print(error)
@@ -128,17 +131,17 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
                 make.left.right.equalTo(view)
                 make.bottom.equalTo(view)
                 make.top.equalTo(tableView.snp.bottom)
-                make.height.equalTo(100)
+                make.height.equalTo(70)
             }
             addComment.snp.makeConstraints { make in
-                make.top.equalTo(horStackView).offset(20)
-                make.right.equalTo(horStackView).offset(-20)
-                make.bottom.equalTo(horStackView.snp.bottom).offset(-20)
+                make.top.equalTo(horStackView).offset(1)
+                make.right.equalTo(horStackView).offset(1)
+                make.bottom.equalTo(horStackView.snp.bottom).offset(1)
                 make.width.equalTo(40)
             }
             textField.snp.makeConstraints { make in
-                make.top.left.equalTo(horStackView).inset(20)
-                make.bottom.equalTo(view.safeAreaLayoutGuide)
+                make.top.left.equalTo(horStackView).inset(1)
+                make.bottom.equalTo(view.safeAreaLayoutGuide).inset(1)
             }
             didSetupConstraints = true
         }

@@ -30,8 +30,7 @@ class TabBarController: UITabBarController {
         let searchViewController = UINavigationController(rootViewController: SearchViewController())
         let newPhotoViewController = UINavigationController(rootViewController: NewPhotoViewController())
         let profileViewController = UINavigationController(rootViewController: ProfileViewController())
-        self.setViewControllers([homeNavController, searchViewController, newPhotoViewController, profileViewController], animated: true)
-//        guard let navBar = navigationController?.navigationBar else { fatalError("Navigation controller doesn't exist")}
+        setViewControllers([homeNavController, searchViewController, newPhotoViewController, profileViewController], animated: true)
         navigationController?.navigationBar.backgroundColor = .white
         guard let items = self.tabBar.items else { return }
         let images = ["house", "magnifyingglass", "plus.app", "person.crop.circle"]

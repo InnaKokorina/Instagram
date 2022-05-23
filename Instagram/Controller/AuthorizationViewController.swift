@@ -93,7 +93,7 @@ class AuthorizationViewController: UIViewController {
     private var signInButton: UIButton = {
         let signInButton = UIButton()
         signInButton.backgroundColor = .white
-        signInButton.setTitle("Go!", for: .normal)
+        signInButton.setTitle(Constants.Auth.buttonTitle, for: .normal)
         signInButton.setTitleColor(.black, for: .normal)
         if #available(iOS 15.0, *) {
             signInButton.configuration?.cornerStyle = .dynamic
@@ -106,6 +106,7 @@ class AuthorizationViewController: UIViewController {
     // MARK: - lifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .black
         view.addSubview(backImage)
         verStackView.contentMode = .center
         verStackView.distribution = .fillProportionally
@@ -176,12 +177,10 @@ extension AuthorizationViewController: UITextFieldDelegate {
                 Auth.auth().createUser(withEmail: email, password: password) { _, err in
                     guard err == nil
                     else {
-
                         self.showAlert(message: ErrorReason.incorrectData.description)
                         return
                     }
-                    let viewController = TabBarController()
-                    self.navigationController?.pushViewController(viewController, animated: true)
+                    self.navigationController?.dismiss(animated: true)
                 }
             } else {
                 showAlert(message: ErrorReason.emptyFields.description)
@@ -194,8 +193,7 @@ extension AuthorizationViewController: UITextFieldDelegate {
                         self.showAlert(message: ErrorReason.noAccount.description)
                         return
                     }
-                        let viewController = HomeViewController()
-                        self.navigationController?.pushViewController(viewController, animated: true)
+                    self.navigationController?.dismiss(animated: true)
                 }
             } else {
                 showAlert(message: ErrorReason.emptyFields.description)

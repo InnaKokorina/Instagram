@@ -99,6 +99,7 @@ class HomeViewController: UIViewController {
 
     @objc func logOutButtonPressed(_ sender: Any) {
         do {
+            navigationController?.popViewController(animated: true)
             try Auth.auth().signOut()
         } catch {
             print(error)
