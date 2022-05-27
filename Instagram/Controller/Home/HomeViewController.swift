@@ -12,6 +12,10 @@ import FirebaseDatabase
 import FirebaseStorage
 import RealmSwift
 
+protocol TabBarDelegate: AnyObject {
+    func transferModelData(data: [Posts])
+}
+
 class HomeViewController: UIViewController {
     var dataModel: Results<Photos>?
     var posts = [Posts]()
@@ -21,6 +25,7 @@ class HomeViewController: UIViewController {
     private var ref: DatabaseReference!
     private let realm = try! Realm()
     private let spinner = SpinnerViewController()
+    weak var delegate: TabBarDelegate?
 
     private let tableView: UITableView = {
         let tableView = UITableView()
@@ -68,10 +73,6 @@ class HomeViewController: UIViewController {
                 self.loadPosts()
             }
         }
-    }
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        loadPosts()
     }
     // MARK: - tableViewSetup
     func tableViewsSetup() {
@@ -166,6 +167,9 @@ class HomeViewController: UIViewController {
             posts.append(postElement)
             comments = []
         }
+         //   print("Home posts === \(posts)")
+            delegate?.transferModelData(data: posts)
+            print("homeVCpoasts.count = \(posts.count)")
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }

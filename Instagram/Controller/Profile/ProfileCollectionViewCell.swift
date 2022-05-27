@@ -1,5 +1,5 @@
 //
-//  HeaderCollectionViewCell.swift
+//  ProfileCollectionViewCell.swift
 //  Instagram
 //
 //  Created by Inna Kokorina on 23.05.2022.
@@ -7,8 +7,9 @@
 
 import UIKit
 
-class HeaderCollectionViewCell: UICollectionViewCell {
-    static var headerCell = "HeaderCell"
+class ProfileCollectionViewCell: UICollectionViewCell {
+    static var cellId = "CollectionViewCell"
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         contentView.addSubview(postImage)
@@ -26,7 +27,7 @@ class HeaderCollectionViewCell: UICollectionViewCell {
         return postImage
     }()
 
-    func configure() {
-        postImage.image = UIImage(named: "3")
+    func configure(post: Posts) {
+        postImage.image = post.image
     }
 }

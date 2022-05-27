@@ -9,13 +9,15 @@ import UIKit
 import Firebase
 
 class TabBarController: UITabBarController {
-
+   private var posts = [Posts]()
     override func viewDidLoad() {
         super.viewDidLoad()
         tabBar.tintColor = .black
         tabBar.backgroundColor = .white
         tabBar.isTranslucent = false
-
+        tabBar.frame.size.
+        self.tabBarItem.imageInsets = UIEdgeInsets(top: 10, left: 0, bottom: -4, right: 0)
+        
         Auth.auth().addStateDidChangeListener {(_, user) in
             if user == nil {
                 self.presentAuthController()
@@ -26,17 +28,21 @@ class TabBarController: UITabBarController {
     }
 
     func setupViewControllers() {
-        let homeNavController = UINavigationController(rootViewController: HomeViewController())
+        let homeVC = HomeViewController()
+        let homeNavController = UINavigationController(rootViewController: homeVC)
         let searchViewController = UINavigationController(rootViewController: SearchViewController())
         let newPhotoViewController = UINavigationController(rootViewController: NewPhotoViewController())
-        let profileViewController = UINavigationController(rootViewController: ProfileViewController())
-        setViewControllers([homeNavController, searchViewController, newPhotoViewController, profileViewController], animated: true)
+        let profileVC = ProfileViewController()
+        homeVC.delegate = profileVC
+        let profileNavController = UINavigationController(rootViewController: profileVC)
+        setViewControllers([homeNavController, searchViewController, newPhotoViewController, profileNavController], animated: true)
         navigationController?.navigationBar.backgroundColor = .white
         guard let items = self.tabBar.items else { return }
         let images = ["house", "magnifyingglass", "plus.app", "person.crop.circle"]
         for index in 0..<items.count {
             items[index].image = UIImage(systemName: images[index])
         }
+      
     }
     private func presentAuthController() {
         DispatchQueue.main.async {
