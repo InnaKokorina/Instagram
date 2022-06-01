@@ -20,7 +20,7 @@ class HomeViewController: UIViewController {
     var dataModel: Results<Photos>?
     var posts = [Posts]()
     private var dataManager = DataManager()
-    private var firebaseManager = FirebaseManager()
+   // private var firebaseManager = FirebaseManager()
     private var activityController: UIActivityViewController?
     private var ref: DatabaseReference!
     private let realm = try! Realm()
@@ -29,7 +29,7 @@ class HomeViewController: UIViewController {
 
     private let tableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(MainTableViewCell.self, forCellReuseIdentifier: "MainTableViewCell")
+        tableView.register(HomeTableViewCell.self, forCellReuseIdentifier: "HomeTableViewCell")
         return tableView
     }()
     private let spinnerImage: UIImageView = {
@@ -48,7 +48,7 @@ class HomeViewController: UIViewController {
         spinner.start(view: spinnerImage)
         if realm.isEmpty {
             spinnerImage.isHidden = false
-            firebaseManager.fetchData { post in
+            FirebaseManager.shared.fetchData { post in
                 // save to Realm
                     let realm = try! Realm()
                     do {
@@ -120,7 +120,7 @@ class HomeViewController: UIViewController {
                 realm.deleteAll()
                 DispatchQueue.main.async {
                     if self.realm.isEmpty {
-                        self.firebaseManager.fetchData { post in
+                        FirebaseManager.shared.fetchData { post in
                                 let realm = try! Realm()
                                 do {
                                     try realm.write({
@@ -167,7 +167,6 @@ class HomeViewController: UIViewController {
             posts.append(postElement)
             comments = []
         }
-         //   print("Home posts === \(posts)")
             delegate?.transferModelData(data: posts)
             print("homeVCpoasts.count = \(posts.count)")
             DispatchQueue.main.async {
@@ -182,7 +181,7 @@ extension HomeViewController: UITableViewDataSource {
        return posts.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "MainTableViewCell", for: indexPath) as? MainTableViewCell else { return UITableViewCell() }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "HomeTableViewCell", for: indexPath) as? HomeTableViewCell else { return UITableViewCell() }
             // set like
             cell.likeButtomTap = {
                 do {

@@ -13,6 +13,7 @@ import FirebaseStorage
 import RealmSwift
 
 class FirebaseManager {
+    static var shared = FirebaseManager()
     private var ref: DatabaseReference!
     private var dataModel: Results<Photos>?
     private var comments = List<CommentsModel>()
@@ -95,5 +96,8 @@ class FirebaseManager {
                 completion(downloadURL.absoluteString)
             }
         }
+    }
+    func saveUserPhototoFB() {
+        
     }
 }

@@ -17,6 +17,7 @@ struct Constants {
         static let switchButtonSignIn = "Уже есть аккаунт?"
         static let placeholderPassword = "Введите пароль"
         static let placeholderEmail = "Введите Email"
+        static let placeholderName = "Введите имя"
         static let backImageName = "backAuth"
         static let buttonTitle = "GO!"
     }

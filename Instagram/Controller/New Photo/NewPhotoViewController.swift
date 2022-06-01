@@ -164,7 +164,6 @@ class NewPhotoViewController: UIViewController {
     }
 
     // MARK: - YPImagePicker
-
  @objc func showResults() {
         if !selectedItems.isEmpty {
             let gallery = YPSelectionsGalleryVC(items: selectedItems) { gallery, _ in

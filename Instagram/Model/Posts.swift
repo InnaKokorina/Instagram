@@ -27,4 +27,3 @@ struct Comments {
     var id: Int = 0
     var postId: Int = 0
 }
-

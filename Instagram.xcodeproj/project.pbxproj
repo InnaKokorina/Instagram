@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C329181628465876006BCB85 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C329181528465875006BCB85 /* ChatViewController.swift */; };
 		C3730DB827FF34CC00BDF0C5 /* SpinnerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3730DB727FF34CC00BDF0C5 /* SpinnerViewController.swift */; };
 		C37D60F427F4D921002E39CB /* BezierHeartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37D60F327F4D921002E39CB /* BezierHeartView.swift */; };
 		C387BA9428141AE500167213 /* NewPhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C387BA9328141AE500167213 /* NewPhotoViewController.swift */; };
@@ -30,7 +31,7 @@
 		C3E4EA3D27EB5DE3003815D2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C3E4EA3B27EB5DE3003815D2 /* LaunchScreen.storyboard */; };
 		C3E4EA4827EB5FA7003815D2 /* PhotosRealm.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4EA4727EB5FA7003815D2 /* PhotosRealm.swift */; };
 		C3E4EA4A27EB5FB4003815D2 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4EA4927EB5FB4003815D2 /* DataManager.swift */; };
-		C3E4EA4C27EB5FD9003815D2 /* MainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4EA4B27EB5FD9003815D2 /* MainTableViewCell.swift */; };
+		C3E4EA4C27EB5FD9003815D2 /* HomeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4EA4B27EB5FD9003815D2 /* HomeTableViewCell.swift */; };
 		C3E4EA4E27EB5FF9003815D2 /* StackViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4EA4D27EB5FF9003815D2 /* StackViewExtensions.swift */; };
 		F917006992C4C1E11D036C13 /* Pods_Instagram.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4523A2CD6D00EB24A7B177F5 /* Pods_Instagram.framework */; };
 /* End PBXBuildFile section */
@@ -39,6 +40,7 @@
 		2080031EC3441507FAAEF64B /* Pods-Instagram.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Instagram.release.xcconfig"; path = "Target Support Files/Pods-Instagram/Pods-Instagram.release.xcconfig"; sourceTree = "<group>"; };
 		4523A2CD6D00EB24A7B177F5 /* Pods_Instagram.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Instagram.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5CB4162244BB3E1118FDA11A /* Pods-Instagram.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Instagram.debug.xcconfig"; path = "Target Support Files/Pods-Instagram/Pods-Instagram.debug.xcconfig"; sourceTree = "<group>"; };
+		C329181528465875006BCB85 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
 		C3730DB727FF34CC00BDF0C5 /* SpinnerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpinnerViewController.swift; sourceTree = "<group>"; };
 		C37D60F327F4D921002E39CB /* BezierHeartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezierHeartView.swift; sourceTree = "<group>"; };
 		C387BA9328141AE500167213 /* NewPhotoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPhotoViewController.swift; sourceTree = "<group>"; };
@@ -65,7 +67,7 @@
 		C3E4EA3E27EB5DE3003815D2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C3E4EA4727EB5FA7003815D2 /* PhotosRealm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosRealm.swift; sourceTree = "<group>"; };
 		C3E4EA4927EB5FB4003815D2 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
-		C3E4EA4B27EB5FD9003815D2 /* MainTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTableViewCell.swift; sourceTree = "<group>"; };
+		C3E4EA4B27EB5FD9003815D2 /* HomeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTableViewCell.swift; sourceTree = "<group>"; };
 		C3E4EA4D27EB5FF9003815D2 /* StackViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackViewExtensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -98,6 +100,14 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		C329181728465C4B006BCB85 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				C329181528465875006BCB85 /* ChatViewController.swift */,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
 		C381173D283D144400BB9BBF /* Authtorization */ = {
 			isa = PBXGroup;
 			children = (
@@ -110,7 +120,7 @@
 			isa = PBXGroup;
 			children = (
 				C3E4EA3427EB5DDE003815D2 /* HomeViewController.swift */,
-				C3E4EA4B27EB5FD9003815D2 /* MainTableViewCell.swift */,
+				C3E4EA4B27EB5FD9003815D2 /* HomeTableViewCell.swift */,
 				C397B38527FDD5ED000F056E /* CommentsViewController.swift */,
 				C397B38927FDF41F000F056E /* CommentsViewCell.swift */,
 			);
@@ -212,6 +222,7 @@
 		C3E4EA4627EB5F93003815D2 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				C329181728465C4B006BCB85 /* Chat */,
 				C381173D283D144400BB9BBF /* Authtorization */,
 				C381173E283D145C00BB9BBF /* Home */,
 				C381173F283D146800BB9BBF /* Search */,
@@ -358,6 +369,7 @@
 			files = (
 				C388268428128F9F00E02CE8 /* AuthorizationViewController.swift in Sources */,
 				C3E4EA3527EB5DDE003815D2 /* HomeViewController.swift in Sources */,
+				C329181628465876006BCB85 /* ChatViewController.swift in Sources */,
 				C3E4EA4E27EB5FF9003815D2 /* StackViewExtensions.swift in Sources */,
 				C38FCCE9283C1032009A81B3 /* HeaderCollectionViewCell.swift in Sources */,
 				C3730DB827FF34CC00BDF0C5 /* SpinnerViewController.swift in Sources */,
@@ -375,7 +387,7 @@
 				C38826882812952A00E02CE8 /* FirebaseManager.swift in Sources */,
 				C397B38627FDD5ED000F056E /* CommentsViewController.swift in Sources */,
 				C387BA9428141AE500167213 /* NewPhotoViewController.swift in Sources */,
-				C3E4EA4C27EB5FD9003815D2 /* MainTableViewCell.swift in Sources */,
+				C3E4EA4C27EB5FD9003815D2 /* HomeTableViewCell.swift in Sources */,
 				C3C89BDF282661B50093D8BD /* YPImagePickerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

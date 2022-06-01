@@ -1,5 +1,5 @@
 //
-//  MainTableViewCell.swift
+//  HomeTableViewCell.swift
 //  Instagram
 //
 //  Created by Inna Kokorina on 20.03.2022.
@@ -8,13 +8,13 @@
 import UIKit
 import RealmSwift
 
-class MainTableViewCell: UITableViewCell {
+class HomeTableViewCell: UITableViewCell {
     var likeButtomTap: (() -> Void)?
     var commentButtonPressed: (() -> Void)?
     private let spinner = SpinnerViewController()
     private var dataManager = DataManager()
     private let firebaseManager = FirebaseManager()
-    static var identifier = "MainTableViewCell"
+    static var identifier = "HomeTableViewCell"
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -161,7 +161,7 @@ class MainTableViewCell: UITableViewCell {
 }
 
 // MARK: - viewForZooming
-extension MainTableViewCell: UIScrollViewDelegate {
+extension HomeTableViewCell: UIScrollViewDelegate {
     func scrollViewSet() {
         scrollView.delegate = self
         scrollView.minimumZoomScale = 1.0
@@ -178,7 +178,7 @@ extension MainTableViewCell: UIScrollViewDelegate {
     }
 }
 // MARK: - doubleTapImage
-extension MainTableViewCell {
+extension HomeTableViewCell {
     func doubleTapImage() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didDoubleTapImage))
         tapGesture.numberOfTapsRequired = 2
