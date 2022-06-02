@@ -237,6 +237,21 @@ extension AuthorizationViewController: UITextFieldDelegate {
                         self.showAlert(message: ErrorReason.incorrectData.description)
                         return
                     }
+                    var urlString = ""
+                    var filePath = ""
+                    if let image = self.personImage.image {
+                        filePath = "\(email).jpg"
+                        DispatchQueue.global().async {
+                            FirebaseManager.shared.uploadImage(for: image, path: filePath) { [self] (downloadURL) in
+                                if  downloadURL == nil {
+                                    print("Download url not found")
+                                    return
+                                } else {
+                                    urlString = downloadURL!
+                                }
+                            }
+                        }
+                    }
                     self.navigationController?.dismiss(animated: true)
                 }
             } else {
@@ -263,6 +278,19 @@ extension AuthorizationViewController: UITextFieldDelegate {
         let name = Auth.auth().currentUser?.email as? String
         return name ?? "User"
     }
+}
+// MARK: - tapGesture
+extension AuthorizationViewController: UIGestureRecognizerDelegate {
+    func tapImage() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapImage))
+                personImage.addGestureRecognizer(tapGesture)
+                tapGesture.delegate = self
+    }
+    @objc func didTapImage(sender: UITapGestureRecognizer) {
+        addNewPhoto()
+    }
+}
+extension AuthorizationViewController: YPImagePickerDelegate {
     @objc func showResults() {
            if !selectedItems.isEmpty {
                let gallery = YPSelectionsGalleryVC(items: selectedItems) { gallery, _ in
@@ -292,20 +320,6 @@ extension AuthorizationViewController: UITextFieldDelegate {
            }
            present(picker, animated: true, completion: nil)
        }
-}
-// MARK: - tapGesture
-extension AuthorizationViewController: UIGestureRecognizerDelegate {
-    func tapImage() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapImage))
-                personImage.addGestureRecognizer(tapGesture)
-        tapGesture.numberOfTapsRequired = 2
-                tapGesture.delegate = self
-    }
-    @objc func didTapImage(sender: UITapGestureRecognizer) {
-        addNewPhoto()
-    }
-}
-extension AuthorizationViewController: YPImagePickerDelegate {
    func imagePickerHasNoItemsInLibrary(_ picker: YPImagePicker) {
    }
 

@@ -17,7 +17,9 @@ struct Posts {
     var likes: Int = 0
   //  var link: String = ""
     var user: String = ""
-    var userImage: UIImage = UIImage(systemName: "person")!
+    var userName: String = ""
+    var userPhoto: UIImage?
+   // var userData: User
     var liked: Bool = false
 }
 
@@ -26,4 +28,11 @@ struct Comments {
     var email: String = ""
     var id: Int = 0
     var postId: Int = 0
+}
+
+struct User {
+   // var userId: String
+    var userName: String = ""
+   // var userEmail: String = ""
+    var userPhotoName: UIImage = UIImage(systemName: "person")!
 }

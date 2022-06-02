@@ -20,7 +20,6 @@ class HomeViewController: UIViewController {
     var dataModel: Results<Photos>?
     var posts = [Posts]()
     private var dataManager = DataManager()
-   // private var firebaseManager = FirebaseManager()
     private var activityController: UIActivityViewController?
     private var ref: DatabaseReference!
     private let realm = try! Realm()

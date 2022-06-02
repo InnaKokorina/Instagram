@@ -1,5 +1,5 @@
 //
-//  ProfileCollectionViewCell.swift
+//  UserProfileCollectionCell.swift
 //  Instagram
 //
 //  Created by Inna Kokorina on 23.05.2022.
@@ -7,8 +7,14 @@
 
 import UIKit
 
-class ProfileCollectionViewCell: UICollectionViewCell {
+class UserProfileCollectionCell: UICollectionViewCell {
     static var cellId = "CollectionViewCell"
+    private let postImage: UIImageView = {
+        let postImage = UIImageView()
+        postImage.contentMode = .scaleAspectFill
+        postImage.clipsToBounds = true
+        return postImage
+    }()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -20,12 +26,7 @@ class ProfileCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private let postImage: UIImageView = {
-        let postImage = UIImageView()
-        postImage.contentMode = .scaleAspectFill
-        postImage.clipsToBounds = true
-        return postImage
-    }()
+
 
     func configure(post: Posts) {
         postImage.image = post.image

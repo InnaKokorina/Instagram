@@ -1,5 +1,5 @@
 //
-//  ProfileViewController.swift
+//  UserProfileViewController.swift
 //  Instagram
 //
 //  Created by Inna Kokorina on 20.05.2022.
@@ -8,13 +8,13 @@
 import UIKit
 import Firebase
 
-class ProfileViewController: UIViewController, TabBarDelegate {
+class UserProfileViewController: UIViewController, TabBarDelegate {
 
     var didSetupConstraints = false
     // MARK: - setView
     var posts = [Posts]()
     var collectionView: UICollectionView?
-
+    private var user = Auth.auth().currentUser?.email as? String
 
 // MARK: - lifeCycle
     override func viewDidLoad() {
@@ -22,8 +22,9 @@ class ProfileViewController: UIViewController, TabBarDelegate {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView?.register(ProfileCollectionViewCell.self, forCellWithReuseIdentifier: ProfileCollectionViewCell.cellId)
-        collectionView?.register(HeaderCollectionViewCell.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HeaderCollectionViewCell.headerCell)
+        collectionView?.register(UserProfileCollectionCell.self, forCellWithReuseIdentifier: UserProfileCollectionCell.cellId)
+        collectionView?.register(UserProfileNoPostsCell.self, forCellWithReuseIdentifier: UserProfileNoPostsCell.cellId)
+        collectionView?.register(UserProfileHeaderCell.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: UserProfileHeaderCell.headerCell)
         view.addSubview(collectionView!)
         view.setNeedsUpdateConstraints()
         collectionView?.delegate = self
@@ -33,7 +34,7 @@ class ProfileViewController: UIViewController, TabBarDelegate {
     func transferModelData(data: [Posts]) {
         print("data.count = \(data.count)")
         for post in data {
-            let name = Auth.auth().currentUser?.email as? String
+            let name = user
             if name ==  post.user {
                 posts.append(post)
             }
@@ -41,7 +42,7 @@ class ProfileViewController: UIViewController, TabBarDelegate {
     }
 }
 // MARK: - updateViewConstraints
-extension ProfileViewController {
+extension UserProfileViewController {
     override func updateViewConstraints() {
         if !didSetupConstraints {
             collectionView?.snp.makeConstraints { make in
@@ -53,21 +54,30 @@ extension ProfileViewController {
     }
     
 }
-extension ProfileViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension UserProfileViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if posts.count == 0 {
+            return 1
+        }
+        return posts.count
+    }
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CollectionViewCell", for: indexPath) as? ProfileCollectionViewCell else {return UICollectionViewCell() }
+        if posts.count == 0 {
+           guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "userProfileNoPostsCellId", for: indexPath) as? UserProfileNoPostsCell else {return UICollectionViewCell()}
+            return cell
+        } else {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CollectionViewCell", for: indexPath) as? UserProfileCollectionCell else {return UICollectionViewCell() }
         cell.configure(post: posts[indexPath.row])
         return cell
-    }
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return posts.count
+        }
     }
 
    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-       guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "HeaderCell", for: indexPath) as? HeaderCollectionViewCell else { return UICollectionReusableView() }
+       guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "HeaderCell", for: indexPath) as? UserProfileHeaderCell else { return UICollectionReusableView() }
        header.personImage.image = UIImage(systemName: "person")
-       header.userLabel.text = posts[0].user
+       header.userLabel.text = user
        return header
 
     }

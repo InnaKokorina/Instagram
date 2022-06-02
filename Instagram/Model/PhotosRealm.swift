@@ -18,6 +18,7 @@ class Photos: Object {
     @objc dynamic var likes: Int = 0
     @objc dynamic var link: String = ""
     @objc dynamic var user: String = ""
+   // @objc dynamic var userPhoto: Data?
     @objc dynamic var liked: Bool = false
 
     convenience init(comment: List<CommentsModel>, id: Int, imageName: String, likes: Int = 0, link: String, user: String, liked: Bool, descriptionImage: String) {

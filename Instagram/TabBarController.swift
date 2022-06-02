@@ -32,7 +32,7 @@ class TabBarController: UITabBarController {
         let searchViewController = UINavigationController(rootViewController: SearchViewController())
         let newPhotoViewController = UINavigationController(rootViewController: NewPhotoViewController())
         let chatViewController = UINavigationController(rootViewController: ChatViewController())
-        let profileVC = ProfileViewController()
+        let profileVC = UserProfileViewController()
         homeVC.delegate = profileVC
         let profileNavController = UINavigationController(rootViewController: profileVC)
         setViewControllers([homeNavController, searchViewController, newPhotoViewController, chatViewController, profileNavController], animated: true)

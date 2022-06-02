@@ -97,7 +97,4 @@ class FirebaseManager {
             }
         }
     }
-    func saveUserPhototoFB() {
-        
-    }
 }

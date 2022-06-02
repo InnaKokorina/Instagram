@@ -1,5 +1,5 @@
 //
-//  HeaderCollectionViewCell.swift
+//  UserProfileHeaderCell.swift
 //  Instagram
 //
 //  Created by Inna Kokorina on 23.05.2022.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class HeaderCollectionViewCell: UICollectionViewCell {
+class UserProfileHeaderCell: UICollectionViewCell {
 
     static var headerCell = "HeaderCell"
     var didSetupConstraints = false
@@ -47,7 +47,7 @@ class HeaderCollectionViewCell: UICollectionViewCell {
 }
 // MARK: - updateViewConstraints
 
-extension HeaderCollectionViewCell {
+extension UserProfileHeaderCell {
     func updateViewConstraints() {
         if !didSetupConstraints {
        
