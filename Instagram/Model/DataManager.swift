@@ -18,7 +18,7 @@ struct DataManager {
     func dateFormatter() -> String {
         let currentDateTime = Date()
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMddHH:mm"
+        formatter.dateFormat = "yyyyMMddHHmm"
         let currentDateTimeString = formatter.string(from: currentDateTime)
         return currentDateTimeString
     }

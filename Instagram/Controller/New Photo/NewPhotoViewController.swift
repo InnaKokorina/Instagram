@@ -23,7 +23,7 @@ class NewPhotoViewController: UIViewController {
     private let realm = try! Realm()
     private let spinner = SpinnerViewController()
     var didSetupConstraints = false
-    var dataModel: Results<Photos>?
+    var dataModel: Results<PostsRealm>?
     let imagePicker = YPImagePickerView()
     var selectedItems = [YPMediaItem]()
     // MARK: - View
@@ -109,11 +109,12 @@ class NewPhotoViewController: UIViewController {
         addButton.setTitle("", for: .normal)
         // save image to FBStorage
         var urlString = ""
-        var filePath = ""
+   
         if let image = self.newImage.image {
-            filePath = "\(self.dataManager.dateFormatter()).jpg"
+            let filePath = self.dataManager.dateFormatter()
+           let filePathStr = "\(filePath).jpg"
             DispatchQueue.global().async {
-                self.firebaseManager.uploadImage(for: image, path: filePath) { [self] (downloadURL) in
+                self.firebaseManager.uploadImage(for: image, path: filePathStr) { [self] (downloadURL) in
                     if  downloadURL == nil {
                         self.addButton.imageView?.isHidden = true
                         self.spinner.stop()
@@ -124,9 +125,20 @@ class NewPhotoViewController: UIViewController {
                         urlString = downloadURL!
 
                         // save to Realm
-                        let post = Photos(comment: List<CommentsModel>(), id: self.dataModel?.count ?? 0, imageName: filePath, likes: 0, link: urlString, user: userLabel.text ?? "user", liked: false, descriptionImage: self.photoTextField.text)
-                        self.firebaseManager.getImage(picName: filePath) { data in
+                        let post = PostsRealm(
+                            comment: List<CommentsRealm>(),
+                            id: "\(filePath)",
+                            imageName: filePathStr, likes: 0,
+                            link: urlString,
+                            user: UserRealm(
+                                userId: (Auth.auth().currentUser?.uid as? String)!,
+                                userName: userLabel.text ?? "user",
+                                userEmail: (Auth.auth().currentUser?.email as? String)!),
+                            liked: false,
+                            descriptionImage: self.photoTextField.text)
+                        FirebaseManager.shared.getImage(picName: filePathStr) { data in
                             post.image = data
+                       // }
                             do {
                                 try self.realm.write {
                                     self.realm.add(post)
@@ -134,7 +146,9 @@ class NewPhotoViewController: UIViewController {
                                     self.ref = Database.database().reference().child("photos/\(index)")
                                     // save to FB
                                     let  dict = [
-                                        "user": post.user,
+                                        "userId": post.user?.userId ?? "",
+                                        "userName": post.user?.userName ?? "unknowedUser",
+                                        "userEmail": post.user?.userEmail ?? "",
                                         "description": post.descriptionImage,
                                         "id": post.id,
                                         "image": post.imageName,

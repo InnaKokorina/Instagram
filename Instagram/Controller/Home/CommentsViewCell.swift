@@ -18,7 +18,6 @@ class CommentsViewCell: UITableViewCell {
     var commentLabel: UILabel = {
         var textLabel = UILabel()
         textLabel.font = UIFont(name: Constants.Font.font, size: 15)
-        textLabel.numberOfLines = 0
         return textLabel
     }()
     private lazy var horStackView = UIStackView(arrangedSubviews: [commentLabel], axis: .horizontal, spacing: 4)
@@ -27,6 +26,7 @@ class CommentsViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         addViews()
         updateViewConstraints()
+        commentLabel.numberOfLines = 0
     }
 
     required init?(coder: NSCoder) {
@@ -37,7 +37,7 @@ class CommentsViewCell: UITableViewCell {
         contentView.addSubview(horStackView)
     }
 
-    func configure(indexPath: Int, comment: Results<CommentsModel>) {
+    func configure(indexPath: Int, comment: Results<CommentsRealm>) {
         let author = "\(comment[indexPath].email): "
         let comment = comment[indexPath].body
         commentLabel.attributedText = attributedText(normStr: comment, boldStr: author)

@@ -17,7 +17,7 @@ protocol TabBarDelegate: AnyObject {
 }
 
 class HomeViewController: UIViewController {
-    var dataModel: Results<Photos>?
+    var dataModel: Results<PostsRealm>?
     var posts = [Posts]()
     private var dataManager = DataManager()
     private var activityController: UIActivityViewController?
@@ -49,10 +49,10 @@ class HomeViewController: UIViewController {
             spinnerImage.isHidden = false
             FirebaseManager.shared.fetchData { post in
                 // save to Realm
-                    let realm = try! Realm()
+               // let realm = try! Realm()
                     do {
-                        try realm.write({
-                            realm.add(post)
+                        try self.realm.write({
+                            self.realm.add(post)
                         })
                     } catch {
                         print("Error saving Data context \(error)")
@@ -109,7 +109,6 @@ class HomeViewController: UIViewController {
         let viewController = NewPhotoViewController()
         viewController.dataModel = self.dataModel
         navigationController?.pushViewController(viewController, animated: true)
-
     }
 
     // MARK: - RefreshImages
@@ -142,17 +141,21 @@ class HomeViewController: UIViewController {
     }
     // MARK: - loadPosts from Realm
     func loadPosts () {
-        dataModel = realm.objects(Photos.self).sorted(byKeyPath: "id", ascending: false)
+        dataModel = realm.objects(PostsRealm.self).sorted(byKeyPath: "id", ascending: false)
         posts = []
         if let photosRealm = dataModel {
         for photo in photosRealm {
             let id = photo.id
             let descriptionImage = photo.descriptionImage
-            let user = photo.user
             let imageName = photo.imageName
             let image = UIImage(data: photo.image!)
             let liked = photo.liked
             let likes = photo.likes
+            let userID = photo.user?.userId ?? "0"
+            let userName = photo.user?.userName ?? "User"
+            let userEmail = photo.user?.userEmail ?? "User"
+            let userPhoto =  UIImage(systemName: "person")//data: (photo.user?.userPhoto) ?? nil)
+            let user = User(userId: userID, userName: userName, userEmail: userEmail, userPhoto: userPhoto)
             var comments = [Comments]()
             for comment in photo.comment {
                 let id = comment.id
@@ -182,13 +185,18 @@ extension HomeViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "HomeTableViewCell", for: indexPath) as? HomeTableViewCell else { return UITableViewCell() }
             // set like
-            cell.likeButtomTap = {
+        cell.likeButtomTap = {
                 do {
                     try self.realm.write {
+                        for index in 0..<self.dataModel!.count {
+                            if self.posts[indexPath.row].id == self.dataModel![index].id {
+                            print("posts[indexPath.row].id == self.posts[index].id   \(self.posts[indexPath.row].id)")
                         self.posts[indexPath.row].liked.toggle()
+                        self.dataModel![index].liked.toggle()
                         if self.posts[indexPath.row].liked == true {
                             cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
                             self.posts[indexPath.row].likes += 1
+                            self.dataModel![index].likes += 1
                             cell.heartView.alpha = 0.5
                             let seconds = 0.3
                             DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
@@ -197,12 +205,15 @@ extension HomeViewController: UITableViewDataSource {
                         } else {
                             cell.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
                             self.posts[indexPath.row].likes -= 1
+                            self.dataModel![index].likes -= 1
                         }
-
-                        cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: self.posts[indexPath.row].likes)
-                        self.ref = Database.database().reference().child("photos/\(self.posts[indexPath.row].id)")
-                        let dict = ["liked": self.posts[indexPath.row].liked, "likes": self.posts[indexPath.row].likes] as [String: Any]
-                        self.ref.updateChildValues(dict)
+                                
+                                cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: self.posts[indexPath.row].likes)
+                                self.ref = Database.database().reference().child("photos/\(index)")
+                                let dict = ["liked": self.posts[indexPath.row].liked, "likes": self.posts[indexPath.row].likes] as [String: Any]
+                                self.ref.updateChildValues(dict)
+                            }
+                        }
                     }
                 } catch {
                     print("Error saving Data context \(error)")
@@ -212,10 +223,10 @@ extension HomeViewController: UITableViewDataSource {
             // navigation to comments
             cell.commentButtonPressed = { [unowned self] in
                 let viewController = CommentsViewController()
-                if let data = self.dataModel {
-                viewController.selectedImage = data[indexPath.row]
+//                if let data = self.posts {
+                viewController.selectedImage = dataModel![indexPath.row]
                 navigationController?.pushViewController(viewController, animated: true)
-           }
+         //  }
         }
         return cell
     }

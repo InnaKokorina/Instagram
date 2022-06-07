@@ -15,7 +15,6 @@ class AuthorizationViewController: UIViewController {
     var didSetupConstraints = false
     let imagePicker = YPImagePickerView()
     var selectedItems = [YPMediaItem]()
-    
     var signIn: Bool = true {
         willSet {
             if newValue {
@@ -229,15 +228,16 @@ extension AuthorizationViewController: UITextFieldDelegate {
     func checkAuth() {
         let email = emailField.text!
         let password = passwordField.text!
+        let name = nameField.text!
         if signIn == false {
-            if !email.isEmpty && !password.isEmpty {
-                Auth.auth().createUser(withEmail: email, password: password) { _, err in
+            if !email.isEmpty && !password.isEmpty && !name.isEmpty {
+                Auth.auth().createUser(withEmail: email, password: password ) { result, err in
                     guard err == nil
                     else {
                         self.showAlert(message: ErrorReason.incorrectData.description)
                         return
                     }
-                    var urlString = ""
+                   // var urlString = ""
                     var filePath = ""
                     if let image = self.personImage.image {
                         filePath = "\(email).jpg"
@@ -247,7 +247,11 @@ extension AuthorizationViewController: UITextFieldDelegate {
                                     print("Download url not found")
                                     return
                                 } else {
-                                    urlString = downloadURL!
+                                   // urlString = downloadURL!
+                                    if let result = result {
+                                    let ref = Database.database().reference().child("users")
+                                    ref.child(result.user.uid).updateChildValues(["name": name, "email": email])
+                                    }
                                 }
                             }
                         }
