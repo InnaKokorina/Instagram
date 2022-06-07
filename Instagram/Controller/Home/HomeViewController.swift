@@ -154,7 +154,7 @@ class HomeViewController: UIViewController {
             let userID = photo.user?.userId ?? "0"
             let userName = photo.user?.userName ?? "User"
             let userEmail = photo.user?.userEmail ?? "User"
-            let userPhoto =  UIImage(systemName: "person")//data: (photo.user?.userPhoto) ?? nil)
+            let userPhoto = FirebaseManager.shared.setImage(data: photo.user?.userPhoto)
             let user = User(userId: userID, userName: userName, userEmail: userEmail, userPhoto: userPhoto)
             var comments = [Comments]()
             for comment in photo.comment {
@@ -190,7 +190,7 @@ extension HomeViewController: UITableViewDataSource {
                     try self.realm.write {
                         for index in 0..<self.dataModel!.count {
                             if self.posts[indexPath.row].id == self.dataModel![index].id {
-                            print("posts[indexPath.row].id == self.posts[index].id   \(self.posts[indexPath.row].id)")
+//                            print("posts[indexPath.row].id == self.posts[index].id   \(self.posts[indexPath.row].id)")
                         self.posts[indexPath.row].liked.toggle()
                         self.dataModel![index].liked.toggle()
                         if self.posts[indexPath.row].liked == true {

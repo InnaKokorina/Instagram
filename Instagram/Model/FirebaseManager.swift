@@ -99,4 +99,11 @@ class FirebaseManager {
             }
         }
     }
+    func setImage(data: Data?) -> UIImage  {
+        if let safeData = data {
+            return UIImage(data: safeData)!
+        } else {
+            return UIImage(systemName: "person")!
+        }
+    }
 }

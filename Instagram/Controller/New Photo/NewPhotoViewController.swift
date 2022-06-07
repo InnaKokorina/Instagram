@@ -149,7 +149,7 @@ class NewPhotoViewController: UIViewController {
                                         "userId": post.user?.userId ?? "",
                                         "userName": post.user?.userName ?? "unknowedUser",
                                         "userEmail": post.user?.userEmail ?? "",
-                                        "description": post.descriptionImage,
+                                        "descriptionImage": post.descriptionImage,
                                         "id": post.id,
                                         "image": post.imageName,
                                         "liked": post.liked,

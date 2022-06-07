@@ -31,10 +31,10 @@ class UserProfileViewController: UIViewController, TabBarDelegate {
         collectionView?.dataSource = self   
     }
     func transferModelData(data: [Posts]) {
-        print("data.count = \(data.count)")
+//        print("data.count = \(data.count)")
         for post in data {
-            let name = user
-            if name ==  post.user.userEmail {
+            let id = user?.userId
+            if id ==  post.user.userId {
                 posts.append(post)
             }
         }
