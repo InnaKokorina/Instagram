@@ -42,7 +42,7 @@ class UserProfileHeaderCell: UICollectionViewCell {
 // MARK: - configure
     func configure(user: Posts ) {
         personImage.image = user.image
-        userLabel.text = user.user
+        userLabel.text = user.user.userName
     }
 }
 // MARK: - updateViewConstraints

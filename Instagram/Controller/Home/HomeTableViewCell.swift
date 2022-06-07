@@ -90,8 +90,8 @@ class HomeTableViewCell: UITableViewCell {
     }
     func configure (dataModel: [Posts], indexPath: IndexPath) {
         verStackView.alignment = .leading
-        authorNameLabel.text = dataModel[indexPath.row].user
-        descriptionLabel.text = "\(dataModel[indexPath.row].user ):  \(dataModel[indexPath.row].descriptionImage)"
+        authorNameLabel.text = dataModel[indexPath.row].user.userName
+        descriptionLabel.text = "\(dataModel[indexPath.row].user.userName):  \(dataModel[indexPath.row].descriptionImage)"
         likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel[indexPath.row].likes)
         likeButton.setImage(UIImage(systemName: dataModel[indexPath.row].liked ? "heart.fill" : "heart"), for: .normal)
         spinner.start(view: self.bandImage)

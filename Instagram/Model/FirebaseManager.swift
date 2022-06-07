@@ -15,20 +15,21 @@ import RealmSwift
 class FirebaseManager {
     static var shared = FirebaseManager()
     private var ref: DatabaseReference!
-    private var dataModel: Results<Photos>?
-    private var comments = List<CommentsModel>()
-    let photosArray = List<Photos>()
+    private var comments = List<CommentsRealm>()
+    let posts = List<PostsRealm>()
   // MARK: - fetch data from FireBAse and save to Realm
-    func fetchData(completion: @escaping(Photos) -> Void) {
+    func fetchData(completion: @escaping(PostsRealm) -> Void) {
         // fetching from Firebase
         ref = Database.database().reference().child("photos")
         ref.observeSingleEvent(of: DataEventType.value) { snapshot in
             if snapshot.childrenCount > 0 {
                 for data in snapshot.children.allObjects as! [DataSnapshot] {
                     let object =  data.value as? [String: AnyObject]
-                    let user = object?["user"] as? String ?? ""
-                    let description = object?["description"] as? String ?? ""
-                    let id = object?["id"] as? Int ?? 0
+                    let userId = object?["userId"] as? String ?? ""
+                    let userName = object?["userName"] as? String ?? ""
+                    let userEmail = object?["userEmail"] as? String ?? ""
+                    let descriptionImage = object?["descriptionImage"] as? String ?? ""
+                    let id = object?["id"] as? String ?? ""
                     let image = object?["image"] as? String ?? ""
                     let liked = object?["liked"] as? Bool ?? false
                     let likes = object?["likes"] as? Int ?? 0
@@ -38,23 +39,25 @@ class FirebaseManager {
                             for one in commentsArray {
                                 let oneCom = one as? [String: AnyObject]
                                 let body = oneCom?["body"] as? String ?? ""
-                                let email = oneCom?["email"] as? String ?? ""
+                                let email = oneCom?["userName"] as? String ?? ""
                                 let id = oneCom?["id"] as? Int ?? 0
-                                let postId = oneCom?["postId"] as? Int ?? 0
-                                self.comments.append(CommentsModel(body: body, email: email, id: id, postId: postId))
+                                let postId = oneCom?["postId"] as? String ?? ""
+                                self.comments.append(CommentsRealm(body: body, email: email, id: id, postId: postId))
                             }
                         }
                     }
                     // save to Model
-                    let post = Photos(comment: self.comments, id: id, imageName: image, likes: likes, link: link, user: user, liked: liked, descriptionImage: description)
+                    let post = PostsRealm(comment: self.comments, id: id, imageName: image, likes: likes, link: link, user: UserRealm(userId: userId, userName: userName, userEmail: userEmail), liked: liked, descriptionImage: descriptionImage)
 
-                    self.comments = List<CommentsModel>()
-                    // get Image
-                    self.getImage(picName: image) { data in
-                        post.image = data
-                        self.photosArray.append(post)
+                    self.comments = List<CommentsRealm>()
 
-                       completion(post)
+                    self.getImage(picName: image) { postData in
+                        post.image = postData
+                        self.getImage(picName: "\(post.user!.userId).jpg") { userData in
+                            post.user?.userPhoto = userData
+                            self.posts.append(post)
+                            completion(post)
+                        }
                     }
                 }
             }
@@ -63,11 +66,10 @@ class FirebaseManager {
 
  // MARK: - get Image from FireBase Storage
     func getImage(picName: String, completion: @escaping (Data?) -> Void) {
-        let storage = Storage.storage()
-        let reference = storage.reference()
-        let pathRef = reference.child("")
+        let pathRef = Storage.storage().reference()
         let fileRef = pathRef.child(picName)
-        fileRef.getData(maxSize: 1080*1080) { data, _ in
+
+   fileRef.getData(maxSize: 1080*1080) { data, _ in
             if let safeData = data {
                 completion(safeData)
             } else {

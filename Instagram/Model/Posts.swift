@@ -7,19 +7,16 @@
 
 import Foundation
 import UIKit
+import RealmSwift
 
 struct Posts {
     var comment: [Comments]
     var descriptionImage: String = ""
-    var id: Int = 0
+    var id: String = ""
     var imageName: String = ""
     var image: UIImage?
     var likes: Int = 0
-  //  var link: String = ""
-    var user: String = ""
-    var userName: String = ""
-    var userPhoto: UIImage?
-   // var userData: User
+    var user: User
     var liked: Bool = false
 }
 
@@ -27,12 +24,13 @@ struct Comments {
     var body: String = ""
     var email: String = ""
     var id: Int = 0
-    var postId: Int = 0
+    var postId: String = ""
 }
 
 struct User {
-   // var userId: String
+    var userId: String
     var userName: String = ""
-   // var userEmail: String = ""
-    var userPhotoName: UIImage = UIImage(systemName: "person")!
+    var userEmail: String = ""
+    var userPhoto: UIImage?
+  //  var userPhotoName: UIImage = UIImage(systemName: "person")!
 }

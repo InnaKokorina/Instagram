@@ -20,9 +20,9 @@ class CommentsViewController: UIViewController {
     private var firebaseManager = FirebaseManager()
     private var ref: DatabaseReference!
     private let realm = try! Realm()
-    private var comments: Results<CommentsModel>?
+    private var comments: Results<CommentsRealm>?
 
-    var selectedImage: Photos? {
+    var selectedImage: PostsRealm? {
         didSet {
             loadComments()
         }
@@ -164,7 +164,7 @@ extension CommentsViewController: UITextFieldDelegate {
                 let postId = currentImage.id
                 do {
                     try realm.write {
-                        let newcomment = CommentsModel(body: message, email: email, id: id, postId: postId)
+                        let newcomment = CommentsRealm(body: message, email: email, id: id, postId: postId)
                         currentImage.comment.append(newcomment)
                         self.ref =  Database.database().reference().child("photos/\(postId)/comments/\(id)")
                         let dictionary = ["email": newcomment.email, "body": newcomment.body, "id": newcomment.id, "postId": newcomment.postId] as [String: Any]
