@@ -9,12 +9,19 @@ import UIKit
 import Firebase
 import FirebaseAuth
 import SnapKit
+import RealmSwift
 import YPImagePicker
 
+//protocol AuthorizationViewControllerDelegate: AnyObject {
+//    func safeUserData(user: User)
+//}
 class AuthorizationViewController: UIViewController {
     var didSetupConstraints = false
     let imagePicker = YPImagePickerView()
     var selectedItems = [YPMediaItem]()
+    // var user =  User()
+    private let realm = try! Realm()
+  //  weak var delegate: AuthorizationViewControllerDelegate?
     var signIn: Bool = true {
         willSet {
             if newValue {
@@ -97,7 +104,7 @@ class AuthorizationViewController: UIViewController {
         emailField.autocorrectionType = .yes
         return emailField
     }()
-
+    
     private var passwordField: UITextField = {
         let passwordField = UITextField()
         passwordField.font = UIFont(name: Constants.Font.font, size: 17)
@@ -133,9 +140,9 @@ class AuthorizationViewController: UIViewController {
         }
         return signInButton
     }()
-
+    
     private lazy var verStackView = UIStackView(arrangedSubviews: [titleLabel, infoLabel, photoView, nameField, emailField, passwordField, signInButton, switchButton], axis: .vertical, spacing: 10)
-
+    
     // MARK: - lifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -177,7 +184,6 @@ extension AuthorizationViewController {
             photoView.snp.makeConstraints { make in
                 make.height.equalTo(100)
             }
-
             personImage.snp.makeConstraints { make in
                 make.centerX.equalTo(photoView)
                 make.width.height.equalTo(100)
@@ -207,7 +213,7 @@ extension AuthorizationViewController {
 extension AuthorizationViewController: UITextFieldDelegate {
     @objc func switchPressed() {
         self.signIn.toggle()
-       // emailField.endEditing(true)
+        // emailField.endEditing(true)
         passwordField.text = ""
         emailField.text = ""
     }
@@ -219,12 +225,12 @@ extension AuthorizationViewController: UITextFieldDelegate {
     @objc func signInPressed() {
         checkAuth()
     }
-
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         checkAuth()
         return true
     }
-
+    
     func checkAuth() {
         let email = emailField.text!
         let password = passwordField.text!
@@ -237,7 +243,7 @@ extension AuthorizationViewController: UITextFieldDelegate {
                         self.showAlert(message: ErrorReason.incorrectData.description)
                         return
                     }
-                   // var urlString = ""
+                    // var urlString = ""
                     var filePath = ""
                     if let image = self.personImage.image {
                         filePath = "\(email).jpg"
@@ -247,37 +253,54 @@ extension AuthorizationViewController: UITextFieldDelegate {
                                     print("Download url not found")
                                     return
                                 } else {
-                                   // urlString = downloadURL!
+                                    // urlString = downloadURL!
                                     if let result = result {
-                                    let ref = Database.database().reference().child("users")
-                                    ref.child(result.user.uid).updateChildValues(["name": name, "email": email])
+                                                let user = UserRealm(userId: result.user.uid, userName: name, userEmail: email)
+                                                FirebaseManager.shared.getImage(picName: "\(result.user.uid).jpg") { data in
+                                                    user.userPhoto = data
+                                                    do {
+                                                        try self.realm.write {
+                                                    self.realm.add(user)
+                                                    //  delegate?.safeUserData(user:user)
+                                                    let ref = Database.database().reference().child("users")
+                                                    ref.child(result.user.uid).updateChildValues(["name": name, "email": email])
+                                                    self.navigationController?.dismiss(animated: true)
+                                                }
+                                        } catch {
+                                            print("Error saving Data context \(error)")
+                                        }
+                                        }
                                     }
                                 }
                             }
                         }
+                        
                     }
-                    self.navigationController?.dismiss(animated: true)
                 }
             } else {
                 showAlert(message: ErrorReason.emptyFields.description)
             }
         } else {
             if !email.isEmpty && !password.isEmpty {
-                Auth.auth().signIn(withEmail: email, password: password) { (_, err) in
+                Auth.auth().signIn(withEmail: email, password: password) { (result, err) in
                     guard err == nil
                     else {
                         self.showAlert(message: ErrorReason.noAccount.description)
                         return
                     }
+//                    if let result = result {
+//                        self.user = User(userId: result.user.uid, userName: email, userEmail: email, userPhoto: self.personImage.image)
+//                       // self.delegate?.safeUserData(user: self.user)
+//                    }
                     self.navigationController?.dismiss(animated: true)
                 }
             } else {
                 showAlert(message: ErrorReason.emptyFields.description)
             }
         }
-
+        
     }
-
+    
     func setName() -> String {
         let name = Auth.auth().currentUser?.email as? String
         return name ?? "User"
@@ -287,8 +310,8 @@ extension AuthorizationViewController: UITextFieldDelegate {
 extension AuthorizationViewController: UIGestureRecognizerDelegate {
     func tapImage() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapImage))
-                personImage.addGestureRecognizer(tapGesture)
-                tapGesture.delegate = self
+        personImage.addGestureRecognizer(tapGesture)
+        tapGesture.delegate = self
     }
     @objc func didTapImage(sender: UITapGestureRecognizer) {
         addNewPhoto()
@@ -296,40 +319,40 @@ extension AuthorizationViewController: UIGestureRecognizerDelegate {
 }
 extension AuthorizationViewController: YPImagePickerDelegate {
     @objc func showResults() {
-           if !selectedItems.isEmpty {
-               let gallery = YPSelectionsGalleryVC(items: selectedItems) { gallery, _ in
-                   gallery.dismiss(animated: true, completion: nil)
-               }
-               let navVC = UINavigationController(rootViewController: gallery)
-               self.present(navVC, animated: true, completion: nil)
-           } else {
-               self.navigationController?.popViewController(animated: false)
-               print("No items selected yet.")
-           }
-       }
-       @objc func addNewPhoto() {
-           var config = imagePicker.setConfig()
-           config.library.preselectedItems = selectedItems
-           let picker = YPImagePicker(configuration: config)
-           picker.imagePickerDelegate = self
-           picker.didFinishPicking { [weak picker] items, cancelled in
-               if cancelled {
-               picker?.dismiss(animated: true, completion: nil)
-               self.navigationController?.popViewController(animated: false)
-               } else {
-               self.selectedItems = items
-               self.personImage.image = items.singlePhoto?.image
-               picker?.dismiss(animated: true, completion: nil)
-               }
-           }
-           present(picker, animated: true, completion: nil)
-       }
-   func imagePickerHasNoItemsInLibrary(_ picker: YPImagePicker) {
-   }
-
-   func shouldAddToSelection(indexPath: IndexPath, numSelections: Int) -> Bool {
-       return true
-   }
+        if !selectedItems.isEmpty {
+            let gallery = YPSelectionsGalleryVC(items: selectedItems) { gallery, _ in
+                gallery.dismiss(animated: true, completion: nil)
+            }
+            let navVC = UINavigationController(rootViewController: gallery)
+            self.present(navVC, animated: true, completion: nil)
+        } else {
+            self.navigationController?.popViewController(animated: false)
+            print("No items selected yet.")
+        }
+    }
+    @objc func addNewPhoto() {
+        var config = imagePicker.setConfig()
+        config.library.preselectedItems = selectedItems
+        let picker = YPImagePicker(configuration: config)
+        picker.imagePickerDelegate = self
+        picker.didFinishPicking { [weak picker] items, cancelled in
+            if cancelled {
+                picker?.dismiss(animated: true, completion: nil)
+                self.navigationController?.popViewController(animated: false)
+            } else {
+                self.selectedItems = items
+                self.personImage.image = items.singlePhoto?.image
+                picker?.dismiss(animated: true, completion: nil)
+            }
+        }
+        present(picker, animated: true, completion: nil)
+    }
+    func imagePickerHasNoItemsInLibrary(_ picker: YPImagePicker) {
+    }
+    
+    func shouldAddToSelection(indexPath: IndexPath, numSelections: Int) -> Bool {
+        return true
+    }
 }
 
 // MARK: - ErrorReason
@@ -337,7 +360,7 @@ enum ErrorReason {
     case emptyFields
     case incorrectData
     case noAccount
-
+    
     var description: String {
         switch self {
         case .emptyFields: return "Пожалуйста, заполните все поля"

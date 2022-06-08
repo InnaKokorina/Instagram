@@ -28,7 +28,7 @@ struct Comments {
 }
 
 struct User {
-    var userId: String
+    var userId: String = ""
     var userName: String = ""
     var userEmail: String = ""
     var userPhoto: UIImage?

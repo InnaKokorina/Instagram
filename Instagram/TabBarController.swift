@@ -7,9 +7,13 @@
 
 import UIKit
 import Firebase
+import RealmSwift
 
 class TabBarController: UITabBarController {
    private var posts = [Posts]()
+    private let realm = try! Realm()
+    private var users: Results<UserRealm>?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         tabBar.tintColor = .black
@@ -33,7 +37,16 @@ class TabBarController: UITabBarController {
         let newPhotoViewController = UINavigationController(rootViewController: NewPhotoViewController())
         let chatViewController = UINavigationController(rootViewController: ChatViewController())
         let profileVC = UserProfileViewController()
-        homeVC.delegate = profileVC
+        users = realm.objects(UserRealm.self)
+        if let unwrappedUsers = users {
+            var currentUser = UserRealm()
+            for eachUser in unwrappedUsers {
+                if eachUser.userId == Auth.auth().currentUser!.uid {
+                    currentUser = eachUser
+                }
+            }
+            profileVC.user = currentUser
+        }
         let profileNavController = UINavigationController(rootViewController: profileVC)
         setViewControllers([homeNavController, searchViewController, newPhotoViewController, chatViewController, profileNavController], animated: true)
         navigationController?.navigationBar.backgroundColor = .white

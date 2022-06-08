@@ -10,6 +10,7 @@
 		C329181628465876006BCB85 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C329181528465875006BCB85 /* ChatViewController.swift */; };
 		C3730DB827FF34CC00BDF0C5 /* SpinnerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3730DB727FF34CC00BDF0C5 /* SpinnerViewController.swift */; };
 		C37D60F427F4D921002E39CB /* BezierHeartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37D60F327F4D921002E39CB /* BezierHeartView.swift */; };
+		C382BFA02850C6400084B817 /* SearchViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C382BF9F2850C63F0084B817 /* SearchViewCell.swift */; };
 		C387BA9428141AE500167213 /* NewPhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C387BA9328141AE500167213 /* NewPhotoViewController.swift */; };
 		C388268428128F9F00E02CE8 /* AuthorizationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C388268328128F9F00E02CE8 /* AuthorizationViewController.swift */; };
 		C38826862812902F00E02CE8 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38826852812902F00E02CE8 /* Constants.swift */; };
@@ -44,6 +45,7 @@
 		C329181528465875006BCB85 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
 		C3730DB727FF34CC00BDF0C5 /* SpinnerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpinnerViewController.swift; sourceTree = "<group>"; };
 		C37D60F327F4D921002E39CB /* BezierHeartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezierHeartView.swift; sourceTree = "<group>"; };
+		C382BF9F2850C63F0084B817 /* SearchViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewCell.swift; sourceTree = "<group>"; };
 		C387BA9328141AE500167213 /* NewPhotoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPhotoViewController.swift; sourceTree = "<group>"; };
 		C388268328128F9F00E02CE8 /* AuthorizationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationViewController.swift; sourceTree = "<group>"; };
 		C38826852812902F00E02CE8 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -133,6 +135,7 @@
 			isa = PBXGroup;
 			children = (
 				C3A38FF52837E4E40085102D /* SearchViewController.swift */,
+				C382BF9F2850C63F0084B817 /* SearchViewCell.swift */,
 			);
 			path = Search;
 			sourceTree = "<group>";
@@ -370,6 +373,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C382BFA02850C6400084B817 /* SearchViewCell.swift in Sources */,
 				C388268428128F9F00E02CE8 /* AuthorizationViewController.swift in Sources */,
 				C3E4EA3527EB5DDE003815D2 /* HomeViewController.swift in Sources */,
 				C329181628465876006BCB85 /* ChatViewController.swift in Sources */,

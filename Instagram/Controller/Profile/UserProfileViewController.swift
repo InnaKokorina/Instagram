@@ -7,15 +7,21 @@
 
 import UIKit
 import Firebase
+import RealmSwift
 
-class UserProfileViewController: UIViewController, TabBarDelegate {
+class UserProfileViewController: UIViewController {
 
     var didSetupConstraints = false
     // MARK: - setView
-    var posts = [Posts]()
+    var posts: Results<PostsRealm>?
+    var currentPosts = [Posts]()
     var collectionView: UICollectionView?
-    private var user = Auth.auth().currentUser?.email as? String
-
+    private let realm = try! Realm()
+    var user: UserRealm? {
+        didSet {
+           loadPosts()
+        }
+    }
 // MARK: - lifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,13 +36,18 @@ class UserProfileViewController: UIViewController, TabBarDelegate {
         collectionView?.delegate = self
         collectionView?.dataSource = self   
     }
-    func transferModelData(data: [Posts]) {
-//        print("data.count = \(data.count)")
-        for post in data {
-            let id = user?.userId
-            if id ==  post.user.userId {
-                posts.append(post)
+    
+    func loadPosts() {
+        posts = realm.objects(PostsRealm.self)
+        if posts != nil {
+        for post in posts! {
+            if post.user?.userId == user?.userId {
+                let onePost =  DataManager.shared.tranferModeltoStruct(withPhoto: post)
+                currentPosts.append(onePost)
+                }
             }
+        } else {
+            currentPosts = []
         }
     }
 }
@@ -56,27 +67,28 @@ extension UserProfileViewController {
 extension UserProfileViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if posts.count == 0 {
+        if currentPosts.count == 0 {
             return 1
         }
-        return posts.count
+        return currentPosts.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if posts.count == 0 {
+        if currentPosts.count == 0 {
            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "userProfileNoPostsCellId", for: indexPath) as? UserProfileNoPostsCell else {return UICollectionViewCell()}
             return cell
         } else {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CollectionViewCell", for: indexPath) as? UserProfileCollectionCell else {return UICollectionViewCell() }
-        cell.configure(post: posts[indexPath.row])
+        cell.configure(post: currentPosts[indexPath.row])
         return cell
         }
     }
 
    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
        guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "HeaderCell", for: indexPath) as? UserProfileHeaderCell else { return UICollectionReusableView() }
-       header.personImage.image = UIImage(systemName: "person")
-       header.userLabel.text = user
+       header.personImage.image = FirebaseManager.shared.setImage(data: user?.userPhoto)
+       header.userLabel.text = user?.userName
+      
        return header
 
     }
