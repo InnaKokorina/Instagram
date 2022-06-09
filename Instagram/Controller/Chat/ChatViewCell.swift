@@ -1,21 +1,20 @@
 //
-//  SearchViewCell.swift
+//  ChatViewCell.swift
 //  Instagram
 //
-//  Created by Inna Kokorina on 08.06.2022.
+//  Created by Inna Kokorina on 09.06.2022.
 //
 
 import UIKit
 
-class SearchViewCell: UITableViewCell {
-    static var identifier = "SearchViewCell"
+class ChatViewCell: UITableViewCell {
+    static var identifier = "ChatViewCell"
     var userLabel: UILabel = {
         let label = UILabel()
         label.text = "user"
         label.font = UIFont.boldSystemFont(ofSize: 17)
         return label
     }()
-
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(userLabel)
@@ -27,3 +26,4 @@ class SearchViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 }
+

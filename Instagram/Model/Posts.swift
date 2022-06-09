@@ -34,3 +34,9 @@ struct User {
     var userPhoto: UIImage?
   //  var userPhotoName: UIImage = UIImage(systemName: "person")!
 }
+
+struct Messages {
+    var user: String
+    var partner: String
+    var body: String
+}

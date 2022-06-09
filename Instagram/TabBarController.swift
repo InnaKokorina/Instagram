@@ -32,11 +32,14 @@ class TabBarController: UITabBarController {
 
     func setupViewControllers() {
         let homeVC = HomeViewController()
-        let homeNavController = UINavigationController(rootViewController: homeVC)
-        let searchViewController = UINavigationController(rootViewController: SearchViewController())
-        let newPhotoViewController = UINavigationController(rootViewController: NewPhotoViewController())
-        let chatViewController = UINavigationController(rootViewController: ChatViewController())
         let profileVC = UserProfileViewController()
+        let searchVC = SearchViewController()
+        let chatVC = ChatViewController()
+        let newPhotoVC = NewPhotoViewController()
+        let homeNavController = UINavigationController(rootViewController: homeVC)
+        let searchViewController = UINavigationController(rootViewController: searchVC)
+        let newPhotoViewController = UINavigationController(rootViewController: newPhotoVC)
+        let chatViewController = UINavigationController(rootViewController: chatVC)
         users = realm.objects(UserRealm.self)
         if let unwrappedUsers = users {
             var currentUser = UserRealm()
@@ -51,7 +54,7 @@ class TabBarController: UITabBarController {
         setViewControllers([homeNavController, searchViewController, newPhotoViewController, chatViewController, profileNavController], animated: true)
         navigationController?.navigationBar.backgroundColor = .white
         guard let items = self.tabBar.items else { return }
-        let images = ["house", "magnifyingglass", "plus.app", "", "person.crop.circle"]
+        let images = ["house", "magnifyingglass", "plus.app", "message", "person.crop.circle"]
         for index in 0..<items.count {
             items[index].image = UIImage(systemName: images[index])
         }

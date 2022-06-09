@@ -46,15 +46,22 @@ class SearchViewController: UIViewController {
     }
     func uniqueArray(array: Results<UserRealm>) -> [UserRealm] {
         var unique = [UserRealm]()
+        var notContains = false
         unique.append(array[0])
         for element in array {
             for one in unique {
-                if element.userName != one.userName {// !unique.contains(element) {
-                    unique.append(element)
+                if element.userId != one.userId && element.userId != Auth.auth().currentUser!.uid {
+                    notContains = true
+                }
+                if element.userId == one.userId {
+                    notContains  = false
+                    continue
                 }
             }
+            if notContains == true {
+            unique.append(element)
+            }
         }
-    print("unique == \(unique)")
     return unique
 }
     // MARK: - navigationItems

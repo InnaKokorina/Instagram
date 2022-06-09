@@ -7,10 +7,140 @@
 
 import UIKit
 
-class ChatViewController: UIViewController {
+import FirebaseAuth
+import RealmSwift
 
+class ChatViewController: UIViewController {
+    private var didSetupConstraints = false
+    private var users: Results<UserRealm>?
+    private let realm = try! Realm()
+    private let searchBar: UISearchBar = {
+        let searchBar = UISearchBar()
+        searchBar.backgroundColor = .black
+        searchBar.placeholder = "Введите пользователя..."
+        return searchBar
+    }()
+    private let tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.register(ChatViewCell.self, forCellReuseIdentifier: "ChatViewCell")
+        return tableView
+    }()
+    // MARK: - lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.addSubview(searchBar)
+        view.addSubview(tableView)
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.separatorStyle = .none
+        view.setNeedsUpdateConstraints()
+        searchBar.delegate = self
+        loadUsers()
+        }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupNavItems()
+    }
+    // MARK: - loadArray
+    func loadUsers() {
+            users = realm.objects(UserRealm.self).sorted(byKeyPath: "userName", ascending: true)
+    }
+    func uniqueArray(array: Results<UserRealm>) -> [UserRealm] {
+        var unique = [UserRealm]()
+        var notContains = false
+        unique.append(array[0])
+        for element in array {
+            for one in unique {
+                if element.userId != one.userId && element.userId != Auth.auth().currentUser!.uid {
+                    notContains = true
+                }
+                if element.userId == one.userId {
+                    notContains  = false
+                    continue
+                }
+            }
+            if notContains == true {
+            unique.append(element)
+            }
+        }
+    return unique
+}
+    // MARK: - navigationItems
+    func setupNavItems() {
+        let logOutButton = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(logOutButtonPressed))
+        logOutButton.tintColor = .black
+        navigationItem.leftBarButtonItem  = logOutButton
+        navigationItem.title = Constants.App.title
+    }
 
+    @objc func logOutButtonPressed(_ sender: Any) {
+        do {
+            navigationController?.popViewController(animated: true)
+            try Auth.auth().signOut()
+        } catch {
+            print(error)
+        }
+    }
+}
+// MARK: - UITableViewDataSource, UITableViewDelegate
+extension ChatViewController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        70
+    }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let uniqueUsers = uniqueArray(array: users!)
+        return uniqueUsers.count
+    }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ChatViewCell.identifier, for: indexPath) as? ChatViewCell else { return UITableViewCell() }
+       if let usersNotEmpty = users {
+        let uniqueUsers = uniqueArray(array: usersNotEmpty)
+           cell.userLabel.text = uniqueUsers[indexPath.row].userName
+           cell.selectionStyle = .none
+      }
+        return cell
+    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        searchBar.resignFirstResponder()
+        let messageViewController = MessagesViewController()
+        if users != nil {
+            messageViewController.partner = uniqueArray(array: users!)[indexPath.row]
+        navigationController?.pushViewController(messageViewController, animated: true)
+        }
+    }
+}
+// MARK: - updateViewConstraints
+extension ChatViewController {
+    override func updateViewConstraints() {
+        if !didSetupConstraints {
+            searchBar.snp.makeConstraints { make in
+                make.top.equalTo(view.safeAreaLayoutGuide)
+                make.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+                make.height.equalTo(70)
+            }
+            tableView.snp.makeConstraints { make in
+                make.top.equalTo(searchBar.snp.bottom)
+                make.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+                make.bottom.equalTo(view)
+            }
+            didSetupConstraints = true
+        }
+        super.updateViewConstraints()
+    }
+}
+// MARK: - UISearchBarDelegate
+extension ChatViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        users = users?.filter("userName CONTAINS[cd] %@", searchBar.text!)
+        tableView.reloadData()
+    }
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadUsers()
+            tableView.reloadData()
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        }
     }
 }

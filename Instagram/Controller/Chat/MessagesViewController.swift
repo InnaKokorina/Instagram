@@ -1,45 +1,38 @@
 //
-//  CommentsViewController.swift
+//  MessagesViewController.swift
 //  Instagram
 //
-//  Created by Inna Kokorina on 06.04.2022.
+//  Created by Inna Kokorina on 09.06.2022.
 //
 
 import UIKit
 import FirebaseAuth
-import Firebase
-import FirebaseDatabase
-import FirebaseStorage
-import RealmSwift
-import SnapKit
+import FirebaseFirestore
 
-class CommentsViewController: UIViewController {
+class MessagesViewController: UIViewController {
     private var didSetupConstraints = false
-    private var auth = AuthorizationViewController()
     private var activeTextField: UITextField?
-    private var firebaseManager = FirebaseManager()
-    private var ref: DatabaseReference!
-    private let realm = try! Realm()
-    private var comments: Results<CommentsRealm>?
-
-    var selectedImage: PostsRealm? {
+    let dataBase = Firestore.firestore()
+    var partner: UserRealm? {
         didSet {
-            loadComments()
+            loadMessages()
         }
     }
-    // MARK: - View
+    var messages = [Messages]()
     private let tableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(CommentsViewCell.self, forCellReuseIdentifier: "CommentsViewCell")
+        tableView.register(MessagesViewCell.self, forCellReuseIdentifier: "MessagesViewCell")
         tableView.setContentHuggingPriority(UILayoutPriority.init(249), for: .vertical)
         return tableView
     }()
 
     private let textField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Введите комментарий"
+        textField.placeholder = "Введите сообщение"
         textField.backgroundColor = .white
         textField.borderStyle = .roundedRect
+        textField.layer.borderWidth = 0.5
+        textField.layer.cornerRadius = 8
         textField.adjustsFontSizeToFitWidth = true
         textField.minimumFontSize = 14
         textField.viewWithTag(0)
@@ -49,21 +42,21 @@ class CommentsViewController: UIViewController {
     private let addComment: UIButton = {
         let addComment = UIButton()
         addComment.setImage(UIImage(systemName: "paperplane.fill"), for: .normal)
-        addComment.imageView?.tintColor = .white
+        addComment.imageView?.tintColor = .black
         return addComment
     }()
 
     private lazy var horStackView = UIStackView(arrangedSubviews: [textField, addComment], axis: .horizontal, spacing: 8)
-    // MARK: - lifecycle
+
     override func viewDidLoad() {
         view.backgroundColor = .systemBackground
-        horStackView.backgroundColor = UIColor(red: 0.25, green: 0.16, blue: 0.58, alpha: 1)
+        //horStackView.backgroundColor = UIColor(red: 0.25, green: 0.16, blue: 0.58, alpha: 1)
+      //  horStackView.backgroundColor = .darkGray
         tableViewsSetup()
         view.addSubview(horStackView)
-      //  horStackView.layer.borderColor  = CGColor(red: 0.25, green: 0.16, blue: 0.58, alpha: 1)
         view.setNeedsUpdateConstraints()
         textField.delegate = self
-        addComment.addTarget(self, action: #selector(addCommentTap), for: .touchUpInside)
+        addComment.addTarget(self, action: #selector(addMessageTap), for: .touchUpInside)
         setupNavItems()
     }
     // MARK: - tableViewsSetup()
@@ -75,6 +68,31 @@ class CommentsViewController: UIViewController {
         tableView.separatorStyle = .none
         tableView.allowsSelection = false
     }
+    func loadMessages() {
+        dataBase.collection(Constants.FStore.collectionName).order(by: Constants.FStore.dateField).addSnapshotListener { [self] querySnapshot, error in
+            self.messages = []
+            if let error = error {
+                print(" error during loadint data from farestire db \(error)")
+            } else {
+                if let snapshot = querySnapshot?.documents {
+                    for doc in snapshot {
+                        let data = doc.data()
+                        if let user = data[Constants.FStore.user] as? String,
+                           let partner = data[Constants.FStore.partner] as? String,
+                           let body = data[Constants.FStore.bodyField] as? String {
+                            let newMessage = Messages(user: user, partner: partner, body: body)
+                            self.messages.append(newMessage)
+                            DispatchQueue.main.async {
+                                self.tableView.reloadData()
+                                let indexPath = IndexPath(row: self.messages.count - 1, section: 0)
+                                self.tableView.scrollToRow(at: indexPath, at: .top, animated: false)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
     // MARK: - NavigationItems
     func setupNavItems() {
         let logOutButton = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(logOutButtonPressed))
@@ -82,9 +100,8 @@ class CommentsViewController: UIViewController {
         let back = UIBarButtonItem(image: UIImage(systemName: "chevron.compact.left"), style: .plain, target: self, action: #selector(backPressed))
         back.tintColor = .black
         navigationItem.leftBarButtonItem = back
-        navigationItem.title = Constants.App.titleComments
+        navigationItem.title = partner?.userName
     }
-
     @objc func backPressed() {
         navigationController?.popViewController(animated: true)
     }
@@ -97,41 +114,46 @@ class CommentsViewController: UIViewController {
             print(error)
         }
     }
-    // MARK: - loadComments()
-    func loadComments() {
-        comments = selectedImage?.comment.sorted(byKeyPath: "id", ascending: true)
-        tableView.reloadData()
-    }
-
 }
 // MARK: - UITableViewDataSource, UITableViewDelegate
-extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
+extension MessagesViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return comments?.count ?? 1
-
+        messages.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "CommentsViewCell", for: indexPath) as? CommentsViewCell else { return UITableViewCell() }
-        if let comments = comments {
-            cell.configure(indexPath: indexPath.row, comment: comments)
+        let message = messages[indexPath.row]
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "MessagesViewCell", for: indexPath) as? MessagesViewCell else { return UITableViewCell() }
+        cell.messageLabel.text = messages[indexPath.row].body
+        // this is the message from current user
+        if message.user == Auth.auth().currentUser?.email {
+            cell.rightUserLabel.isHidden = true
+            cell.leftUserLabel.isHidden = false
+            cell.messageView.backgroundColor = UIColor(red: 0.90, green: 0.81, blue: 1, alpha: 1)
+        }
+       // this is the message from another user
+        else {
+            cell.rightUserLabel.isHidden = false
+            cell.leftUserLabel.isHidden = true
+            cell.messageView.backgroundColor = UIColor(red: 0.70, green: 0.81, blue: 1, alpha: 1)
+
         }
         return cell
     }
-//    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-//        60
-//    }
-    // MARK: - setConstraints()
+}
+  // MARK: - updateViewConstraints()
+extension MessagesViewController {
     override func updateViewConstraints() {
         if !didSetupConstraints {
             tableView.snp.makeConstraints { make in
                 make.left.right.top.equalTo(view)
             }
             horStackView.snp.makeConstraints { make in
-                make.left.right.equalTo(view)
+                make.right.equalTo(view)
+                make.left.equalTo(view).offset(10)
                 make.bottom.equalTo(view)
                 make.top.equalTo(tableView.snp.bottom)
-                make.height.equalTo(70)
+                make.height.equalTo(50)
             }
             addComment.snp.makeConstraints { make in
                 make.top.equalTo(horStackView).offset(1)
@@ -150,39 +172,36 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
  }
 
 // MARK: - UITextFieldDelegate
-extension CommentsViewController: UITextFieldDelegate {
+extension MessagesViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
     }
 
-    @objc func addCommentTap() {
-     if let currentImage = self.selectedImage {
-            if  let message = textField.text {
-                let email  = auth.setName()
-                let id = currentImage.comment.count
-                let postId = currentImage.id
-                do {
-                    try realm.write {
-                        let newcomment = CommentsRealm(body: message, email: email, id: id, postId: postId)
-                        currentImage.comment.append(newcomment)
-                        self.ref =  Database.database().reference().child("photos/\(postId)/comments/\(id)")
-                        let dictionary = ["email": newcomment.email, "body": newcomment.body, "id": newcomment.id, "postId": newcomment.postId] as [String: Any]
-                        ref.setValue(dictionary)
+    @objc func addMessageTap() {
+        if let messageBody = textField.text, let messageSender = Auth.auth().currentUser?.email {
+            dataBase.collection(Constants.FStore.collectionName).addDocument(data: [
+                Constants.FStore.bodyField: messageBody,
+                Constants.FStore.user: messageSender,
+                Constants.FStore.partner: partner?.userEmail as Any,
+                Constants.FStore.dateField: Date.timeIntervalSinceReferenceDate])
+            { error in
+                if let error = error {
+                    print(" error during saving data to farestire db \(error)")
+                } else {
+                    print("successfully saved data to Firestore")
+                    DispatchQueue.main.async {
+                    self.textField.text = ""
                     }
-                } catch {
-                    print("Error saving Data context \(error)")
                 }
-                tableView.reloadData()
-                textField.text = ""
-                textField.endEditing(true)
             }
         }
+
     }
 }
 
 // MARK: - keyboardWillShow
-extension CommentsViewController {
+extension MessagesViewController {
     @objc func keyboardWillShow(notification: NSNotification) {
         guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
         var shouldMoveViewUp = false

@@ -29,6 +29,7 @@ struct Constants {
     struct App {
         static let title = "PhotoStory"
         static let titleComments = "Комментарии"
+        static let titleMessages = "Сообщения"
     }
 
     struct ImagePicker {
@@ -38,6 +39,12 @@ struct Constants {
         static let cancel = "Отмена"
         static let textPhotoPlaceholder = "Поделитесь впечатлением..."
         static let share = "Поделиться"
-
+    }
+    struct FStore {
+        static let collectionName = "messages"
+        static let user = "user"
+        static let partner = "partner"
+        static let bodyField = "body"
+        static let dateField = "date"
     }
 }

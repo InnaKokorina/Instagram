@@ -25,6 +25,9 @@
 		C3A38FF62837E4E40085102D /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A38FF52837E4E40085102D /* SearchViewController.swift */; };
 		C3A38FF82837E4F70085102D /* UserProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A38FF72837E4F70085102D /* UserProfileViewController.swift */; };
 		C3A82A77282BFD6B00C83A7D /* Posts.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A82A76282BFD6B00C83A7D /* Posts.swift */; };
+		C3B27BDC2852187A00A04476 /* ChatViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3B27BDB2852187A00A04476 /* ChatViewCell.swift */; };
+		C3B27BDE28521B8300A04476 /* MessagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3B27BDD28521B8200A04476 /* MessagesViewController.swift */; };
+		C3B27BE028521B9C00A04476 /* MessagesViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3B27BDF28521B9C00A04476 /* MessagesViewCell.swift */; };
 		C3B2985A280D842D004E7BB3 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = C3B2985C280D842D004E7BB3 /* Localizable.stringsdict */; };
 		C3C89BDF282661B50093D8BD /* YPImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C89BDE282661B50093D8BD /* YPImagePickerView.swift */; };
 		C3E4EA3127EB5DDE003815D2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4EA3027EB5DDE003815D2 /* AppDelegate.swift */; };
@@ -61,6 +64,9 @@
 		C3A38FF72837E4F70085102D /* UserProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileViewController.swift; sourceTree = "<group>"; };
 		C3A82A76282BFD6B00C83A7D /* Posts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Posts.swift; sourceTree = "<group>"; };
 		C3AC945A2820103100FF5E4F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		C3B27BDB2852187A00A04476 /* ChatViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewCell.swift; sourceTree = "<group>"; };
+		C3B27BDD28521B8200A04476 /* MessagesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesViewController.swift; sourceTree = "<group>"; };
+		C3B27BDF28521B9C00A04476 /* MessagesViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesViewCell.swift; sourceTree = "<group>"; };
 		C3B2985B280D842D004E7BB3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = en.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		C3B2985E280D85AA004E7BB3 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ru; path = ru.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		C3C89BDE282661B50093D8BD /* YPImagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YPImagePickerView.swift; sourceTree = "<group>"; };
@@ -108,6 +114,9 @@
 			isa = PBXGroup;
 			children = (
 				C329181528465875006BCB85 /* ChatViewController.swift */,
+				C3B27BDB2852187A00A04476 /* ChatViewCell.swift */,
+				C3B27BDD28521B8200A04476 /* MessagesViewController.swift */,
+				C3B27BDF28521B9C00A04476 /* MessagesViewCell.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -374,6 +383,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				C382BFA02850C6400084B817 /* SearchViewCell.swift in Sources */,
+				C3B27BDC2852187A00A04476 /* ChatViewCell.swift in Sources */,
+				C3B27BDE28521B8300A04476 /* MessagesViewController.swift in Sources */,
 				C388268428128F9F00E02CE8 /* AuthorizationViewController.swift in Sources */,
 				C3E4EA3527EB5DDE003815D2 /* HomeViewController.swift in Sources */,
 				C329181628465876006BCB85 /* ChatViewController.swift in Sources */,
@@ -393,6 +404,7 @@
 				C3A38FF62837E4E40085102D /* SearchViewController.swift in Sources */,
 				C38FCCE6283B8C73009A81B3 /* UserProfileCollectionCell.swift in Sources */,
 				C38826882812952A00E02CE8 /* FirebaseManager.swift in Sources */,
+				C3B27BE028521B9C00A04476 /* MessagesViewCell.swift in Sources */,
 				C397B38627FDD5ED000F056E /* CommentsViewController.swift in Sources */,
 				C387BA9428141AE500167213 /* NewPhotoViewController.swift in Sources */,
 				C3E4EA4C27EB5FD9003815D2 /* HomeTableViewCell.swift in Sources */,
