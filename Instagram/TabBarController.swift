@@ -13,7 +13,7 @@ class TabBarController: UITabBarController {
    private var posts = [Posts]()
     private let realm = try! Realm()
     private var users: Results<UserRealm>?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         tabBar.tintColor = .black
@@ -40,16 +40,6 @@ class TabBarController: UITabBarController {
         let searchViewController = UINavigationController(rootViewController: searchVC)
         let newPhotoViewController = UINavigationController(rootViewController: newPhotoVC)
         let chatViewController = UINavigationController(rootViewController: chatVC)
-        users = realm.objects(UserRealm.self)
-        if let unwrappedUsers = users {
-            var currentUser = UserRealm()
-            for eachUser in unwrappedUsers {
-                if eachUser.userId == Auth.auth().currentUser!.uid {
-                    currentUser = eachUser
-                }
-            }
-            profileVC.user = currentUser
-        }
         let profileNavController = UINavigationController(rootViewController: profileVC)
         setViewControllers([homeNavController, searchViewController, newPhotoViewController, chatViewController, profileNavController], animated: true)
         navigationController?.navigationBar.backgroundColor = .white
@@ -61,7 +51,6 @@ class TabBarController: UITabBarController {
     }
     func setNavigationControllers(rootVC: UIViewController) -> UINavigationController {
         let navigationVC = UINavigationController(rootViewController: rootVC)
-     //   homeVC.delegate = rootVC
         return navigationVC
     }
     private func presentAuthController() {

@@ -29,7 +29,9 @@ struct Constants {
     struct App {
         static let title = "PhotoStory"
         static let titleComments = "Комментарии"
-        static let titleMessages = "Сообщения"
+        static let titleMessages = "Чат"
+        static let titleSearch = "Поиск"
+        static let titleNewPhoto = "Новая публикация"
     }
 
     struct ImagePicker {

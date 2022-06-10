@@ -10,7 +10,6 @@ import Firebase
 import RealmSwift
 
 class UserProfileViewController: UIViewController {
-
     var didSetupConstraints = false
     // MARK: - setView
     var posts: Results<PostsRealm>?
@@ -34,9 +33,11 @@ class UserProfileViewController: UIViewController {
         view.addSubview(collectionView!)
         view.setNeedsUpdateConstraints()
         collectionView?.delegate = self
-        collectionView?.dataSource = self   
+        collectionView?.dataSource = self
+        setupNavItems()
+        chooseUser()
     }
-    
+
     func loadPosts() {
         posts = realm.objects(PostsRealm.self)
         if posts != nil {
@@ -48,6 +49,39 @@ class UserProfileViewController: UIViewController {
             }
         } else {
             currentPosts = []
+        }
+    }
+    func chooseUser() {
+        if user == nil {
+            let allUsers = self.realm.objects(UserRealm.self)
+            for eachUser in allUsers where eachUser.userId == Auth.auth().currentUser!.uid {
+                user = eachUser
+            }
+            navigationItem.leftBarButtonItem?.tintColor = .clear
+        }
+    }
+
+    // MARK: - navigationItems
+    func setupNavItems() {
+        let logOutButton = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(logOutButtonPressed))
+        logOutButton.tintColor = .black
+        navigationItem.rightBarButtonItem  = logOutButton
+        navigationItem.title = user?.userName
+        let back = UIBarButtonItem(image: UIImage(systemName: "chevron.compact.left"), style: .plain, target: self, action: #selector(backPressed))
+        back.tintColor = .black
+        navigationItem.leftBarButtonItem = back
+    }
+
+    @objc func backPressed() {
+        navigationController?.popViewController(animated: true)
+    }
+
+    @objc func logOutButtonPressed(_ sender: Any) {
+        do {
+            navigationController?.popViewController(animated: true)
+            try Auth.auth().signOut()
+        } catch {
+            print(error)
         }
     }
 }
@@ -88,7 +122,6 @@ extension UserProfileViewController: UICollectionViewDelegate, UICollectionViewD
        guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "HeaderCell", for: indexPath) as? UserProfileHeaderCell else { return UICollectionReusableView() }
        header.personImage.image = FirebaseManager.shared.setImage(data: user?.userPhoto)
        header.userLabel.text = user?.userName
-      
        return header
 
     }

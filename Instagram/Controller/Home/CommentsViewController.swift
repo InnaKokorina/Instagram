@@ -39,7 +39,9 @@ class CommentsViewController: UIViewController {
         let textField = UITextField()
         textField.placeholder = "Введите комментарий"
         textField.backgroundColor = .white
-        textField.borderStyle = .roundedRect
+        textField.backgroundColor = .white
+        textField.layer.borderWidth = 0.5
+        textField.layer.cornerRadius = 8
         textField.adjustsFontSizeToFitWidth = true
         textField.minimumFontSize = 14
         textField.viewWithTag(0)
@@ -49,7 +51,7 @@ class CommentsViewController: UIViewController {
     private let addComment: UIButton = {
         let addComment = UIButton()
         addComment.setImage(UIImage(systemName: "paperplane.fill"), for: .normal)
-        addComment.imageView?.tintColor = .white
+        addComment.imageView?.tintColor = .black
         return addComment
     }()
 
@@ -57,7 +59,7 @@ class CommentsViewController: UIViewController {
     // MARK: - lifecycle
     override func viewDidLoad() {
         view.backgroundColor = .systemBackground
-        horStackView.backgroundColor = UIColor(red: 0.25, green: 0.16, blue: 0.58, alpha: 1)
+     //   horStackView.backgroundColor = UIColor(red: 0.25, green: 0.16, blue: 0.58, alpha: 1)
         tableViewsSetup()
         view.addSubview(horStackView)
       //  horStackView.layer.borderColor  = CGColor(red: 0.25, green: 0.16, blue: 0.58, alpha: 1)
@@ -79,6 +81,7 @@ class CommentsViewController: UIViewController {
     func setupNavItems() {
         let logOutButton = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(logOutButtonPressed))
         navigationItem.rightBarButtonItem  = logOutButton
+        logOutButton.tintColor = .black
         let back = UIBarButtonItem(image: UIImage(systemName: "chevron.compact.left"), style: .plain, target: self, action: #selector(backPressed))
         back.tintColor = .black
         navigationItem.leftBarButtonItem = back
@@ -134,14 +137,15 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
                 make.height.equalTo(70)
             }
             addComment.snp.makeConstraints { make in
-                make.top.equalTo(horStackView).offset(1)
-                make.right.equalTo(horStackView).offset(1)
-                make.bottom.equalTo(horStackView.snp.bottom).offset(1)
+                make.top.equalTo(horStackView)
+                make.right.equalTo(horStackView)
+                make.bottom.equalTo(horStackView.snp.bottom)
                 make.width.equalTo(40)
             }
             textField.snp.makeConstraints { make in
-                make.top.left.equalTo(horStackView).inset(1)
-                make.bottom.equalTo(view.safeAreaLayoutGuide).inset(1)
+                make.top.equalTo(horStackView)
+                make.left.equalTo(horStackView).offset(10)
+                make.bottom.equalTo(view.safeAreaLayoutGuide)
             }
             didSetupConstraints = true
         }

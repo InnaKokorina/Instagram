@@ -16,7 +16,6 @@ class ChatViewController: UIViewController {
     private let realm = try! Realm()
     private let searchBar: UISearchBar = {
         let searchBar = UISearchBar()
-        searchBar.backgroundColor = .black
         searchBar.placeholder = "Введите пользователя..."
         return searchBar
     }()
@@ -28,6 +27,7 @@ class ChatViewController: UIViewController {
     // MARK: - lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .systemBackground
         view.addSubview(searchBar)
         view.addSubview(tableView)
         tableView.dataSource = self
@@ -36,6 +36,7 @@ class ChatViewController: UIViewController {
         view.setNeedsUpdateConstraints()
         searchBar.delegate = self
         loadUsers()
+        setupNavItems()
         }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -48,7 +49,7 @@ class ChatViewController: UIViewController {
     func uniqueArray(array: Results<UserRealm>) -> [UserRealm] {
         var unique = [UserRealm]()
         var notContains = false
-        unique.append(array[0])
+        unique = [UserRealm(userId: " ", userName: " ", userEmail: " ")]
         for element in array {
             for one in unique {
                 if element.userId != one.userId && element.userId != Auth.auth().currentUser!.uid {
@@ -63,14 +64,15 @@ class ChatViewController: UIViewController {
             unique.append(element)
             }
         }
+        unique.removeFirst()
     return unique
 }
     // MARK: - navigationItems
     func setupNavItems() {
         let logOutButton = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(logOutButtonPressed))
         logOutButton.tintColor = .black
-        navigationItem.leftBarButtonItem  = logOutButton
-        navigationItem.title = Constants.App.title
+        navigationItem.rightBarButtonItem  = logOutButton
+        navigationItem.title = Constants.App.titleMessages
     }
 
     @objc func logOutButtonPressed(_ sender: Any) {

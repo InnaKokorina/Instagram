@@ -92,8 +92,8 @@ class HomeViewController: UIViewController {
         logOutButton.tintColor = .black
         let addPhoto = UIBarButtonItem(image: UIImage(systemName: "plus.app"), style: .plain, target: self, action: #selector(addNewPost))
         addPhoto.tintColor = .black
-        navigationItem.leftBarButtonItem  = logOutButton
-        navigationItem.rightBarButtonItem = addPhoto
+        navigationItem.rightBarButtonItem  = logOutButton
+        navigationItem.leftBarButtonItem = addPhoto
         navigationItem.title = Constants.App.title
     }
 

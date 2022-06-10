@@ -14,6 +14,7 @@ class UserProfileNoPostsCell: UICollectionViewCell {
         label.text = "Публикаций пока нет..."
         label.textColor = .lightGray
         label.textAlignment = .center
+        label.numberOfLines = 0
         return label
     }()
 

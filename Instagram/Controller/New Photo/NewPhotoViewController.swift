@@ -14,7 +14,6 @@ import YPImagePicker
 import SnapKit
 
 class NewPhotoViewController: UIViewController {
-
     private var activeTextField: UITextView?
     private var auth = AuthorizationViewController()
     private var firebaseManager = FirebaseManager()
@@ -97,7 +96,7 @@ class NewPhotoViewController: UIViewController {
         let back = UIBarButtonItem(image: UIImage(systemName: "chevron.compact.left"), style: .plain, target: self, action: #selector(backPressed))
         back.tintColor = .black
         navigationItem.leftBarButtonItem = back
-        navigationItem.title = Constants.App.title
+        navigationItem.title = Constants.App.titleNewPhoto
     }
 
     @objc func backPressed() {
@@ -109,7 +108,6 @@ class NewPhotoViewController: UIViewController {
         addButton.setTitle("", for: .normal)
         // save image to FBStorage
         var urlString = ""
-   
         if let image = self.newImage.image {
             let filePath = self.dataManager.dateFormatter()
            let filePathStr = "\(filePath).jpg"

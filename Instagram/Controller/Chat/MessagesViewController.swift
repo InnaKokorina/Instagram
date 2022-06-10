@@ -30,7 +30,6 @@ class MessagesViewController: UIViewController {
         let textField = UITextField()
         textField.placeholder = "Введите сообщение"
         textField.backgroundColor = .white
-        textField.borderStyle = .roundedRect
         textField.layer.borderWidth = 0.5
         textField.layer.cornerRadius = 8
         textField.adjustsFontSizeToFitWidth = true
@@ -50,8 +49,6 @@ class MessagesViewController: UIViewController {
 
     override func viewDidLoad() {
         view.backgroundColor = .systemBackground
-        //horStackView.backgroundColor = UIColor(red: 0.25, green: 0.16, blue: 0.58, alpha: 1)
-      //  horStackView.backgroundColor = .darkGray
         tableViewsSetup()
         view.addSubview(horStackView)
         view.setNeedsUpdateConstraints()
@@ -81,11 +78,15 @@ class MessagesViewController: UIViewController {
                            let partner = data[Constants.FStore.partner] as? String,
                            let body = data[Constants.FStore.bodyField] as? String {
                             let newMessage = Messages(user: user, partner: partner, body: body)
+                            if newMessage.partner == self.partner?.userEmail && newMessage.user == Auth.auth().currentUser!.email || newMessage.partner == Auth.auth().currentUser!.email && newMessage.user == self.partner?.userEmail {
                             self.messages.append(newMessage)
+                            }
                             DispatchQueue.main.async {
                                 self.tableView.reloadData()
+                                if self.messages.count != 0 {
                                 let indexPath = IndexPath(row: self.messages.count - 1, section: 0)
                                 self.tableView.scrollToRow(at: indexPath, at: .top, animated: false)
+                                }
                             }
                         }
                     }
@@ -97,6 +98,7 @@ class MessagesViewController: UIViewController {
     func setupNavItems() {
         let logOutButton = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(logOutButtonPressed))
         navigationItem.rightBarButtonItem  = logOutButton
+        navigationItem.rightBarButtonItem?.tintColor = .black
         let back = UIBarButtonItem(image: UIImage(systemName: "chevron.compact.left"), style: .plain, target: self, action: #selector(backPressed))
         back.tintColor = .black
         navigationItem.leftBarButtonItem = back

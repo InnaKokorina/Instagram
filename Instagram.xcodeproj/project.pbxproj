@@ -237,11 +237,11 @@
 		C3E4EA4627EB5F93003815D2 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				C329181728465C4B006BCB85 /* Chat */,
 				C381173D283D144400BB9BBF /* Authtorization */,
 				C381173E283D145C00BB9BBF /* Home */,
 				C381173F283D146800BB9BBF /* Search */,
 				C3811742283D14A100BB9BBF /* New Photo */,
+				C329181728465C4B006BCB85 /* Chat */,
 				C3811741283D149200BB9BBF /* Profile */,
 			);
 			path = Controller;
