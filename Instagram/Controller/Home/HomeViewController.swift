@@ -24,7 +24,7 @@ class HomeViewController: UIViewController {
     private var ref: DatabaseReference!
     private let realm = try! Realm()
     private let spinner = SpinnerViewController()
-    weak var delegate: TabBarDelegate?
+   // weak var delegate: TabBarDelegate?
 
     private let tableView: UITableView = {
         let tableView = UITableView()
@@ -166,47 +166,43 @@ extension HomeViewController: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "HomeTableViewCell", for: indexPath) as? HomeTableViewCell else { return UITableViewCell() }
             // set like
         cell.likeButtomTap = {
-                do {
-                    try self.realm.write {
-                        for index in 0..<self.dataModel!.count {
-                            if self.posts[indexPath.row].id == self.dataModel![index].id {
-//                            print("posts[indexPath.row].id == self.posts[index].id   \(self.posts[indexPath.row].id)")
-                        self.posts[indexPath.row].liked.toggle()
-                        self.dataModel![index].liked.toggle()
-                        if self.posts[indexPath.row].liked == true {
-                            cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-                            self.posts[indexPath.row].likes += 1
-                            self.dataModel![index].likes += 1
-                            cell.heartView.alpha = 0.5
-                            let seconds = 0.3
-                            DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
-                                cell.heartView.alpha = 0
+            do {
+                try self.realm.write {
+                    for index in 0..<self.dataModel!.count {
+                        if self.posts[indexPath.row].id == self.dataModel![index].id {
+                            self.posts[indexPath.row].liked.toggle()
+                            self.dataModel![index].liked.toggle()
+                            if self.posts[indexPath.row].liked == true {
+                                cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+                                self.posts[indexPath.row].likes += 1
+                                self.dataModel![index].likes += 1
+                                cell.heartView.alpha = 0.5
+                                let seconds = 0.3
+                                DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
+                                    cell.heartView.alpha = 0
+                                }
+                            } else {
+                                cell.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
+                                self.posts[indexPath.row].likes -= 1
+                                self.dataModel![index].likes -= 1
                             }
-                        } else {
-                            cell.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
-                            self.posts[indexPath.row].likes -= 1
-                            self.dataModel![index].likes -= 1
-                        }
-                                
-                                cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: self.posts[indexPath.row].likes)
-                                self.ref = Database.database().reference().child("photos/\(index)")
-                                let dict = ["liked": self.posts[indexPath.row].liked, "likes": self.posts[indexPath.row].likes] as [String: Any]
-                                self.ref.updateChildValues(dict)
-                            }
+                            cell.likesCountLabel.text = self.dataManager.likeLabelConvert(counter: self.posts[indexPath.row].likes)
+                            self.ref = Database.database().reference().child("photos/\(self.posts[indexPath.row].id)")
+                            let dict = ["liked": self.posts[indexPath.row].liked, "likes": self.posts[indexPath.row].likes] as [String: Any]
+                            self.ref.updateChildValues(dict)
                         }
                     }
-                } catch {
-                    print("Error saving Data context \(error)")
-               }
+                }
+            } catch {
+                print("Error saving Data context \(error)")
+            }
             }
         cell.configure(dataModel: self.posts, indexPath: indexPath)
             // navigation to comments
             cell.commentButtonPressed = { [unowned self] in
                 let viewController = CommentsViewController()
-//                if let data = self.posts {
                 viewController.selectedImage = dataModel![indexPath.row]
                 navigationController?.pushViewController(viewController, animated: true)
-         //  }
         }
         return cell
     }

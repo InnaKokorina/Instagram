@@ -24,7 +24,6 @@ struct DataManager {
         return currentDateTimeString
     }
     func tranferModeltoStruct(withPhoto photo: PostsRealm) -> Posts {
-        var outputPosts = [Posts]()
         let id = photo.id
         let descriptionImage = photo.descriptionImage
         let imageName = photo.imageName

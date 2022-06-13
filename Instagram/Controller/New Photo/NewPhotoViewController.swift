@@ -123,9 +123,10 @@ class NewPhotoViewController: UIViewController {
                         urlString = downloadURL!
 
                         // save to Realm
+                        let index: Int = (self.dataModel?.count ?? 1) - 1
                         let post = PostsRealm(
                             comment: List<CommentsRealm>(),
-                            id: "\(filePath)",
+                            id: index,
                             imageName: filePathStr, likes: 0,
                             link: urlString,
                             user: UserRealm(
@@ -140,7 +141,6 @@ class NewPhotoViewController: UIViewController {
                             do {
                                 try self.realm.write {
                                     self.realm.add(post)
-                                    let index: Int = (self.dataModel?.count ?? 1) - 1
                                     self.ref = Database.database().reference().child("photos/\(index)")
                                     // save to FB
                                     let  dict = [

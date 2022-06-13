@@ -186,8 +186,7 @@ extension MessagesViewController: UITextFieldDelegate {
                 Constants.FStore.bodyField: messageBody,
                 Constants.FStore.user: messageSender,
                 Constants.FStore.partner: partner?.userEmail as Any,
-                Constants.FStore.dateField: Date.timeIntervalSinceReferenceDate])
-            { error in
+                Constants.FStore.dateField: Date.timeIntervalSinceReferenceDate]) { error in
                 if let error = error {
                     print(" error during saving data to farestire db \(error)")
                 } else {

@@ -29,7 +29,7 @@ class FirebaseManager {
                     let userName = object?["userName"] as? String ?? ""
                     let userEmail = object?["userEmail"] as? String ?? ""
                     let descriptionImage = object?["descriptionImage"] as? String ?? ""
-                    let id = object?["id"] as? String ?? ""
+                    let id = object?["id"] as? Int ?? 0
                     let image = object?["image"] as? String ?? ""
                     let liked = object?["liked"] as? Bool ?? false
                     let likes = object?["likes"] as? Int ?? 0
@@ -41,7 +41,7 @@ class FirebaseManager {
                                 let body = oneCom?["body"] as? String ?? ""
                                 let email = oneCom?["userName"] as? String ?? ""
                                 let id = oneCom?["id"] as? Int ?? 0
-                                let postId = oneCom?["postId"] as? String ?? ""
+                                let postId = oneCom?["postId"] as? Int ?? 0
                                 self.comments.append(CommentsRealm(body: body, email: email, id: id, postId: postId))
                             }
                         }

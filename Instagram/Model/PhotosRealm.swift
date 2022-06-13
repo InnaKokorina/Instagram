@@ -13,16 +13,14 @@ class PostsRealm: Object {
     dynamic var comment = List<CommentsRealm>()
     @objc dynamic var user: UserRealm?
     @objc dynamic var descriptionImage: String = ""
-    @objc dynamic var id: String = ""
+    @objc dynamic var id: Int  = 0
     @objc dynamic var imageName: String = ""
     @objc dynamic var image: Data?
     @objc dynamic var likes: Int = 0
     @objc dynamic var link: String = ""
     @objc dynamic var liked: Bool = false
-//    dynamic var parentPosts = LinkingObjects(fromType: UserRealm.self, property: "posts")
-    
 
-    convenience init(comment: List<CommentsRealm>, id: String, imageName: String, likes: Int = 0, link: String, user: UserRealm, liked: Bool, descriptionImage: String) {
+    convenience init(comment: List<CommentsRealm>, id: Int, imageName: String, likes: Int = 0, link: String, user: UserRealm, liked: Bool, descriptionImage: String) {
         self.init()
         self.comment = comment
         self.descriptionImage = descriptionImage
@@ -39,10 +37,10 @@ class CommentsRealm: Object {
     @objc dynamic var body: String = ""
     @objc dynamic var email: String = ""
     @objc dynamic var id: Int = 0
-    @objc dynamic var postId: String = ""
+    @objc dynamic var postId: Int  = 0
     dynamic var parentImage = LinkingObjects(fromType: PostsRealm.self, property: "comment")
 
-  convenience init(body: String, email: String, id: Int, postId: String) {
+  convenience init(body: String, email: String, id: Int, postId: Int) {
       self.init()
         self.body = body
         self.email = email

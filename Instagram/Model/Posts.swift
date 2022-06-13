@@ -12,7 +12,7 @@ import RealmSwift
 struct Posts {
     var comment: [Comments]
     var descriptionImage: String = ""
-    var id: String = ""
+    var id: Int  = 0
     var imageName: String = ""
     var image: UIImage?
     var likes: Int = 0
@@ -24,7 +24,7 @@ struct Comments {
     var body: String = ""
     var email: String = ""
     var id: Int = 0
-    var postId: String = ""
+    var postId: Int  = 0
 }
 
 struct User {

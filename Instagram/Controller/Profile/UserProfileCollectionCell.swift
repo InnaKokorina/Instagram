@@ -28,7 +28,7 @@ class UserProfileCollectionCell: UICollectionViewCell {
 
 
 
-    func configure(post: Posts) {
-        postImage.image = post.image
-    }
+    func configure(post: PostsRealm) {
+        postImage.image = UIImage(data: post.image!)
+}
 }

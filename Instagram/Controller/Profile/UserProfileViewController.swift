@@ -13,7 +13,7 @@ class UserProfileViewController: UIViewController {
     var didSetupConstraints = false
     // MARK: - setView
     var posts: Results<PostsRealm>?
-    var currentPosts = [Posts]()
+    var currentPosts = [PostsRealm]()
     var collectionView: UICollectionView?
     private let realm = try! Realm()
     var user: UserRealm? {
@@ -43,7 +43,7 @@ class UserProfileViewController: UIViewController {
         if posts != nil {
         for post in posts! {
             if post.user?.userId == user?.userId {
-                let onePost =  DataManager.shared.tranferModeltoStruct(withPhoto: post)
+                let onePost = post//  DataManager.shared.tranferModeltoStruct(withPhoto: post)
                 currentPosts.append(onePost)
                 }
             }
@@ -96,17 +96,15 @@ extension UserProfileViewController {
         }
         super.updateViewConstraints()
     }
-    
 }
 extension UserProfileViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if currentPosts.count == 0 {
             return 1
         }
         return currentPosts.count
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if currentPosts.count == 0 {
            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "userProfileNoPostsCellId", for: indexPath) as? UserProfileNoPostsCell else {return UICollectionViewCell()}
@@ -115,6 +113,13 @@ extension UserProfileViewController: UICollectionViewDelegate, UICollectionViewD
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CollectionViewCell", for: indexPath) as? UserProfileCollectionCell else {return UICollectionViewCell() }
         cell.configure(post: currentPosts[indexPath.row])
         return cell
+        }
+    }
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let detailVC = DetailPostViewController()
+        if currentPosts.count != 0 {
+        detailVC.post = currentPosts[indexPath.row]
+            navigationController?.pushViewController(detailVC, animated: true)
         }
     }
 
