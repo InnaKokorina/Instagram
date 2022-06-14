@@ -18,6 +18,7 @@ struct Posts {
     var likes: Int = 0
     var user: User
     var liked: Bool = false
+    var location: String = ""
 }
 
 struct Comments {
@@ -32,7 +33,6 @@ struct User {
     var userName: String = ""
     var userEmail: String = ""
     var userPhoto: UIImage?
-  //  var userPhotoName: UIImage = UIImage(systemName: "person")!
 }
 
 struct Messages {

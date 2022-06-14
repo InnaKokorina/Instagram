@@ -7,12 +7,12 @@
 
 import UIKit
 import Firebase
-import RealmSwift
+//import RealmSwift
 
 class TabBarController: UITabBarController {
-   private var posts = [Posts]()
-    private let realm = try! Realm()
-    private var users: Results<UserRealm>?
+//   private var posts = [Posts]()
+  //  private let realm = try! Realm()
+   // private var users: Results<UserRealm>?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,16 +35,14 @@ class TabBarController: UITabBarController {
         let profileVC = UserProfileViewController()
         let searchVC = SearchViewController()
         let chatVC = ChatViewController()
-        let newPhotoVC = NewPhotoViewController()
         let homeNavController = UINavigationController(rootViewController: homeVC)
         let searchViewController = UINavigationController(rootViewController: searchVC)
-        let newPhotoViewController = UINavigationController(rootViewController: newPhotoVC)
         let chatViewController = UINavigationController(rootViewController: chatVC)
         let profileNavController = UINavigationController(rootViewController: profileVC)
-        setViewControllers([homeNavController, searchViewController, newPhotoViewController, chatViewController, profileNavController], animated: true)
+        setViewControllers([homeNavController, searchViewController, chatViewController, profileNavController], animated: true)
         navigationController?.navigationBar.backgroundColor = .white
         guard let items = self.tabBar.items else { return }
-        let images = ["house", "magnifyingglass", "plus.app", "message", "person.crop.circle"]
+        let images = ["house", "magnifyingglass", "message", "person.crop.circle"]
         for index in 0..<items.count {
             items[index].image = UIImage(systemName: images[index])
         }

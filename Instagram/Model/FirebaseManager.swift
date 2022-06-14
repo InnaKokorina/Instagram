@@ -34,6 +34,7 @@ class FirebaseManager {
                     let liked = object?["liked"] as? Bool ?? false
                     let likes = object?["likes"] as? Int ?? 0
                     let link = object?["link"] as? String ?? ""
+                    let location = object?["location"] as? String ?? ""
                     for comment in data .children.allObjects as! [DataSnapshot] {
                         if let commentsArray  = comment.value as? [Any] {
                             for one in commentsArray {
@@ -47,7 +48,7 @@ class FirebaseManager {
                         }
                     }
                     // save to Model
-                    let post = PostsRealm(comment: self.comments, id: id, imageName: image, likes: likes, link: link, user: UserRealm(userId: userId, userName: userName, userEmail: userEmail), liked: liked, descriptionImage: descriptionImage)
+                    let post = PostsRealm(comment: self.comments, id: id, imageName: image, likes: likes, link: link, user: UserRealm(userId: userId, userName: userName, userEmail: userEmail), liked: liked, descriptionImage: descriptionImage, location: location)
 
                     self.comments = List<CommentsRealm>()
 

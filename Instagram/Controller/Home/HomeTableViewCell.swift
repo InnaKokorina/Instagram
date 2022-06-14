@@ -11,24 +11,11 @@ import RealmSwift
 class HomeTableViewCell: UITableViewCell {
     var likeButtomTap: (() -> Void)?
     var commentButtonPressed: (() -> Void)?
+    var locationPressed:(() -> Void)?
     private let spinner = SpinnerViewController()
     private var dataManager = DataManager()
     private let firebaseManager = FirebaseManager()
     static var identifier = "HomeTableViewCell"
-
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        addViews()
-        setConstraints()
-        likeButton.addTarget(self, action: #selector(likePressed), for: .touchUpInside)
-        commentsButton.addTarget(self, action: #selector(commentButtonpTap), for: .touchUpInside)
-        doubleTapImage()
-        scrollViewSet()
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
 
     // MARK: - UIViews
     private var scrollView: UIScrollView = {
@@ -40,6 +27,14 @@ class HomeTableViewCell: UITableViewCell {
         authorNameLabel.font = UIFont(name: Constants.Font.font, size: 17)
         authorNameLabel.textAlignment = .left
         return authorNameLabel
+    }()
+    private var locationButton: UIButton = {
+        let locationButton = UIButton()
+        locationButton.setTitleColor(.lightGray, for: .normal)
+        locationButton.setTitle("Location", for: .normal)
+        locationButton.contentHorizontalAlignment = .left
+        locationButton.titleLabel?.font = UIFont(name: Constants.Font.font, size: 14)
+        return locationButton
     }()
     private var bandImage: UIImageView = {
         let bandImage = UIImageView()
@@ -80,7 +75,22 @@ class HomeTableViewCell: UITableViewCell {
         commentsButton.setImage(UIImage(systemName: "message"), for: .normal)
         return commentsButton
     }()
-    private lazy var verStackView = UIStackView(arrangedSubviews: [authorNameLabel, scrollView, likeButton, likesCountLabel, descriptionLabel, commentsButton ], axis: .vertical, spacing: 4)
+    private lazy var verStackView = UIStackView(arrangedSubviews: [authorNameLabel, locationButton, scrollView, likeButton, likesCountLabel, descriptionLabel, commentsButton ], axis: .vertical, spacing: 4)
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        addViews()
+        setConstraints()
+        likeButton.addTarget(self, action: #selector(likePressed), for: .touchUpInside)
+        commentsButton.addTarget(self, action: #selector(commentButtonpTap), for: .touchUpInside)
+        locationButton.addTarget(self, action: #selector(locationTap), for: .touchUpInside)
+        doubleTapImage()
+        scrollViewSet()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     // MARK: - cell setup and configure
     private func addViews() {
@@ -94,6 +104,7 @@ class HomeTableViewCell: UITableViewCell {
         descriptionLabel.text = "\(dataModel[indexPath.row].user.userName):  \(dataModel[indexPath.row].descriptionImage)"
         likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel[indexPath.row].likes)
         likeButton.setImage(UIImage(systemName: dataModel[indexPath.row].liked ? "heart.fill" : "heart"), for: .normal)
+        locationButton.setTitle(dataModel[indexPath.row].location, for: .normal)
         spinner.start(view: self.bandImage)
         setImage(image: dataModel[indexPath.row].image)
         spinner.stop()
@@ -111,8 +122,11 @@ class HomeTableViewCell: UITableViewCell {
     @objc  func likePressed() {
         likeButtomTap?()
     }
-    @objc  func  commentButtonpTap (_ sender: UIButton) {
+    @objc  func  commentButtonpTap(_ sender: UIButton) {
         commentButtonPressed?()
+    }
+    @objc func locationTap(_ sender: UIButton) {
+       locationPressed?()
     }
 
     // MARK: - set image from Api or failImage
@@ -134,6 +148,10 @@ class HomeTableViewCell: UITableViewCell {
         }
         authorNameLabel.snp.makeConstraints { make in
             make.left.right.equalTo(verStackView).inset(6)
+        }
+        locationButton.snp.makeConstraints { make in
+            make.left.right.equalTo(verStackView).inset(6)
+            make.height.equalTo(20)
         }
         scrollView.snp.makeConstraints { make in
             make.left.right.equalTo(verStackView)

@@ -19,8 +19,9 @@ class PostsRealm: Object {
     @objc dynamic var likes: Int = 0
     @objc dynamic var link: String = ""
     @objc dynamic var liked: Bool = false
-
-    convenience init(comment: List<CommentsRealm>, id: Int, imageName: String, likes: Int = 0, link: String, user: UserRealm, liked: Bool, descriptionImage: String) {
+    @objc dynamic var location: String = ""
+    
+    convenience init(comment: List<CommentsRealm>, id: Int, imageName: String, likes: Int = 0, link: String, user: UserRealm, liked: Bool, descriptionImage: String, location: String) {
         self.init()
         self.comment = comment
         self.descriptionImage = descriptionImage
@@ -30,6 +31,7 @@ class PostsRealm: Object {
         self.link = link
         self.user = user
         self.liked = liked
+        self.location = location
     }
 }
 
@@ -54,7 +56,6 @@ class UserRealm: Object {
     @objc dynamic var userName: String = ""
     @objc dynamic var userEmail: String = ""
     @objc dynamic var userPhoto: Data?
-//    dynamic var posts = List<PostsRealm>()
     
     convenience init(userId: String, userName: String, userEmail: String) {
       self.init()

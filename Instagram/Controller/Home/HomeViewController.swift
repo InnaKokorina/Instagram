@@ -12,9 +12,9 @@ import FirebaseDatabase
 import FirebaseStorage
 import RealmSwift
 
-protocol TabBarDelegate: AnyObject {
-    func transferModelData(data: [Posts])
-}
+//protocol TabBarDelegate: AnyObject {
+//    func transferModelData(data: [Posts])
+//}
 
 class HomeViewController: UIViewController {
     var dataModel: Results<PostsRealm>?
@@ -24,7 +24,6 @@ class HomeViewController: UIViewController {
     private var ref: DatabaseReference!
     private let realm = try! Realm()
     private let spinner = SpinnerViewController()
-   // weak var delegate: TabBarDelegate?
 
     private let tableView: UITableView = {
         let tableView = UITableView()
@@ -48,8 +47,6 @@ class HomeViewController: UIViewController {
         if realm.isEmpty {
             spinnerImage.isHidden = false
             FirebaseManager.shared.fetchData { post in
-                // save to Realm
-               // let realm = try! Realm()
                     do {
                         try self.realm.write({
                             self.realm.add(post)
@@ -113,30 +110,9 @@ class HomeViewController: UIViewController {
 
     // MARK: - RefreshImages
     @objc func callPullToRefresh() {
-        do {
-            try realm.write {
-                realm.deleteAll()
-                DispatchQueue.main.async {
-                    if self.realm.isEmpty {
-                        FirebaseManager.shared.fetchData { post in
-                                let realm = try! Realm()
-                                do {
-                                    try realm.write({
-                                        realm.add(post)
-                                    })
-                                } catch {
-                                    print("Error saving Data context \(error)")
-                                }
-                                DispatchQueue.main.async {
-                                    self.tableView.refreshControl?.endRefreshing()
-                                    self.loadPosts()
-                                }
-                        }
-                    }
-                }
-            }
-        } catch {
-            print("error in delete \(error)")
+        DispatchQueue.main.async {
+            self.tableView.refreshControl?.endRefreshing()
+            self.loadPosts()
         }
     }
     // MARK: - loadPosts from Realm
@@ -148,14 +124,11 @@ class HomeViewController: UIViewController {
             let onePost = DataManager.shared.tranferModeltoStruct(withPhoto: photo)
             posts.append(onePost)
         }
-         //   delegate?.transferModelData(data: posts)
-            print("homeVCpoasts.count = \(posts.count)")
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
         }
     }
-    
 }
 // MARK: - UITableViewDataSource
 extension HomeViewController: UITableViewDataSource {
@@ -203,6 +176,10 @@ extension HomeViewController: UITableViewDataSource {
                 let viewController = CommentsViewController()
                 viewController.selectedImage = dataModel![indexPath.row]
                 navigationController?.pushViewController(viewController, animated: true)
+        }
+        cell.locationPressed  = {
+            let mapVC = MapViewController()
+            self.navigationController?.pushViewController(mapVC, animated: true)
         }
         return cell
     }

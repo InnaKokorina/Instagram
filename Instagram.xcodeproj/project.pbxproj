@@ -22,6 +22,8 @@
 		C38FCCE9283C1032009A81B3 /* UserProfileHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38FCCE8283C1032009A81B3 /* UserProfileHeaderCell.swift */; };
 		C397B38627FDD5ED000F056E /* CommentsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C397B38527FDD5ED000F056E /* CommentsViewController.swift */; };
 		C397B38A27FDF41F000F056E /* CommentsViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C397B38927FDF41F000F056E /* CommentsViewCell.swift */; };
+		C398D5A22857CFD700C82019 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C398D5A12857CFD700C82019 /* MapViewController.swift */; };
+		C39B31CD2858762F00FCF913 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C39B31CC2858762F00FCF913 /* LocationManager.swift */; };
 		C3A38FF42837E4AC0085102D /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A38FF32837E4AC0085102D /* TabBarController.swift */; };
 		C3A38FF62837E4E40085102D /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A38FF52837E4E40085102D /* SearchViewController.swift */; };
 		C3A38FF82837E4F70085102D /* UserProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A38FF72837E4F70085102D /* UserProfileViewController.swift */; };
@@ -61,6 +63,8 @@
 		C38FCCE8283C1032009A81B3 /* UserProfileHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileHeaderCell.swift; sourceTree = "<group>"; };
 		C397B38527FDD5ED000F056E /* CommentsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsViewController.swift; sourceTree = "<group>"; };
 		C397B38927FDF41F000F056E /* CommentsViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsViewCell.swift; sourceTree = "<group>"; };
+		C398D5A12857CFD700C82019 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		C39B31CC2858762F00FCF913 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		C3A38FF32837E4AC0085102D /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		C3A38FF52837E4E40085102D /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		C3A38FF72837E4F70085102D /* UserProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileViewController.swift; sourceTree = "<group>"; };
@@ -222,6 +226,7 @@
 				C3E4EA4727EB5FA7003815D2 /* PhotosRealm.swift */,
 				C3E4EA4927EB5FB4003815D2 /* DataManager.swift */,
 				C38826872812952A00E02CE8 /* FirebaseManager.swift */,
+				C39B31CC2858762F00FCF913 /* LocationManager.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -233,6 +238,7 @@
 				C37D60F327F4D921002E39CB /* BezierHeartView.swift */,
 				C3730DB727FF34CC00BDF0C5 /* SpinnerViewController.swift */,
 				C3C89BDE282661B50093D8BD /* YPImagePickerView.swift */,
+				C398D5A12857CFD700C82019 /* MapViewController.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -387,6 +393,7 @@
 			files = (
 				C382BFA02850C6400084B817 /* SearchViewCell.swift in Sources */,
 				C375B45C2853A41B00490401 /* DetailPostViewController.swift in Sources */,
+				C39B31CD2858762F00FCF913 /* LocationManager.swift in Sources */,
 				C3B27BDC2852187A00A04476 /* ChatViewCell.swift in Sources */,
 				C3B27BDE28521B8300A04476 /* MessagesViewController.swift in Sources */,
 				C388268428128F9F00E02CE8 /* AuthorizationViewController.swift in Sources */,
@@ -412,6 +419,7 @@
 				C397B38627FDD5ED000F056E /* CommentsViewController.swift in Sources */,
 				C387BA9428141AE500167213 /* NewPhotoViewController.swift in Sources */,
 				C3E4EA4C27EB5FD9003815D2 /* HomeTableViewCell.swift in Sources */,
+				C398D5A22857CFD700C82019 /* MapViewController.swift in Sources */,
 				C3C89BDF282661B50093D8BD /* YPImagePickerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -33,6 +33,7 @@ struct DataManager {
         let userID = photo.user?.userId ?? "0"
         let userName = photo.user?.userName ?? "User"
         let userEmail = photo.user?.userEmail ?? "User"
+        let location = photo.location
         let userPhoto = FirebaseManager.shared.setImage(data: photo.user?.userPhoto)
         let user = User(userId: userID, userName: userName, userEmail: userEmail, userPhoto: userPhoto)
         var comments = [Comments]()
@@ -44,7 +45,7 @@ struct DataManager {
             let oneComment = Comments(body: body, email: email, id: id, postId: postId)
             comments.append(oneComment)
         }
-        let postElement = Posts(comment: comments, descriptionImage: descriptionImage, id: id, imageName: imageName, image: image, likes: likes, user: user, liked: liked)
+        let postElement = Posts(comment: comments, descriptionImage: descriptionImage, id: id, imageName: imageName, image: image, likes: likes, user: user, liked: liked, location: location)
         comments = []
         return postElement
     }

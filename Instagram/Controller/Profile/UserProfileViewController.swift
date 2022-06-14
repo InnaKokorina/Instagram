@@ -36,19 +36,18 @@ class UserProfileViewController: UIViewController {
         collectionView?.dataSource = self
         setupNavItems()
         chooseUser()
+        collectionView?.refreshControl = UIRefreshControl()
+        collectionView?.refreshControl?.addTarget(self, action: #selector(callPullToRefresh), for: .valueChanged)
     }
 
     func loadPosts() {
+        currentPosts = []
         posts = realm.objects(PostsRealm.self)
         if posts != nil {
-        for post in posts! {
-            if post.user?.userId == user?.userId {
-                let onePost = post//  DataManager.shared.tranferModeltoStruct(withPhoto: post)
+            for post in posts! where post.user?.userId == user?.userId {
+                let onePost = post
                 currentPosts.append(onePost)
-                }
             }
-        } else {
-            currentPosts = []
         }
     }
     func chooseUser() {
@@ -82,6 +81,14 @@ class UserProfileViewController: UIViewController {
             try Auth.auth().signOut()
         } catch {
             print(error)
+        }
+    }
+    // MARK: - RefreshImages
+    @objc func callPullToRefresh() {
+        DispatchQueue.main.async { [self] in
+            collectionView?.refreshControl?.endRefreshing()
+            self.loadPosts()
+            collectionView?.reloadData()
         }
     }
 }

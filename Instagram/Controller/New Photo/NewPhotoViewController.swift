@@ -23,6 +23,7 @@ class NewPhotoViewController: UIViewController {
     private let spinner = SpinnerViewController()
     var didSetupConstraints = false
     var dataModel: Results<PostsRealm>?
+    private var currentUser = UserRealm()
     let imagePicker = YPImagePickerView()
     var selectedItems = [YPMediaItem]()
     // MARK: - View
@@ -31,6 +32,14 @@ class NewPhotoViewController: UIViewController {
         userLabel.font = UIFont(name: Constants.Font.font, size: 17)
         userLabel.textAlignment = .left
         return userLabel
+    }()
+    private var locationButton: UIButton = {
+        let locationButton = UIButton()
+        locationButton.setTitleColor(.gray, for: .normal)
+        locationButton.setTitle("Location", for: .normal)
+        locationButton.contentHorizontalAlignment = .left
+        locationButton.titleLabel?.font = UIFont(name: Constants.Font.font, size: 14)
+        return locationButton
     }()
     var newImage: UIImageView = {
         let newImage = UIImageView()
@@ -71,7 +80,7 @@ class NewPhotoViewController: UIViewController {
         spinnerImage.translatesAutoresizingMaskIntoConstraints = false
         return spinnerImage
     }()
-    private lazy var verStackView = UIStackView(arrangedSubviews: [userLabel, newImage, photoTextField, addButton], axis: .vertical, spacing: 8)
+    private lazy var verStackView = UIStackView(arrangedSubviews: [userLabel, locationButton, newImage, photoTextField, addButton], axis: .vertical, spacing: 4)
 
     // MARK: - lifecycle
     override func viewDidLoad() {
@@ -80,12 +89,19 @@ class NewPhotoViewController: UIViewController {
         view.addSubview(verStackView)
         addButton.addSubview(spinnerImage)
         spinnerImage.frame = addButton.frame
-        userLabel.text = auth.setName()
+        setUser()
         view.setNeedsUpdateConstraints()
         photoTextField.delegate = self
         addNewPhoto()
         setupNavItems()
         addButton.addTarget(self, action: #selector(sharePressed), for: .touchUpInside)
+        locationButton.addTarget(self, action: #selector(locationTap), for: .touchUpInside)
+    }
+    func setUser() {
+       let users = realm.objects(UserRealm.self)
+        for eachUser in users where eachUser.userId == Auth.auth().currentUser!.uid {
+            userLabel.text = eachUser.userName
+        }
     }
 
     // MARK: - navigationItems
@@ -97,10 +113,16 @@ class NewPhotoViewController: UIViewController {
         back.tintColor = .black
         navigationItem.leftBarButtonItem = back
         navigationItem.title = Constants.App.titleNewPhoto
+
     }
 
     @objc func backPressed() {
         navigationController?.popViewController(animated: true)
+    }
+    @objc func locationTap() {
+        let mapVC = MapViewController()
+        self.navigationController?.pushViewController(mapVC, animated: true)
+        mapVC.delegate = self
     }
     // MARK: - sharePressed
     @objc func sharePressed(_ sender: Any) {
@@ -121,20 +143,21 @@ class NewPhotoViewController: UIViewController {
                         return
                     } else {
                         urlString = downloadURL!
-
                         // save to Realm
-                        let index: Int = (self.dataModel?.count ?? 1) - 1
+                        let index: Int = self.dataModel?.count ?? 1
+                        let users = realm.objects(UserRealm.self)
+                         for eachUser in users where eachUser.userId == Auth.auth().currentUser!.uid {
+                             currentUser = eachUser
+                         }
                         let post = PostsRealm(
                             comment: List<CommentsRealm>(),
                             id: index,
                             imageName: filePathStr, likes: 0,
                             link: urlString,
-                            user: UserRealm(
-                                userId: (Auth.auth().currentUser?.uid as? String)!,
-                                userName: userLabel.text ?? "user",
-                                userEmail: (Auth.auth().currentUser?.email as? String)!),
+                            user: currentUser,
                             liked: false,
-                            descriptionImage: self.photoTextField.text)
+                            descriptionImage: self.photoTextField.text,
+                            location: locationButton.currentTitle!)
                         FirebaseManager.shared.getImage(picName: filePathStr) { data in
                             post.image = data
                        // }
@@ -153,6 +176,7 @@ class NewPhotoViewController: UIViewController {
                                         "liked": post.liked,
                                         "likes": post.likes,
                                         "link": post.link,
+                                        "location": post.location,
                                         "comments": Array(post.comment)
                                     ] as [String: Any]
                                     self.ref.setValue(dict)
@@ -161,7 +185,6 @@ class NewPhotoViewController: UIViewController {
                                     DispatchQueue.main.async {
                                         self.navigationController?.popViewController(animated: false)
                                         self.spinner.stop()
-
                                     }
                                 }
                             } catch {
@@ -223,13 +246,17 @@ extension NewPhotoViewController {
         if !didSetupConstraints {
         verStackView.snp.makeConstraints { make in
             make.left.right.equalTo(view).inset(8)
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(16)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(24)
             make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-30)
         }
         userLabel.snp.makeConstraints { make in
             make.left.right.equalTo(verStackView)
-            make.height.equalTo(60)
+            make.height.equalTo(24)
         }
+            locationButton.snp.makeConstraints { make in
+                make.left.right.equalTo(verStackView)
+                make.height.equalTo(20)
+            }
         newImage.snp.makeConstraints { make in
             make.left.right.equalTo(verStackView)
             make.height.equalTo(400)
@@ -255,5 +282,10 @@ extension NewPhotoViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         textView.text = ""
         photoTextField.textColor = .black
+    }
+}
+extension NewPhotoViewController: MapViewControllerDelegate {
+    func saveLocation(with location: String) {
+        locationButton.setTitle(location, for: .normal)
     }
 }
