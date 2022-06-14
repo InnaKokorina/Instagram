@@ -14,6 +14,7 @@ protocol MapViewControllerDelegate: AnyObject {
 
 class MapViewController: UIViewController {
     weak var delegate: MapViewControllerDelegate?
+    var searchPoint: String? = ""
     private let map: MKMapView = {
         let map = MKMapView()
         return map
@@ -23,10 +24,18 @@ class MapViewController: UIViewController {
         view.addSubview(map)
         map.frame = view.bounds
         setupNavItems()
-        LocationManager.shared.getUserLocaation { [weak self] location in
-            DispatchQueue.main.async {
-                guard let strongSelf = self else { return }
-                strongSelf.addMapPin(with: location)
+        if let searchItem = searchPoint {
+            if searchItem == "Location" {
+                LocationManager.shared.getUserLocaation { [weak self] location in
+                    DispatchQueue.main.async {
+                        guard let strongSelf = self else { return }
+                        strongSelf.addMapPin(with: location)
+                    }
+                }
+            } else if searchPoint == "" {
+                return
+            } else {
+                searchPoint(with : searchPoint ?? "")
             }
         }
     }
@@ -55,5 +64,26 @@ class MapViewController: UIViewController {
         let location = self.title
         delegate?.saveLocation(with: location ?? "")
         navigationController?.popViewController(animated: true)
+    }
+
+    func searchPoint(with searchPoint: String) {
+        let request = MKLocalSearch.Request()
+        request.naturalLanguageQuery = searchPoint
+        request.region = map.region
+
+        let search = MKLocalSearch(request: request)
+        search.start { response, error in
+            guard let response = response else {
+                print("Search error: \(error)")
+                return
+            }
+            for item in response.mapItems {
+                let pin = MKPointAnnotation()
+                pin.coordinate = item.placemark.coordinate
+                self.map.setRegion(MKCoordinateRegion(center: item.placemark.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.7, longitudeDelta: 0.7)), animated: true)
+                self.map.addAnnotation(pin)
+                    self.title = searchPoint
+            }
+        }
     }
 }

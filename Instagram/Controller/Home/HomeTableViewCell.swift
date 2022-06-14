@@ -28,7 +28,7 @@ class HomeTableViewCell: UITableViewCell {
         authorNameLabel.textAlignment = .left
         return authorNameLabel
     }()
-    private var locationButton: UIButton = {
+    var locationButton: UIButton = {
         let locationButton = UIButton()
         locationButton.setTitleColor(.lightGray, for: .normal)
         locationButton.setTitle("Location", for: .normal)

@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreLocation
+import MapKit
 
 class LocationManager: NSObject, CLLocationManagerDelegate {
     static let shared = LocationManager()

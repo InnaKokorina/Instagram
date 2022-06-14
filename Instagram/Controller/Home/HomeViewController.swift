@@ -12,9 +12,6 @@ import FirebaseDatabase
 import FirebaseStorage
 import RealmSwift
 
-//protocol TabBarDelegate: AnyObject {
-//    func transferModelData(data: [Posts])
-//}
 
 class HomeViewController: UIViewController {
     var dataModel: Results<PostsRealm>?
@@ -59,6 +56,7 @@ class HomeViewController: UIViewController {
                         self.spinner.stop()
                         self.tableViewsSetup()
                         self.spinnerImage.isHidden = true
+                        print("loadPosts")
                         self.loadPosts()
                 }
             }
@@ -170,6 +168,7 @@ extension HomeViewController: UITableViewDataSource {
                 print("Error saving Data context \(error)")
             }
             }
+        print("cnfigure")
         cell.configure(dataModel: self.posts, indexPath: indexPath)
             // navigation to comments
             cell.commentButtonPressed = { [unowned self] in
@@ -179,6 +178,7 @@ extension HomeViewController: UITableViewDataSource {
         }
         cell.locationPressed  = {
             let mapVC = MapViewController()
+            mapVC.searchPoint = cell.locationButton.currentTitle!
             self.navigationController?.pushViewController(mapVC, animated: true)
         }
         return cell
