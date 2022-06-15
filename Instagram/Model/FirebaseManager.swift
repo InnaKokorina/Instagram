@@ -131,7 +131,7 @@ class FirebaseManager {
     }
     // MARK: - saveNewPhotoToRealmAndFB
     func saveNewPhotoToRealmAndFB(dataModel: Results<PostsRealm>?, filePathStr: String, urlString: String, location: String, descriptionTextField: String) {
-        let index: Int = dataModel?.count ?? 1
+        let index: Int = dataModel![0].id + 1 
         let users = realm.objects(UserRealm.self)
          for eachUser in users where eachUser.userId == Auth.auth().currentUser!.uid {
             currentUser = eachUser

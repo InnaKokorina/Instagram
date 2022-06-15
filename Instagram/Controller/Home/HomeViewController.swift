@@ -168,6 +168,7 @@ extension HomeViewController: UITableViewDataSource {
             }
         }
         cell.configure(dataModel: self.posts, indexPath: indexPath)
+        cell.deleteButton.isHidden = true
             // navigation to comments
             cell.commentButtonPressed = { [unowned self] in
                 let viewController = CommentsViewController()

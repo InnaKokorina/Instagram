@@ -16,11 +16,7 @@ class UserProfileViewController: UIViewController {
     var currentPosts = [PostsRealm]()
     var collectionView: UICollectionView?
     private let realm = try! Realm()
-    var user: UserRealm? {
-        didSet {
-           loadPosts()
-        }
-    }
+    var user: UserRealm? 
 // MARK: - lifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,11 +34,12 @@ class UserProfileViewController: UIViewController {
         chooseUser()
         collectionView?.refreshControl = UIRefreshControl()
         collectionView?.refreshControl?.addTarget(self, action: #selector(callPullToRefresh), for: .valueChanged)
+        loadPosts()
     }
 
     func loadPosts() {
         currentPosts = []
-        posts = realm.objects(PostsRealm.self)
+        posts = realm.objects(PostsRealm.self).sorted(byKeyPath: "id", ascending: false)
         if posts != nil {
             for post in posts! where post.user?.userId == user?.userId {
                 let onePost = post

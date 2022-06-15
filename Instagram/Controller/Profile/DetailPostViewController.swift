@@ -45,7 +45,14 @@ class DetailPostViewController: UIViewController {
         logOutButton.tintColor = .black
         navigationItem.rightBarButtonItem  = logOutButton
         navigationItem.title = Constants.App.title
+        let back = UIBarButtonItem(image: UIImage(systemName: "chevron.compact.left"), style: .plain, target: self, action: #selector(backPressed))
+        back.tintColor = .black
+        navigationItem.leftBarButtonItem = back
     }
+    @objc func backPressed() {
+        navigationController?.popViewController(animated: true)
+    }
+    
     @objc func logOutButtonPressed(_ sender: Any) {
         do {
             navigationController?.popViewController(animated: true)
@@ -89,7 +96,6 @@ extension DetailPostViewController: UITableViewDataSource {
                             postStruct[indexPath.row].likes -= 1
                            postsRealm![index].likes -= 1
                         }
-
                                 cell.likesCountLabel.text = DataManager.shared.likeLabelConvert(counter: postStruct[indexPath.row].likes)
                                 self.ref = Database.database().reference().child("photos/\(postsRealm![index].id)")
                                 let dict = ["liked": postsRealm![index].liked, "likes": postsRealm![index].likes] as [String: Any]
@@ -110,6 +116,40 @@ extension DetailPostViewController: UITableViewDataSource {
                 viewController.selectedImage = posts[indexPath.row]
                 navigationController?.pushViewController(viewController, animated: true)
         }
+        cell.locationPressed  = {
+            if cell.locationButton.currentTitle! != "" {
+            let mapVC = MapViewController()
+            mapVC.searchPoint = cell.locationButton.currentTitle!
+            self.navigationController?.pushViewController(mapVC, animated: true)
+            }
+        }
+        cell.deleteItem = {
+            let alert = UIAlertController(title: "", message: "Удалить фото?", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+            let postsRealm: Results<PostsRealm>?
+            postsRealm = self.realm.objects(PostsRealm.self)
+            if postsRealm != nil {
+                for index in 0..<postsRealm!.count {
+                    if postStruct[indexPath.row].id == postsRealm![index].id {
+                        
+                        do {
+                            try self.realm.write {
+                                self.ref = Database.database().reference().child("photos/\(postsRealm![index].id)")
+                                self.ref.removeValue()
+                                self.realm.delete(postsRealm![index])
+                            }
+                        } catch {
+                            print("error in deleting category \(error)")
+                        }
+                        break                  }
+                }
+                self.navigationController?.popViewController(animated: true)
+            }
+        })
+            alert.addAction(UIAlertAction(title: "Oтмена", style: .cancel, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
         return cell
     }
 }
+

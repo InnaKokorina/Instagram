@@ -22,6 +22,7 @@
 		C38FCCE9283C1032009A81B3 /* UserProfileHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38FCCE8283C1032009A81B3 /* UserProfileHeaderCell.swift */; };
 		C397B38627FDD5ED000F056E /* CommentsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C397B38527FDD5ED000F056E /* CommentsViewController.swift */; };
 		C397B38A27FDF41F000F056E /* CommentsViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C397B38927FDF41F000F056E /* CommentsViewCell.swift */; };
+		C397FA11285A570B00C5BB8F /* SwipeVIewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C397FA10285A570B00C5BB8F /* SwipeVIewCell.swift */; };
 		C398D5A22857CFD700C82019 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C398D5A12857CFD700C82019 /* MapViewController.swift */; };
 		C39B31CD2858762F00FCF913 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C39B31CC2858762F00FCF913 /* LocationManager.swift */; };
 		C3A38FF42837E4AC0085102D /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A38FF32837E4AC0085102D /* TabBarController.swift */; };
@@ -63,6 +64,7 @@
 		C38FCCE8283C1032009A81B3 /* UserProfileHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileHeaderCell.swift; sourceTree = "<group>"; };
 		C397B38527FDD5ED000F056E /* CommentsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsViewController.swift; sourceTree = "<group>"; };
 		C397B38927FDF41F000F056E /* CommentsViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsViewCell.swift; sourceTree = "<group>"; };
+		C397FA10285A570B00C5BB8F /* SwipeVIewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeVIewCell.swift; sourceTree = "<group>"; };
 		C398D5A12857CFD700C82019 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		C39B31CC2858762F00FCF913 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		C3A38FF32837E4AC0085102D /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
@@ -239,6 +241,7 @@
 				C3730DB727FF34CC00BDF0C5 /* SpinnerViewController.swift */,
 				C3C89BDE282661B50093D8BD /* YPImagePickerView.swift */,
 				C398D5A12857CFD700C82019 /* MapViewController.swift */,
+				C397FA10285A570B00C5BB8F /* SwipeVIewCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -398,6 +401,7 @@
 				C3B27BDE28521B8300A04476 /* MessagesViewController.swift in Sources */,
 				C388268428128F9F00E02CE8 /* AuthorizationViewController.swift in Sources */,
 				C3E4EA3527EB5DDE003815D2 /* HomeViewController.swift in Sources */,
+				C397FA11285A570B00C5BB8F /* SwipeVIewCell.swift in Sources */,
 				C329181628465876006BCB85 /* ChatViewController.swift in Sources */,
 				C3E4EA4E27EB5FF9003815D2 /* StackViewExtensions.swift in Sources */,
 				C38FCCE9283C1032009A81B3 /* UserProfileHeaderCell.swift in Sources */,

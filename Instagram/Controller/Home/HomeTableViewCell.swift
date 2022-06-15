@@ -7,15 +7,15 @@
 
 import UIKit
 import RealmSwift
+import FirebaseAuth
 
 class HomeTableViewCell: UITableViewCell {
     var likeButtomTap: (() -> Void)?
     var commentButtonPressed: (() -> Void)?
     var locationPressed:(() -> Void)?
     var authorLabelPressed:(() -> Void)?
+    var  deleteItem:(() -> Void)?
     private let spinner = SpinnerViewController()
-    private var dataManager = DataManager()
-    private let firebaseManager = FirebaseManager()
     static var identifier = "HomeTableViewCell"
 
     // MARK: - UIViews
@@ -52,6 +52,13 @@ class HomeTableViewCell: UITableViewCell {
         likeButton.contentHorizontalAlignment = .leading
         return likeButton
     }()
+    let deleteButton: UIButton = {
+        let deleteButton = UIButton()
+        deleteButton.contentHorizontalAlignment = .trailing
+        deleteButton.setImage(UIImage(systemName: "trash"), for: .normal)
+        deleteButton.imageView?.tintColor = .black
+        return deleteButton
+    }()
     var likesCountLabel: UILabel = {
         var likesCountLabel = UILabel()
         likesCountLabel.font = UIFont(name: Constants.Font.font, size: 15)
@@ -77,7 +84,8 @@ class HomeTableViewCell: UITableViewCell {
         commentsButton.setImage(UIImage(systemName: "message"), for: .normal)
         return commentsButton
     }()
-    private lazy var verStackView = UIStackView(arrangedSubviews: [authorNameLabel, locationButton, scrollView, likeButton, likesCountLabel, descriptionLabel, commentsButton ], axis: .vertical, spacing: 4)
+    private lazy var verStackView = UIStackView(arrangedSubviews: [authorNameLabel, locationButton, scrollView, horStackView, likesCountLabel, descriptionLabel, commentsButton ], axis: .vertical, spacing: 4)
+    private lazy var horStackView = UIStackView(arrangedSubviews: [likeButton, deleteButton], axis: .horizontal)
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -86,6 +94,7 @@ class HomeTableViewCell: UITableViewCell {
         likeButton.addTarget(self, action: #selector(likePressed), for: .touchUpInside)
         commentsButton.addTarget(self, action: #selector(commentButtonpTap), for: .touchUpInside)
         locationButton.addTarget(self, action: #selector(locationTap), for: .touchUpInside)
+        deleteButton.addTarget(self, action: #selector(deleteTap), for: .touchUpInside)
         doubleTapImage()
         tapUser()
         scrollViewSet()
@@ -100,12 +109,13 @@ class HomeTableViewCell: UITableViewCell {
         contentView.addSubview(verStackView)
         scrollView.addSubview(bandImage)
         bandImage.addSubview(heartView)
+        horStackView.distribution = .equalSpacing
     }
     func configure (dataModel: [Posts], indexPath: IndexPath) {
         verStackView.alignment = .leading
         authorNameLabel.text = dataModel[indexPath.row].user.userName
         descriptionLabel.text = "\(dataModel[indexPath.row].user.userName):  \(dataModel[indexPath.row].descriptionImage)"
-        likesCountLabel.text = dataManager.likeLabelConvert(counter: dataModel[indexPath.row].likes)
+        likesCountLabel.text = DataManager.shared.likeLabelConvert(counter: dataModel[indexPath.row].likes)
         likeButton.setImage(UIImage(systemName: dataModel[indexPath.row].liked ? "heart.fill" : "heart"), for: .normal)
         locationButton.setTitle(dataModel[indexPath.row].location, for: .normal)
         spinner.start(view: self.bandImage)
@@ -113,6 +123,11 @@ class HomeTableViewCell: UITableViewCell {
         spinner.stop()
         selectionStyle = .none
         commentsButton.tintColor = .black
+        if dataModel[indexPath.row].user.userId == Auth.auth().currentUser!.uid {
+            deleteButton.isHidden = false
+        } else {
+            deleteButton.isHidden = true
+        }
     }
 
     // prepare for reuse
@@ -134,7 +149,9 @@ class HomeTableViewCell: UITableViewCell {
     @objc func userPressed() {
         authorLabelPressed?()
     }
-
+    @objc func deleteTap() {
+       deleteItem?()
+    }
     // MARK: - set image from Api or failImage
     func setImage(image: UIImage?) {
         if image == nil {
@@ -171,8 +188,14 @@ class HomeTableViewCell: UITableViewCell {
             make.left.right.equalTo(bandImage).inset(40)
             make.top.bottom.equalTo(bandImage).inset(100)
         }
+        horStackView.snp.makeConstraints { make in
+            make.left.right.equalTo(verStackView).inset(6)
+          //  make.width.equalTo(22)
+        }
         likeButton.snp.makeConstraints { make in
-            make.left.equalTo(verStackView).inset(6)
+            make.width.equalTo(22)
+        }
+        deleteButton.snp.makeConstraints { make in
             make.width.equalTo(22)
         }
         likesCountLabel.snp.makeConstraints { make in
