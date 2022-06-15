@@ -7,15 +7,18 @@
 
 import Foundation
 import UIKit
+import RealmSwift
 
 struct DataManager {
     static var shared = DataManager()
+    // MARK: - likeLabelConvert
     func likeLabelConvert(counter: Int) -> String {
         let formatString: String = NSLocalizedString("likes count", comment: "likes count string format to be found in Localized.stringsdict")
         let likesCount: String = String.localizedStringWithFormat(formatString, counter)
         let likesTextLabel = ("\(likesCount)")
         return likesTextLabel
     }
+    // MARK: - dateFormatter
     func dateFormatter() -> String {
         let currentDateTime = Date()
         let formatter = DateFormatter()
@@ -23,6 +26,7 @@ struct DataManager {
         let currentDateTimeString = formatter.string(from: currentDateTime)
         return currentDateTimeString
     }
+    // MARK: - tranferModeltoStruct
     func tranferModeltoStruct(withPhoto photo: PostsRealm) -> Posts {
         let id = photo.id
         let descriptionImage = photo.descriptionImage
@@ -48,5 +52,27 @@ struct DataManager {
         let postElement = Posts(comment: comments, descriptionImage: descriptionImage, id: id, imageName: imageName, image: image, likes: likes, user: user, liked: liked, location: location)
         comments = []
         return postElement
+    }
+    // MARK: - uniqueArray
+    func uniqueArray(array: Results<UserRealm>, authUserId: String?) -> [UserRealm] {
+        var unique = [UserRealm]()
+        var notContains = false
+        unique = [UserRealm(userId: " ", userName: " ", userEmail: " ")]
+        for element in array {
+            for one in unique {
+                if element.userId != one.userId && element.userId != authUserId {
+                    notContains = true
+                }
+                if element.userId == one.userId {
+                    notContains  = false
+                    continue
+                }
+            }
+            if notContains == true {
+                unique.append(element)
+            }
+        }
+        unique.removeFirst()
+        return unique
     }
 }

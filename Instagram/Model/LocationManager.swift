@@ -20,7 +20,6 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         manager.delegate = self
         manager.startUpdatingLocation()
     }
- 
     public func resolveLocatioName(with location: CLLocation, completion: @escaping ((String?) -> Void)) {
         let geocoder = CLGeocoder()
         geocoder.reverseGeocodeLocation(location, preferredLocale: .current) { placemarks, error in

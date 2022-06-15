@@ -7,21 +7,13 @@
 
 import UIKit
 import FirebaseAuth
-import Firebase
-import FirebaseDatabase
-import FirebaseStorage
 import RealmSwift
 import SnapKit
 
 class CommentsViewController: UIViewController {
     private var didSetupConstraints = false
-    private var auth = AuthorizationViewController()
     private var activeTextField: UITextField?
-    private var firebaseManager = FirebaseManager()
-    private var ref: DatabaseReference!
-    private let realm = try! Realm()
     private var comments: Results<CommentsRealm>?
-
     var selectedImage: PostsRealm? {
         didSet {
             loadComments()
@@ -47,22 +39,18 @@ class CommentsViewController: UIViewController {
         textField.viewWithTag(0)
         return textField
     }()
-
     private let addComment: UIButton = {
         let addComment = UIButton()
         addComment.setImage(UIImage(systemName: "paperplane.fill"), for: .normal)
         addComment.imageView?.tintColor = .black
         return addComment
     }()
-
     private lazy var horStackView = UIStackView(arrangedSubviews: [textField, addComment], axis: .horizontal, spacing: 8)
     // MARK: - lifecycle
     override func viewDidLoad() {
         view.backgroundColor = .systemBackground
-     //   horStackView.backgroundColor = UIColor(red: 0.25, green: 0.16, blue: 0.58, alpha: 1)
         tableViewsSetup()
         view.addSubview(horStackView)
-      //  horStackView.layer.borderColor  = CGColor(red: 0.25, green: 0.16, blue: 0.58, alpha: 1)
         view.setNeedsUpdateConstraints()
         textField.delegate = self
         addComment.addTarget(self, action: #selector(addCommentTap), for: .touchUpInside)
@@ -87,11 +75,9 @@ class CommentsViewController: UIViewController {
         navigationItem.leftBarButtonItem = back
         navigationItem.title = Constants.App.titleComments
     }
-
     @objc func backPressed() {
         navigationController?.popViewController(animated: true)
     }
-
     @objc func logOutButtonPressed(_ sender: Any) {
         do {
             navigationController?.popViewController(animated: true)
@@ -105,7 +91,6 @@ class CommentsViewController: UIViewController {
         comments = selectedImage?.comment.sorted(byKeyPath: "id", ascending: true)
         tableView.reloadData()
     }
-
 }
 // MARK: - UITableViewDataSource, UITableViewDelegate
 extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
@@ -121,20 +106,18 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
         }
         return cell
     }
-//    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-//        60
-//    }
     // MARK: - setConstraints()
     override func updateViewConstraints() {
         if !didSetupConstraints {
             tableView.snp.makeConstraints { make in
-                make.left.right.top.equalTo(view)
+                make.left.right.equalTo(view)
+                make.top.equalTo(view).offset(10)
             }
             horStackView.snp.makeConstraints { make in
                 make.left.right.equalTo(view)
                 make.bottom.equalTo(view)
                 make.top.equalTo(tableView.snp.bottom)
-                make.height.equalTo(70)
+                make.height.equalTo(50)
             }
             addComment.snp.makeConstraints { make in
                 make.top.equalTo(horStackView)
@@ -159,24 +142,10 @@ extension CommentsViewController: UITextFieldDelegate {
         textField.resignFirstResponder()
         return true
     }
-
     @objc func addCommentTap() {
      if let currentImage = self.selectedImage {
             if  let message = textField.text {
-                let email  = auth.setName()
-                let id = currentImage.comment.count
-                let postId = currentImage.id
-                do {
-                    try realm.write {
-                        let newcomment = CommentsRealm(body: message, email: email, id: id, postId: postId)
-                        currentImage.comment.append(newcomment)
-                        self.ref =  Database.database().reference().child("photos/\(postId)/comments/\(id)")
-                        let dictionary = ["email": newcomment.email, "body": newcomment.body, "id": newcomment.id, "postId": newcomment.postId] as [String: Any]
-                        ref.setValue(dictionary)
-                    }
-                } catch {
-                    print("Error saving Data context \(error)")
-                }
+                FirebaseManager.shared.saveComment(message: message, currentImage: currentImage)
                 tableView.reloadData()
                 textField.text = ""
                 textField.endEditing(true)
@@ -184,7 +153,6 @@ extension CommentsViewController: UITextFieldDelegate {
         }
     }
 }
-
 // MARK: - keyboardWillShow
 extension CommentsViewController {
     @objc func keyboardWillShow(notification: NSNotification) {

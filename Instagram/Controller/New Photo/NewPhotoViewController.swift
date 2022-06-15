@@ -15,15 +15,11 @@ import SnapKit
 
 class NewPhotoViewController: UIViewController {
     private var activeTextField: UITextView?
-    private var auth = AuthorizationViewController()
-    private var firebaseManager = FirebaseManager()
-    private var ref: DatabaseReference!
     private let dataManager = DataManager()
     private let realm = try! Realm()
     private let spinner = SpinnerViewController()
     var didSetupConstraints = false
     var dataModel: Results<PostsRealm>?
-    private var currentUser = UserRealm()
     let imagePicker = YPImagePickerView()
     var selectedItems = [YPMediaItem]()
     // MARK: - View
@@ -113,14 +109,13 @@ class NewPhotoViewController: UIViewController {
         back.tintColor = .black
         navigationItem.leftBarButtonItem = back
         navigationItem.title = Constants.App.titleNewPhoto
-
     }
-
     @objc func backPressed() {
         navigationController?.popViewController(animated: true)
     }
     @objc func locationTap() {
         let mapVC = MapViewController()
+        mapVC.searchPoint = locationButton.currentTitle!
         self.navigationController?.pushViewController(mapVC, animated: true)
         mapVC.delegate = self
     }
@@ -129,12 +124,11 @@ class NewPhotoViewController: UIViewController {
         spinner.start(view: spinnerImage)
         addButton.setTitle("", for: .normal)
         // save image to FBStorage
-        var urlString = ""
         if let image = self.newImage.image {
             let filePath = self.dataManager.dateFormatter()
            let filePathStr = "\(filePath).jpg"
             DispatchQueue.global().async {
-                self.firebaseManager.uploadImage(for: image, path: filePathStr) { [self] (downloadURL) in
+                FirebaseManager.shared.uploadImage(for: image, path: filePathStr) { [self] (downloadURL) in
                     if  downloadURL == nil {
                         self.addButton.imageView?.isHidden = true
                         self.spinner.stop()
@@ -142,55 +136,11 @@ class NewPhotoViewController: UIViewController {
                         print("Download url not found")
                         return
                     } else {
-                        urlString = downloadURL!
-                        // save to Realm
-                        let index: Int = self.dataModel?.count ?? 1
-                        let users = realm.objects(UserRealm.self)
-                         for eachUser in users where eachUser.userId == Auth.auth().currentUser!.uid {
-                             currentUser = eachUser
-                         }
-                        let post = PostsRealm(
-                            comment: List<CommentsRealm>(),
-                            id: index,
-                            imageName: filePathStr, likes: 0,
-                            link: urlString,
-                            user: currentUser,
-                            liked: false,
-                            descriptionImage: self.photoTextField.text,
-                            location: locationButton.currentTitle!)
-                        FirebaseManager.shared.getImage(picName: filePathStr) { data in
-                            post.image = data
-                       // }
-                            do {
-                                try self.realm.write {
-                                    self.realm.add(post)
-                                    self.ref = Database.database().reference().child("photos/\(index)")
-                                    // save to FB
-                                    let  dict = [
-                                        "userId": post.user?.userId ?? "",
-                                        "userName": post.user?.userName ?? "unknowedUser",
-                                        "userEmail": post.user?.userEmail ?? "",
-                                        "descriptionImage": post.descriptionImage,
-                                        "id": post.id,
-                                        "image": post.imageName,
-                                        "liked": post.liked,
-                                        "likes": post.likes,
-                                        "link": post.link,
-                                        "location": post.location,
-                                        "comments": Array(post.comment)
-                                    ] as [String: Any]
-                                    self.ref.setValue(dict)
-                                    // Navigation
-
-                                    DispatchQueue.main.async {
-                                        self.navigationController?.popViewController(animated: false)
-                                        self.spinner.stop()
-                                    }
-                                }
-                            } catch {
-                                print("Error saving Data context \(error)")
-
-                            }
+                       let urlString = downloadURL!
+                        FirebaseManager.shared.saveNewPhotoToRealmAndFB(dataModel: dataModel, filePathStr: filePathStr, urlString: urlString, location: locationButton.currentTitle!, descriptionTextField: self.photoTextField.text)
+                        DispatchQueue.main.async {
+                            self.navigationController?.popViewController(animated: false)
+                            self.spinner.stop()
                         }
                     }
                 }

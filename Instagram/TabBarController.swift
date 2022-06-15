@@ -7,13 +7,8 @@
 
 import UIKit
 import Firebase
-//import RealmSwift
 
 class TabBarController: UITabBarController {
-//   private var posts = [Posts]()
-  //  private let realm = try! Realm()
-   // private var users: Results<UserRealm>?
-
     override func viewDidLoad() {
         super.viewDidLoad()
         tabBar.tintColor = .black

@@ -20,6 +20,9 @@ struct Constants {
         static let placeholderName = "Введите имя"
         static let backImageName = "backAuth"
         static let buttonTitle = "GO!"
+        static let errorEmptyFields = "Пожалуйста, заполните все поля"
+        static let errorIncorrectData = "Email адрес или пароль введены некорректно, либо учетная запись с таким email уже существует"
+        static let errorNoAccount = "Такой учетной записи не существует. Проверьте email адрес или пароль"
     }
 
     struct Font {
@@ -29,8 +32,8 @@ struct Constants {
     struct App {
         static let title = "PhotoStory"
         static let titleComments = "Комментарии"
-        static let titleMessages = "Чат"
-        static let titleSearch = "Поиск"
+        static let titleMessages = "Чат💬"
+        static let titleSearch = "Поиск🔍"
         static let titleNewPhoto = "Новая публикация"
     }
 

@@ -35,7 +35,7 @@ class MapViewController: UIViewController {
             } else if searchPoint == "" {
                 return
             } else {
-                searchPoint(with : searchPoint ?? "")
+                searchPoint(with: searchPoint ?? "")
             }
         }
     }
@@ -74,7 +74,7 @@ class MapViewController: UIViewController {
         let search = MKLocalSearch(request: request)
         search.start { response, error in
             guard let response = response else {
-                print("Search error: \(error)")
+                print("Search error")
                 return
             }
             for item in response.mapItems {

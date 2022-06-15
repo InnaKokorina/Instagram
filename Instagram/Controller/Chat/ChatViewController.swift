@@ -22,6 +22,7 @@ class ChatViewController: UIViewController {
     private let tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(ChatViewCell.self, forCellReuseIdentifier: "ChatViewCell")
+        tableView.separatorStyle = .none
         return tableView
     }()
     // MARK: - lifecycle
@@ -32,7 +33,6 @@ class ChatViewController: UIViewController {
         view.addSubview(tableView)
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.separatorStyle = .none
         view.setNeedsUpdateConstraints()
         searchBar.delegate = self
         loadUsers()
@@ -46,27 +46,6 @@ class ChatViewController: UIViewController {
     func loadUsers() {
             users = realm.objects(UserRealm.self).sorted(byKeyPath: "userName", ascending: true)
     }
-    func uniqueArray(array: Results<UserRealm>) -> [UserRealm] {
-        var unique = [UserRealm]()
-        var notContains = false
-        unique = [UserRealm(userId: " ", userName: " ", userEmail: " ")]
-        for element in array {
-            for one in unique {
-                if element.userId != one.userId && element.userId != Auth.auth().currentUser!.uid {
-                    notContains = true
-                }
-                if element.userId == one.userId {
-                    notContains  = false
-                    continue
-                }
-            }
-            if notContains == true {
-            unique.append(element)
-            }
-        }
-        unique.removeFirst()
-    return unique
-}
     // MARK: - navigationItems
     func setupNavItems() {
         let logOutButton = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(logOutButtonPressed))
@@ -90,13 +69,13 @@ extension ChatViewController: UITableViewDataSource, UITableViewDelegate {
         70
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let uniqueUsers = uniqueArray(array: users!)
+        let uniqueUsers = DataManager.shared.uniqueArray(array: users!, authUserId: Auth.auth().currentUser?.uid)
         return uniqueUsers.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: ChatViewCell.identifier, for: indexPath) as? ChatViewCell else { return UITableViewCell() }
        if let usersNotEmpty = users {
-        let uniqueUsers = uniqueArray(array: usersNotEmpty)
+        let uniqueUsers = DataManager.shared.uniqueArray(array: usersNotEmpty, authUserId: Auth.auth().currentUser?.uid)
            cell.userLabel.text = uniqueUsers[indexPath.row].userName
            cell.selectionStyle = .none
       }
@@ -106,7 +85,7 @@ extension ChatViewController: UITableViewDataSource, UITableViewDelegate {
         searchBar.resignFirstResponder()
         let messageViewController = MessagesViewController()
         if users != nil {
-            messageViewController.partner = uniqueArray(array: users!)[indexPath.row]
+            messageViewController.partner = DataManager.shared.uniqueArray(array: users!, authUserId: Auth.auth().currentUser?.uid)[indexPath.row]
         navigationController?.pushViewController(messageViewController, animated: true)
         }
     }

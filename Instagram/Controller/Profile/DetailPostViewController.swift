@@ -29,7 +29,6 @@ class DetailPostViewController: UIViewController {
         tableViewsSetup()
         setupNavItems()
     }
-    
     // MARK: - tableViewSetup
     func tableViewsSetup() {
         view.addSubview(tableView)
@@ -58,7 +57,7 @@ class DetailPostViewController: UIViewController {
 
 }
 
-extension DetailPostViewController:  UITableViewDataSource {
+extension DetailPostViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
        return 1
     }

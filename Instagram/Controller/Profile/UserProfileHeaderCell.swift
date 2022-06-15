@@ -27,7 +27,6 @@ class UserProfileHeaderCell: UICollectionViewCell {
         let userLabel = UILabel()
         return userLabel
     }()
-
     // MARK: - init
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -50,7 +49,6 @@ class UserProfileHeaderCell: UICollectionViewCell {
 extension UserProfileHeaderCell {
     func updateViewConstraints() {
         if !didSetupConstraints {
-       
         personImage.snp.makeConstraints { make in
             make.left.equalTo(contentView).offset(30)
             make.top.equalTo(contentView).offset(30)
@@ -62,6 +60,5 @@ extension UserProfileHeaderCell {
             }
             didSetupConstraints = true
         }
-     //   super.updateViewConstraints()
     }
 }

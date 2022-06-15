@@ -12,10 +12,9 @@ import FirebaseDatabase
 import FirebaseStorage
 import RealmSwift
 
-
 class HomeViewController: UIViewController {
-    var dataModel: Results<PostsRealm>?
-    var posts = [Posts]()
+    private var dataModel: Results<PostsRealm>?
+    private var posts = [Posts]()
     private var dataManager = DataManager()
     private var activityController: UIActivityViewController?
     private var ref: DatabaseReference!
@@ -24,7 +23,10 @@ class HomeViewController: UIViewController {
 
     private let tableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(HomeTableViewCell.self, forCellReuseIdentifier: "HomeTableViewCell")
+        tableView.register(HomeTableViewCell.self, forCellReuseIdentifier: HomeTableViewCell.identifier)
+        tableView.separatorStyle = .none
+        tableView.allowsSelection = false
+        tableView.separatorColor = .clear
         return tableView
     }()
     private let spinnerImage: UIImageView = {
@@ -72,9 +74,6 @@ class HomeViewController: UIViewController {
     func tableViewsSetup() {
         view.addSubview(tableView)
         tableView.dataSource = self
-        tableView.separatorStyle = .none
-        tableView.allowsSelection = false
-        tableView.separatorColor = .clear
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl?.addTarget(self, action: #selector(callPullToRefresh), for: .valueChanged)
         tableView.snp.makeConstraints { make in
@@ -134,7 +133,7 @@ extension HomeViewController: UITableViewDataSource {
        return posts.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "HomeTableViewCell", for: indexPath) as? HomeTableViewCell else { return UITableViewCell() }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeTableViewCell.identifier, for: indexPath) as? HomeTableViewCell else { return UITableViewCell() }
             // set like
         cell.likeButtomTap = {
             do {
@@ -167,8 +166,7 @@ extension HomeViewController: UITableViewDataSource {
             } catch {
                 print("Error saving Data context \(error)")
             }
-            }
-        print("cnfigure")
+        }
         cell.configure(dataModel: self.posts, indexPath: indexPath)
             // navigation to comments
             cell.commentButtonPressed = { [unowned self] in
@@ -177,9 +175,11 @@ extension HomeViewController: UITableViewDataSource {
                 navigationController?.pushViewController(viewController, animated: true)
         }
         cell.locationPressed  = {
+            if cell.locationButton.currentTitle! != "" {
             let mapVC = MapViewController()
             mapVC.searchPoint = cell.locationButton.currentTitle!
             self.navigationController?.pushViewController(mapVC, animated: true)
+            }
         }
         return cell
     }

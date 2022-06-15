@@ -45,6 +45,7 @@ class MessagesViewCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    // MARK: - setView
     func addViews() {
         contentView.addSubview(horStackView)
         messageView.addSubview(messageLabel)

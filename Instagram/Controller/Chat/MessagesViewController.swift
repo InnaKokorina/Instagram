@@ -25,7 +25,6 @@ class MessagesViewController: UIViewController {
         tableView.setContentHuggingPriority(UILayoutPriority.init(249), for: .vertical)
         return tableView
     }()
-
     private let textField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Введите сообщение"
@@ -37,7 +36,6 @@ class MessagesViewController: UIViewController {
         textField.viewWithTag(0)
         return textField
     }()
-
     private let addComment: UIButton = {
         let addComment = UIButton()
         addComment.setImage(UIImage(systemName: "paperplane.fill"), for: .normal)
@@ -65,6 +63,7 @@ class MessagesViewController: UIViewController {
         tableView.separatorStyle = .none
         tableView.allowsSelection = false
     }
+    // MARK: - loadMessages
     func loadMessages() {
         dataBase.collection(Constants.FStore.collectionName).order(by: Constants.FStore.dateField).addSnapshotListener { [self] querySnapshot, error in
             self.messages = []
@@ -188,9 +187,8 @@ extension MessagesViewController: UITextFieldDelegate {
                 Constants.FStore.partner: partner?.userEmail as Any,
                 Constants.FStore.dateField: Date.timeIntervalSinceReferenceDate]) { error in
                 if let error = error {
-                    print(" error during saving data to farestire db \(error)")
+                    print(" error during saving data to firestore db \(error)")
                 } else {
-                    print("successfully saved data to Firestore")
                     DispatchQueue.main.async {
                     self.textField.text = ""
                     }

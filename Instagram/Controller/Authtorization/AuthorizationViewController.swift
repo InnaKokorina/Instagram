@@ -13,10 +13,11 @@ import RealmSwift
 import YPImagePicker
 
 class AuthorizationViewController: UIViewController {
-    var didSetupConstraints = false
-    let imagePicker = YPImagePickerView()
-    var selectedItems = [YPMediaItem]()
+    private var didSetupConstraints = false
+    private let imagePicker = YPImagePickerView()
+    private var selectedItems = [YPMediaItem]()
     private let realm = try! Realm()
+    private let spinner = SpinnerViewController()
     var signIn: Bool = true {
         willSet {
             if newValue {
@@ -134,6 +135,12 @@ class AuthorizationViewController: UIViewController {
         }
         return signInButton
     }()
+    private let spinnerImage: UIImageView = {
+        let spinnerImage = UIImageView()
+        spinnerImage.contentMode = .center
+        spinnerImage.translatesAutoresizingMaskIntoConstraints = false
+        return spinnerImage
+    }()
     private lazy var verStackView = UIStackView(arrangedSubviews: [titleLabel, infoLabel, photoView, nameField, emailField, passwordField, signInButton, switchButton], axis: .vertical, spacing: 10)
 
     // MARK: - lifeCycle
@@ -141,10 +148,11 @@ class AuthorizationViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .black
         view.addSubview(backImage)
+        view.addSubview(verStackView)
         verStackView.contentMode = .center
         verStackView.distribution = .fillProportionally
-        view.addSubview(verStackView)
         photoView.addSubview(personImage)
+        signInButton.addSubview(spinnerImage)
         view.setNeedsUpdateConstraints()
         switchButton.addTarget(self, action: #selector(switchPressed), for: .touchUpInside)
         signInButton.addTarget(self, action: #selector(signInPressed), for: .touchUpInside)
@@ -196,6 +204,9 @@ extension AuthorizationViewController {
             switchButton.snp.makeConstraints { make in
                 make.height.equalTo(40)
             }
+            spinnerImage.snp.makeConstraints { make in
+                make.center.equalTo(signInButton)
+            }
             didSetupConstraints = true
         }
         super.updateViewConstraints()
@@ -206,7 +217,6 @@ extension AuthorizationViewController {
 extension AuthorizationViewController: UITextFieldDelegate {
     @objc func switchPressed() {
         self.signIn.toggle()
-        // emailField.endEditing(true)
         passwordField.text = ""
         emailField.text = ""
     }
@@ -224,11 +234,13 @@ extension AuthorizationViewController: UITextFieldDelegate {
     }
     // MARK: - checkAuth
     func checkAuth() {
+        signInButton.setTitle("", for: .normal)
         let email = emailField.text!
         let password = passwordField.text!
         let name = nameField.text!
         if signIn == false {
             if !email.isEmpty && !password.isEmpty && !name.isEmpty {
+                spinner.start(view: spinnerImage)
                 Auth.auth().createUser(withEmail: email, password: password ) { result, err in
                     guard err == nil
                     else {
@@ -252,6 +264,7 @@ extension AuthorizationViewController: UITextFieldDelegate {
                                             do {
                                                 try self.realm.write {
                                                     self.realm.add(user)
+                                                    self.spinner.stop()
                                                     self.navigationController?.dismiss(animated: true)
                                                 }
                                             } catch {
@@ -269,12 +282,14 @@ extension AuthorizationViewController: UITextFieldDelegate {
             }
         } else {
             if !email.isEmpty && !password.isEmpty {
+                spinner.start(view: spinnerImage)
                 Auth.auth().signIn(withEmail: email, password: password) { _, err in
                     guard err == nil
                     else {
                         self.showAlert(message: ErrorReason.noAccount.description)
                         return
                     }
+                    self.spinner.stop()
                     self.navigationController?.dismiss(animated: true)
                 }
             } else {
@@ -298,6 +313,7 @@ extension AuthorizationViewController: UIGestureRecognizerDelegate {
         addNewPhoto()
     }
 }
+// MARK: - YPImagePickerDelegate
 extension AuthorizationViewController: YPImagePickerDelegate {
     @objc func showResults() {
         if !selectedItems.isEmpty {
@@ -343,9 +359,9 @@ enum ErrorReason {
 
     var description: String {
         switch self {
-        case .emptyFields: return "Пожалуйста, заполните все поля"
-        case .incorrectData: return "Email адрес или пароль введены некорректно, либо учетная запись с таким email уже существует"
-        case .noAccount: return "Такой учетной записи не существует. Проверьте email адрес или пароль"
+        case .emptyFields: return Constants.Auth.errorEmptyFields
+        case .incorrectData: return Constants.Auth.errorIncorrectData
+        case .noAccount: return Constants.Auth.errorNoAccount
         }
     }
 }

@@ -32,11 +32,10 @@ class CommentsViewCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+// MARK: - setViews
     func addViews() {
         contentView.addSubview(horStackView)
     }
-
     func configure(indexPath: Int, comment: Results<CommentsRealm>) {
         let author = "\(comment[indexPath].email): "
         let comment = comment[indexPath].body
