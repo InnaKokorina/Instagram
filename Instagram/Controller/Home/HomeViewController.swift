@@ -181,6 +181,15 @@ extension HomeViewController: UITableViewDataSource {
             self.navigationController?.pushViewController(mapVC, animated: true)
             }
         }
+        cell.authorLabelPressed = {
+            let users = self.realm.objects(UserRealm.self)
+            var user = UserRealm()
+            let userProfileController = UserProfileViewController()
+            for eachUser in users where eachUser.userId == self.posts[indexPath.row].user.userId {
+                user = eachUser }
+            userProfileController.user = user
+            self.navigationController?.pushViewController(userProfileController, animated: true)
+            }
         return cell
     }
 }

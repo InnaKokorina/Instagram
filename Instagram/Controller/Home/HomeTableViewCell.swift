@@ -12,6 +12,7 @@ class HomeTableViewCell: UITableViewCell {
     var likeButtomTap: (() -> Void)?
     var commentButtonPressed: (() -> Void)?
     var locationPressed:(() -> Void)?
+    var authorLabelPressed:(() -> Void)?
     private let spinner = SpinnerViewController()
     private var dataManager = DataManager()
     private let firebaseManager = FirebaseManager()
@@ -26,6 +27,7 @@ class HomeTableViewCell: UITableViewCell {
         let authorNameLabel = UILabel()
         authorNameLabel.font = UIFont(name: Constants.Font.font, size: 17)
         authorNameLabel.textAlignment = .left
+        authorNameLabel.isUserInteractionEnabled = true
         return authorNameLabel
     }()
     var locationButton: UIButton = {
@@ -85,6 +87,7 @@ class HomeTableViewCell: UITableViewCell {
         commentsButton.addTarget(self, action: #selector(commentButtonpTap), for: .touchUpInside)
         locationButton.addTarget(self, action: #selector(locationTap), for: .touchUpInside)
         doubleTapImage()
+        tapUser()
         scrollViewSet()
     }
 
@@ -127,6 +130,9 @@ class HomeTableViewCell: UITableViewCell {
     }
     @objc func locationTap(_ sender: UIButton) {
        locationPressed?()
+    }
+    @objc func userPressed() {
+        authorLabelPressed?()
     }
 
     // MARK: - set image from Api or failImage
@@ -207,4 +213,12 @@ extension HomeTableViewCell {
         likePressed()
     }
 
+    func tapUser() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapUser))
+        authorNameLabel.addGestureRecognizer(tapGesture)
+        tapGesture.delegate = self
+    }
+    @objc func didTapUser(sender: UITapGestureRecognizer) {
+        userPressed()
+    }
 }
