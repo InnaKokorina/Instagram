@@ -36,6 +36,7 @@ class MapViewController: UIViewController {
                 return
             } else {
                 searchPoint(with: searchPoint ?? "")
+                navigationItem.rightBarButtonItem?.tintColor = .clear
             }
         }
     }
