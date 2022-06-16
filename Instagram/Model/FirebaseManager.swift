@@ -58,7 +58,7 @@ class FirebaseManager {
 
                     self.getImage(picName: image) { postData in
                         post.image = postData
-                        self.getImage(picName: "\(post.user!.userId).jpg") { userData in
+                        self.getImage(picName: "\(post.user!.userEmail).jpg") { userData in
                             post.user?.userPhoto = userData
                             self.posts.append(post)
                             completion(post)

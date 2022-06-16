@@ -47,8 +47,8 @@ struct Constants {
     }
     struct FStore {
         static let collectionName = "messages"
-        static let user = "user"
-        static let partner = "partner"
+        static let user = "userId"
+        static let partner = "partnerId"
         static let bodyField = "body"
         static let dateField = "date"
     }

@@ -36,7 +36,7 @@ struct User {
 }
 
 struct Messages {
-    var user: String
-    var partner: String
+    var userId: String
+    var partnerId: String
     var body: String
 }

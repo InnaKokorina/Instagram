@@ -68,16 +68,16 @@ class MessagesViewController: UIViewController {
         dataBase.collection(Constants.FStore.collectionName).order(by: Constants.FStore.dateField).addSnapshotListener { [self] querySnapshot, error in
             self.messages = []
             if let error = error {
-                print(" error during loadint data from farestire db \(error)")
+                print(" error during loadind data from firestore db \(error)")
             } else {
                 if let snapshot = querySnapshot?.documents {
                     for doc in snapshot {
                         let data = doc.data()
-                        if let user = data[Constants.FStore.user] as? String,
-                           let partner = data[Constants.FStore.partner] as? String,
+                        if let userId = data[Constants.FStore.user] as? String,
+                           let partnerId = data[Constants.FStore.partner] as? String,
                            let body = data[Constants.FStore.bodyField] as? String {
-                            let newMessage = Messages(user: user, partner: partner, body: body)
-                            if newMessage.partner == self.partner?.userEmail && newMessage.user == Auth.auth().currentUser!.email || newMessage.partner == Auth.auth().currentUser!.email && newMessage.user == self.partner?.userEmail {
+                            let newMessage = Messages(userId: userId, partnerId: partnerId, body: body)
+                            if newMessage.partnerId == self.partner?.userId && newMessage.userId == Auth.auth().currentUser!.uid || newMessage.partnerId == Auth.auth().currentUser!.uid && newMessage.userId == self.partner?.userId {
                             self.messages.append(newMessage)
                             }
                             DispatchQueue.main.async {
@@ -127,7 +127,7 @@ extension MessagesViewController: UITableViewDataSource, UITableViewDelegate {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "MessagesViewCell", for: indexPath) as? MessagesViewCell else { return UITableViewCell() }
         cell.messageLabel.text = messages[indexPath.row].body
         // this is the message from current user
-        if message.user == Auth.auth().currentUser?.email {
+        if message.userId == Auth.auth().currentUser?.uid {
             cell.rightUserLabel.isHidden = true
             cell.leftUserLabel.isHidden = false
             cell.messageView.backgroundColor = UIColor(red: 0.90, green: 0.81, blue: 1, alpha: 1)
@@ -180,11 +180,11 @@ extension MessagesViewController: UITextFieldDelegate {
     }
 
     @objc func addMessageTap() {
-        if let messageBody = textField.text, let messageSender = Auth.auth().currentUser?.email {
+        if let messageBody = textField.text, let messageSender = Auth.auth().currentUser?.uid {
             dataBase.collection(Constants.FStore.collectionName).addDocument(data: [
                 Constants.FStore.bodyField: messageBody,
                 Constants.FStore.user: messageSender,
-                Constants.FStore.partner: partner?.userEmail as Any,
+                Constants.FStore.partner: partner?.userId as Any,
                 Constants.FStore.dateField: Date.timeIntervalSinceReferenceDate]) { error in
                 if let error = error {
                     print(" error during saving data to firestore db \(error)")
