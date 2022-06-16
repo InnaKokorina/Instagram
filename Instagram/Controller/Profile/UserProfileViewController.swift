@@ -16,7 +16,7 @@ class UserProfileViewController: UIViewController {
     var currentPosts = [PostsRealm]()
     var collectionView: UICollectionView?
     private let realm = try! Realm()
-    var user: UserRealm? 
+    var user: UserRealm?
 // MARK: - lifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()

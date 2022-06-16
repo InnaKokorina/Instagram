@@ -14,6 +14,7 @@ class CommentsViewController: UIViewController {
     private var didSetupConstraints = false
     private var activeTextField: UITextField?
     private var comments: Results<CommentsRealm>?
+    private let realm = try! Realm()
     var selectedImage: PostsRealm? {
         didSet {
             loadComments()
@@ -143,9 +144,14 @@ extension CommentsViewController: UITextFieldDelegate {
         return true
     }
     @objc func addCommentTap() {
+        let users = realm.objects(UserRealm.self)
+        var currentUser: UserRealm?
+        for eachUser in users where eachUser.userId == Auth.auth().currentUser?.uid {
+            currentUser = eachUser
+        }
      if let currentImage = self.selectedImage {
             if  let message = textField.text {
-                FirebaseManager.shared.saveComment(message: message, currentImage: currentImage)
+                FirebaseManager.shared.saveComment(message: message, currentImage: currentImage, currentUser: currentUser!.userName)
                 tableView.reloadData()
                 textField.text = ""
                 textField.endEditing(true)

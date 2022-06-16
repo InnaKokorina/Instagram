@@ -9,3 +9,9 @@ force_try:
 disabled_rules:
 - force_cast
 - force_try
+function_body_length:
+- 70 # warning
+- 100 # error
+cyclomatic_complexity:
+- 11 # warning
+- 20 # error

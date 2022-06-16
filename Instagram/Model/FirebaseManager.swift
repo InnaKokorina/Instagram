@@ -113,13 +113,13 @@ class FirebaseManager {
         }
     }
     // MARK: - saveCommentToRealmAndFB
-    func saveComment(message: String, currentImage: PostsRealm ) {
-            let email  = currentImage.user?.userName
+    func saveComment(message: String, currentImage: PostsRealm, currentUser: String) {
+            let email  = currentUser
             let id = currentImage.comment.count
             let postId = currentImage.id
             do {
                 try realm.write {
-                    let newcomment = CommentsRealm(body: message, email: email ?? "User", id: id, postId: postId)
+                    let newcomment = CommentsRealm(body: message, email: email, id: id, postId: postId)
                     currentImage.comment.append(newcomment)
                     self.ref =  Database.database().reference().child("photos/\(postId)/comments/\(id)")
                     let dictionary = ["email": newcomment.email, "body": newcomment.body, "id": newcomment.id, "postId": newcomment.postId] as [String: Any]
@@ -131,7 +131,7 @@ class FirebaseManager {
     }
     // MARK: - saveNewPhotoToRealmAndFB
     func saveNewPhotoToRealmAndFB(dataModel: Results<PostsRealm>?, filePathStr: String, urlString: String, location: String, descriptionTextField: String) {
-        let index: Int = dataModel![0].id + 1 
+        let index: Int = dataModel![0].id + 1
         let users = realm.objects(UserRealm.self)
          for eachUser in users where eachUser.userId == Auth.auth().currentUser!.uid {
             currentUser = eachUser

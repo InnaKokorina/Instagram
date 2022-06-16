@@ -76,6 +76,9 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
        if let usersNotEmpty = users {
         let uniqueUsers = DataManager.shared.uniqueArray(array: usersNotEmpty, authUserId: Auth.auth().currentUser?.uid)
            cell.userLabel.text = uniqueUsers[indexPath.row].userName
+           if let photoData =  uniqueUsers[indexPath.row].userPhoto {
+           cell.personImage.image = UIImage(data: photoData)
+           }
            cell.selectionStyle = .none
       }
         return cell

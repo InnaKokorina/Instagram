@@ -52,7 +52,6 @@ class DetailPostViewController: UIViewController {
     @objc func backPressed() {
         navigationController?.popViewController(animated: true)
     }
-    
     @objc func logOutButtonPressed(_ sender: Any) {
         do {
             navigationController?.popViewController(animated: true)
@@ -72,30 +71,31 @@ extension DetailPostViewController: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "HomeTableViewCell", for: indexPath) as? HomeTableViewCell else { return UITableViewCell() }
         var postStruct = [Posts]()
         postStruct.append(DataManager.shared.tranferModeltoStruct(withPhoto: post!))
-            // set like
+        // set like
         cell.likeButtomTap = {
-                do {
-                    try self.realm.write {
-                        let postsRealm: Results<PostsRealm>?
-                        postsRealm = self.realm.objects(PostsRealm.self)
-                        for index in 0..<postsRealm!.count { /// unwrap
+            do {
+                try self.realm.write {
+                    let postsRealm: Results<PostsRealm>?
+                    postsRealm = self.realm.objects(PostsRealm.self)
+                    if postsRealm != nil {
+                        for index in 0..<postsRealm!.count {
                             if postStruct[indexPath.row].id == postsRealm![index].id {
                                 postStruct[indexPath.row].liked.toggle()
                                 postsRealm![index].liked.toggle()
-                        if postStruct[indexPath.row].liked == true {
-                            cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-                            postStruct[indexPath.row].likes += 1
-                            postsRealm![index].likes += 1
-                            cell.heartView.alpha = 0.5
-                            let seconds = 0.3
-                            DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
-                                cell.heartView.alpha = 0
-                            }
-                        } else {
-                            cell.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
-                            postStruct[indexPath.row].likes -= 1
-                           postsRealm![index].likes -= 1
-                        }
+                                if postStruct[indexPath.row].liked == true {
+                                    cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+                                    postStruct[indexPath.row].likes += 1
+                                    postsRealm![index].likes += 1
+                                    cell.heartView.alpha = 0.5
+                                    let seconds = 0.3
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
+                                        cell.heartView.alpha = 0
+                                    }
+                                } else {
+                                    cell.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
+                                    postStruct[indexPath.row].likes -= 1
+                                    postsRealm![index].likes -= 1
+                                }
                                 cell.likesCountLabel.text = DataManager.shared.likeLabelConvert(counter: postStruct[indexPath.row].likes)
                                 self.ref = Database.database().reference().child("photos/\(postsRealm![index].id)")
                                 let dict = ["liked": postsRealm![index].liked, "likes": postsRealm![index].likes] as [String: Any]
@@ -103,10 +103,11 @@ extension DetailPostViewController: UITableViewDataSource {
                             }
                         }
                     }
-                } catch {
-                    print("Error saving Data context \(error)")
-              }
+                }
+            } catch {
+                print("Error saving Data context \(error)")
             }
+        }
         var posts = [PostsRealm]()
         posts.append(post!)
         cell.configure(dataModel: postStruct, indexPath: indexPath)
@@ -131,7 +132,6 @@ extension DetailPostViewController: UITableViewDataSource {
             if postsRealm != nil {
                 for index in 0..<postsRealm!.count {
                     if postStruct[indexPath.row].id == postsRealm![index].id {
-                        
                         do {
                             try self.realm.write {
                                 self.ref = Database.database().reference().child("photos/\(postsRealm![index].id)")
@@ -152,4 +152,3 @@ extension DetailPostViewController: UITableViewDataSource {
         return cell
     }
 }
-

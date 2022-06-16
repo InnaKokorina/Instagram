@@ -73,7 +73,7 @@ class MapViewController: UIViewController {
         request.region = map.region
 
         let search = MKLocalSearch(request: request)
-        search.start { response, error in
+        search.start { response, _ in
             guard let response = response else {
                 print("Search error")
                 return
