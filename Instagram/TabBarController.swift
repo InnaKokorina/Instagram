@@ -50,6 +50,7 @@ class TabBarController: UITabBarController {
         DispatchQueue.main.async {
             let authViewController = AuthorizationViewController()
             let navController = UINavigationController(rootViewController: authViewController)
+            navController.modalPresentationStyle = .fullScreen
             self.present(navController, animated: true, completion: nil)
         }
     }
