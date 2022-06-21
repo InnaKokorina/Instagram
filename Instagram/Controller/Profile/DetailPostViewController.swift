@@ -69,52 +69,54 @@ extension DetailPostViewController: UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "HomeTableViewCell", for: indexPath) as? HomeTableViewCell else { return UITableViewCell() }
-        var postStruct = [Posts]()
-        postStruct.append(DataManager.shared.tranferModeltoStruct(withPhoto: post!))
-        // set like
-        cell.likeButtomTap = {
-            do {
-                try self.realm.write {
-                    let postsRealm: Results<PostsRealm>?
-                    postsRealm = self.realm.objects(PostsRealm.self)
-                    if postsRealm != nil {
-                        for index in 0..<postsRealm!.count {
-                            if postStruct[indexPath.row].id == postsRealm![index].id {
-                                postStruct[indexPath.row].liked.toggle()
-                                postsRealm![index].liked.toggle()
-                                if postStruct[indexPath.row].liked == true {
+        if let post = self.post {
+            cell.configure(dataModel: post)
+            cell.likeButtomTap = {
+                var newLikedUser = LikedByUsers()
+                        do {
+                            try self.realm.write {
+                                post.liked.toggle()
+                                if DataManager.shared.likedByUser(currentUserId: Auth.auth().currentUser!.uid, usersArray: post.likedByUsers) == false {
+                                    post.liked = true
                                     cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-                                    postStruct[indexPath.row].likes += 1
-                                    postsRealm![index].likes += 1
+                                    post.likes += 1
+                                    newLikedUser = LikedByUsers(userId: Auth.auth().currentUser!.uid)
+                                    post.likedByUsers.append(newLikedUser)
                                     cell.heartView.alpha = 0.5
                                     let seconds = 0.3
                                     DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
                                         cell.heartView.alpha = 0
                                     }
+                                    self.ref = Database.database().reference().child("photos/\(post.id)/likedByUsers/\(post.likedByUsers.count - 1)")
+                                    let  dictUser = ["userId": newLikedUser.userId]
+                                    as [String: Any]
+                                    self.ref.updateChildValues(dictUser)
                                 } else {
                                     cell.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
-                                    postStruct[indexPath.row].likes -= 1
-                                    postsRealm![index].likes -= 1
-                                }
-                                cell.likesCountLabel.text = DataManager.shared.likeLabelConvert(counter: postStruct[indexPath.row].likes)
-                                self.ref = Database.database().reference().child("photos/\(postsRealm![index].id)")
-                                let dict = ["liked": postsRealm![index].liked, "likes": postsRealm![index].likes] as [String: Any]
+                                    post.liked = false
+                                    post.likes -= 1
+                                    self.realm.delete(post.likedByUsers.filter("userId=%@", Auth.auth().currentUser!.uid))
+                                    self.ref = Database.database().reference().child("photos/\(post.id)/likedByUsers/\(post.likedByUsers.count)")
+                                    let  dictUser = ["userId": newLikedUser.userId]
+                                    as [String: Any]
+                                    self.ref.updateChildValues(dictUser) }
+                                cell.likesCountLabel.text = DataManager.shared.likeLabelConvert(counter: post.likes)
+                                self.ref = Database.database().reference().child("photos/\(post.id)")
+                                let  dict = [
+                                    "liked": post.liked,
+                                    "likes": post.likes
+                                ]
+                                as [String: Any]
                                 self.ref.updateChildValues(dict)
                             }
+                        } catch {
+                            print("Error saving Data context \(error)")
                         }
-                    }
                 }
-            } catch {
-                print("Error saving Data context \(error)")
-            }
-        }
-        var posts = [PostsRealm]()
-        posts.append(post!)
-        cell.configure(dataModel: postStruct, indexPath: indexPath)
             // navigation to comments
             cell.commentButtonPressed = { [unowned self] in
                 let viewController = CommentsViewController()
-                viewController.selectedImage = posts[indexPath.row]
+                viewController.selectedImage = post
                 navigationController?.pushViewController(viewController, animated: true)
         }
         cell.locationPressed  = {
@@ -127,27 +129,21 @@ extension DetailPostViewController: UITableViewDataSource {
         cell.deleteItem = {
             let alert = UIAlertController(title: "", message: "Удалить фото?", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-            let postsRealm: Results<PostsRealm>?
-            postsRealm = self.realm.objects(PostsRealm.self)
-            if postsRealm != nil {
-                for index in 0..<postsRealm!.count {
-                    if postStruct[indexPath.row].id == postsRealm![index].id {
                         do {
                             try self.realm.write {
-                                self.ref = Database.database().reference().child("photos/\(postsRealm![index].id)")
+                                self.ref = Database.database().reference().child("photos/\(post.id)")
                                 self.ref.removeValue()
-                                self.realm.delete(postsRealm![index])
+                                self.realm.delete(post)
                             }
                         } catch {
                             print("error in deleting category \(error)")
                         }
-                        break                  }
-                }
                 self.navigationController?.popViewController(animated: true)
             }
-        })
+            )
             alert.addAction(UIAlertAction(title: "Oтмена", style: .cancel, handler: nil))
             self.present(alert, animated: true, completion: nil)
+        }
         }
         return cell
     }

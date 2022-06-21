@@ -39,9 +39,11 @@ class UserProfileHeaderCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 // MARK: - configure
-    func configure(user: Posts ) {
-        personImage.image = user.image
-        userLabel.text = user.user.userName
+    func configure(user: PostsRealm ) {
+        if let image = user.image {
+        personImage.image = UIImage(data: image)
+        }
+        userLabel.text = user.user?.userName
     }
 }
 // MARK: - updateViewConstraints

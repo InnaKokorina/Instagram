@@ -26,33 +26,35 @@ struct DataManager {
         let currentDateTimeString = formatter.string(from: currentDateTime)
         return currentDateTimeString
     }
-    // MARK: - tranferModeltoStruct
-    func tranferModeltoStruct(withPhoto photo: PostsRealm) -> Posts {
-        let id = photo.id
-        let descriptionImage = photo.descriptionImage
-        let imageName = photo.imageName
-        let image = UIImage(data: photo.image!)
-        let liked = photo.liked
-        let likes = photo.likes
-        let userID = photo.user?.userId ?? "0"
-        let userName = photo.user?.userName ?? "User"
-        let userEmail = photo.user?.userEmail ?? "User"
-        let location = photo.location
-        let userPhoto = FirebaseManager.shared.setImage(data: photo.user?.userPhoto)
-        let user = User(userId: userID, userName: userName, userEmail: userEmail, userPhoto: userPhoto)
-        var comments = [Comments]()
-        for comment in photo.comment {
-            let id = comment.id
-            let postId = comment.postId
-            let email = comment.email
-            let body = comment.body
-            let oneComment = Comments(body: body, email: email, id: id, postId: postId)
-            comments.append(oneComment)
-        }
-        let postElement = Posts(comment: comments, descriptionImage: descriptionImage, id: id, imageName: imageName, image: image, likes: likes, user: user, liked: liked, location: location)
-        comments = []
-        return postElement
-    }
+//    // MARK: - tranferModeltoStruct
+//    func tranferModeltoStruct(withPhoto photo: PostsRealm) -> Posts {
+//        let id = photo.id
+//        let descriptionImage = photo.descriptionImage
+//        let imageName = photo.imageName
+//        let image = UIImage(data: photo.image!)
+//        let liked = photo.liked
+//        let likedByUsers = photo.likedByUsers
+//        let likes = photo.likes
+//        let userID = photo.user?.userId ?? "0"
+//        let userName = photo.user?.userName ?? "User"
+//        let userEmail = photo.user?.userEmail ?? "User"
+//        let location = photo.location
+//        let userPhoto = FirebaseManager.shared.setImage(data: photo.user?.userPhoto)
+//        let user = User(userId: userID, userName: userName, userEmail: userEmail, userPhoto: userPhoto)
+//        var comments = [Comments]()
+//        for comment in photo.comment {
+//            let id = comment.id
+//            let postId = comment.postId
+//            let email = comment.email
+//            let body = comment.body
+//            let oneComment = Comments(body: body, email: email, id: id, postId: postId)
+//            comments.append(oneComment)
+//        }
+//        let postElement = Posts(comment: comments, descriptionImage: descriptionImage, id: id, imageName: imageName, image: image, likes: likes, user: user, liked: liked, location: location)
+//        postElement.likedByUsers.append(likedByUsers)
+//        comments = []
+//        return postElement
+//    }
     // MARK: - uniqueArray
     func uniqueArray(array: Results<UserRealm>, authUserId: String?) -> [UserRealm] {
         var unique = [UserRealm]()
@@ -74,5 +76,18 @@ struct DataManager {
         }
         unique.removeFirst()
         return unique
+    }
+    func likedByUser(currentUserId: String, usersArray: List<LikedByUsers> ) -> Bool {
+        var liked = false
+        for element in usersArray {
+            if element.userId != currentUserId {
+                liked = false
+            }
+            if element.userId == currentUserId {
+                liked = true
+                break
+            }
+        }
+        return liked
     }
 }

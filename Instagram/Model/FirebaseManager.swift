@@ -22,7 +22,7 @@ class FirebaseManager {
     let posts = List<PostsRealm>()
 
   // MARK: - fetch data from FireBAse and save to Realm
-    func fetchData(completion: @escaping(PostsRealm) -> Void) {
+    func fetchData(completion: @escaping(List<PostsRealm>) -> Void) {
         // fetching from Firebase
         ref = Database.database().reference().child("photos")
         ref.observeSingleEvent(of: DataEventType.value) { snapshot in
@@ -39,29 +39,36 @@ class FirebaseManager {
                     let likes = object?["likes"] as? Int ?? 0
                     let link = object?["link"] as? String ?? ""
                     let location = object?["location"] as? String ?? ""
-                    for comment in data .children.allObjects as! [DataSnapshot] {
-                        if let commentsArray  = comment.value as? [Any] {
-                            for one in commentsArray {
-                                let oneCom = one as? [String: AnyObject]
-                                let body = oneCom?["body"] as? String ?? ""
-                                let email = oneCom?["userName"] as? String ?? ""
-                                let id = oneCom?["id"] as? Int ?? 0
-                                let postId = oneCom?["postId"] as? Int ?? 0
+                    var likedByUsers = List<LikedByUsers>()
+                    for users in data .children.allObjects as! [DataSnapshot] {
+                        if let usersArray  = users.value as? [Any] {
+                            for oneElement in usersArray {
+                                let one = oneElement as? [String: AnyObject]
+                                if one?["userId"] != nil {
+                                let userId = one?["userId"] as! String
+                                likedByUsers.append(LikedByUsers(userId: userId))
+                                }
+                                if one?["body"] != nil &&  one?["userName"] != nil && one?["id"] != nil && one?["postId"] != nil {
+                                let body = one?["body"] as! String
+                                let email = one?["userName"] as! String
+                                let id = one?["id"] as! Int
+                                let postId = one?["postId"] as! Int
                                 self.comments.append(CommentsRealm(body: body, email: email, id: id, postId: postId))
+                                }
                             }
                         }
                     }
-                    // save to Model
-                    let post = PostsRealm(comment: self.comments, id: id, imageName: image, likes: likes, link: link, user: UserRealm(userId: userId, userName: userName, userEmail: userEmail), liked: liked, descriptionImage: descriptImage, location: location)
-
+                    let post = PostsRealm(comment: self.comments, id: id, imageName: image, likes: likes, link: link, user: UserRealm(userId: userId, userName: userName, userEmail: userEmail), liked: liked, descriptionImage: descriptImage, location: location, likedByUsers: likedByUsers)
                     self.comments = List<CommentsRealm>()
-
+                    likedByUsers = List<LikedByUsers>()
                     self.getImage(picName: image) { postData in
                         post.image = postData
                         self.getImage(picName: "\(post.user!.userEmail).jpg") { userData in
                             post.user?.userPhoto = userData
                             self.posts.append(post)
-                            completion(post)
+                            if self.posts.count == snapshot.children.allObjects.count {
+                                completion(self.posts)
+                            }
                         }
                     }
                 }
@@ -145,7 +152,8 @@ class FirebaseManager {
             user: currentUser,
             liked: false,
             descriptionImage: descriptionTextField,
-            location: location)
+            location: location,
+            likedByUsers: List<LikedByUsers>())
         FirebaseManager.shared.getImage(picName: filePathStr) { data in
             post.image = data
        // }
@@ -166,7 +174,7 @@ class FirebaseManager {
                         "link": post.link,
                         "location": post.location,
                         "comments": Array(post.comment)
-                    ] as [String: Any]
+                    ] as? [String: Any]
                     self.ref.setValue(dict)
                 }
             } catch {

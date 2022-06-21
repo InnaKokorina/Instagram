@@ -111,22 +111,26 @@ class HomeTableViewCell: UITableViewCell {
         bandImage.addSubview(heartView)
         horStackView.distribution = .equalSpacing
     }
-    func configure (dataModel: [Posts], indexPath: IndexPath) {
+    func configure (dataModel: PostsRealm) {
         verStackView.alignment = .leading
-        authorNameLabel.text = dataModel[indexPath.row].user.userName
-        descriptionLabel.text = "\(dataModel[indexPath.row].user.userName):  \(dataModel[indexPath.row].descriptionImage)"
-        likesCountLabel.text = DataManager.shared.likeLabelConvert(counter: dataModel[indexPath.row].likes)
-        likeButton.setImage(UIImage(systemName: dataModel[indexPath.row].liked ? "heart.fill" : "heart"), for: .normal)
-        locationButton.setTitle(dataModel[indexPath.row].location, for: .normal)
+        authorNameLabel.text = dataModel.user!.userName
+        descriptionLabel.text = "\(dataModel.user!.userName):  \(dataModel.descriptionImage)"
+        likesCountLabel.text = DataManager.shared.likeLabelConvert(counter: dataModel.likes)
+        locationButton.setTitle(dataModel.location, for: .normal)
         spinner.start(view: self.bandImage)
-        setImage(image: dataModel[indexPath.row].image)
+        setImage(image: dataModel.image)
         spinner.stop()
         selectionStyle = .none
         commentsButton.tintColor = .black
-        if dataModel[indexPath.row].user.userId == Auth.auth().currentUser!.uid {
+        if dataModel.user?.userId == Auth.auth().currentUser!.uid {
             deleteButton.isHidden = false
         } else {
             deleteButton.isHidden = true
+        }
+        if DataManager.shared.likedByUser(currentUserId: Auth.auth().currentUser!.uid, usersArray: dataModel.likedByUsers) {
+            likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+        } else {
+            likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
         }
     }
 
@@ -153,15 +157,15 @@ class HomeTableViewCell: UITableViewCell {
        deleteItem?()
     }
     // MARK: - set image from Api or failImage
-    func setImage(image: UIImage?) {
+    func setImage(image: Data?) {
         if image == nil {
             bandImage.image = UIImage(systemName: "xmark.circle")
-             bandImage.contentMode = .center
-             bandImage.tintColor = .red
-       } else {
-           bandImage.image = image
-      }
-     }
+            bandImage.contentMode = .center
+            bandImage.tintColor = .red
+        } else {
+            bandImage.image = UIImage(data: image!)
+        }
+    }
     // MARK: - constraints
     private func setConstraints() {
         verStackView.snp.makeConstraints { make in

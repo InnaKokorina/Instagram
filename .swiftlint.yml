@@ -1,6 +1,6 @@
 line_length:
-- 260 # warning
-- 300 # error
+- 290 # warning
+- 400 # error
 excluded:
 - Pods
 force_cast: warning
