@@ -66,27 +66,6 @@ class CommentsViewController: UIViewController {
         tableView.separatorStyle = .none
         tableView.allowsSelection = false
     }
-    // MARK: - NavigationItems
-    func setupNavItems() {
-        let logOutButton = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(logOutButtonPressed))
-        navigationItem.rightBarButtonItem  = logOutButton
-        logOutButton.tintColor = .black
-        let back = UIBarButtonItem(image: UIImage(systemName: "chevron.compact.left"), style: .plain, target: self, action: #selector(backPressed))
-        back.tintColor = .black
-        navigationItem.leftBarButtonItem = back
-        navigationItem.title = Constants.App.titleComments
-    }
-    @objc func backPressed() {
-        navigationController?.popViewController(animated: true)
-    }
-    @objc func logOutButtonPressed(_ sender: Any) {
-        do {
-            navigationController?.popViewController(animated: true)
-            try Auth.auth().signOut()
-        } catch {
-            print(error)
-        }
-    }
     // MARK: - loadComments()
     func loadComments() {
         comments = selectedImage?.comment.sorted(byKeyPath: "id", ascending: true)
@@ -107,36 +86,7 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
         }
         return cell
     }
-    // MARK: - setConstraints()
-    override func updateViewConstraints() {
-        if !didSetupConstraints {
-            tableView.snp.makeConstraints { make in
-                make.left.right.equalTo(view)
-                make.top.equalTo(view).offset(10)
-            }
-            horStackView.snp.makeConstraints { make in
-                make.left.right.equalTo(view)
-                make.bottom.equalTo(view)
-                make.top.equalTo(tableView.snp.bottom)
-                make.height.equalTo(50)
-            }
-            addComment.snp.makeConstraints { make in
-                make.top.equalTo(horStackView)
-                make.right.equalTo(horStackView)
-                make.bottom.equalTo(horStackView.snp.bottom)
-                make.width.equalTo(40)
-            }
-            textField.snp.makeConstraints { make in
-                make.top.equalTo(horStackView)
-                make.left.equalTo(horStackView).offset(10)
-                make.bottom.equalTo(view.safeAreaLayoutGuide)
-            }
-            didSetupConstraints = true
-        }
-        super.updateViewConstraints()
-    }
- }
-
+}
 // MARK: - UITextFieldDelegate
 extension CommentsViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -173,6 +123,59 @@ extension CommentsViewController {
             if shouldMoveViewUp {
                 self.view.frame.origin.y = 0 - keyboardSize.height
             }
+        }
+    }
+}
+    // MARK: - setConstraints()
+extension CommentsViewController {
+    override func updateViewConstraints() {
+        if !didSetupConstraints {
+            tableView.snp.makeConstraints { make in
+                make.left.right.equalTo(view)
+                make.top.equalTo(view).offset(10)
+            }
+            horStackView.snp.makeConstraints { make in
+                make.left.right.equalTo(view)
+                make.bottom.equalTo(view)
+                make.top.equalTo(tableView.snp.bottom)
+                make.height.equalTo(50)
+            }
+            addComment.snp.makeConstraints { make in
+                make.top.equalTo(horStackView)
+                make.right.equalTo(horStackView)
+                make.bottom.equalTo(horStackView.snp.bottom)
+                make.width.equalTo(40)
+            }
+            textField.snp.makeConstraints { make in
+                make.top.equalTo(horStackView)
+                make.left.equalTo(horStackView).offset(10)
+                make.bottom.equalTo(view.safeAreaLayoutGuide)
+            }
+            didSetupConstraints = true
+        }
+        super.updateViewConstraints()
+    }
+ }
+// MARK: - NavigationItems
+extension CommentsViewController {
+    func setupNavItems() {
+        let logOutButton = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(logOutButtonPressed))
+        navigationItem.rightBarButtonItem  = logOutButton
+        logOutButton.tintColor = .black
+        let back = UIBarButtonItem(image: UIImage(systemName: "chevron.compact.left"), style: .plain, target: self, action: #selector(backPressed))
+        back.tintColor = .black
+        navigationItem.leftBarButtonItem = back
+        navigationItem.title = Constants.App.titleComments
+    }
+    @objc func backPressed() {
+        navigationController?.popViewController(animated: true)
+    }
+    @objc func logOutButtonPressed(_ sender: Any) {
+        do {
+            navigationController?.popViewController(animated: true)
+            try Auth.auth().signOut()
+        } catch {
+            print(error)
         }
     }
 }

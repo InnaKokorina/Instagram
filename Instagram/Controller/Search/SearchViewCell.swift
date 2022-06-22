@@ -10,23 +10,11 @@ import UIKit
 class SearchViewCell: UITableViewCell {
     static var identifier = "SearchViewCell"
     var userLabel: UILabel = {
-        let label = UILabel()
-        label.text = "user"
+        let label = BaseLabel(textColor: .black, textAlignment: .left, text: "User")
         label.font = UIFont.boldSystemFont(ofSize: 17)
         return label
     }()
-    var personImage: UIImageView = {
-        let personImage = UIImageView()
-        personImage.contentMode = .scaleAspectFill
-        personImage.image = UIImage(systemName: "person")
-        personImage.layer.borderWidth = 1
-        personImage.layer.masksToBounds = false
-        personImage.layer.borderColor = UIColor.black.cgColor
-        personImage.layer.cornerRadius = 50/2
-        personImage.clipsToBounds = true
-        personImage.isUserInteractionEnabled = true
-        return personImage
-    }()
+    var personImage = BaseUserImage(cornerRadius: 50/2)
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

@@ -8,19 +8,9 @@
 import UIKit
 
 class MessagesViewCell: UITableViewCell {
+    var leftUserLabel = BaseLabel(textColor: .black, textAlignment: .left, text: " ")
+    var rightUserLabel = BaseLabel(textColor: .black, textAlignment: .right, text: " ")
 
-    var leftUserLabel: UILabel = {
-        let label = UILabel()
-        label.text = " "
-        label.font = UIFont.boldSystemFont(ofSize: 17)
-        return label
-    }()
-    var rightUserLabel: UILabel = {
-        let label = UILabel()
-        label.text = " "
-        label.font = UIFont.boldSystemFont(ofSize: 17)
-        return label
-    }()
     var messageView: UIView = {
         let messageView = UIView()
         messageView.backgroundColor = UIColor(red: 0.90, green: 0.81, blue: 1, alpha: 1)
@@ -28,9 +18,8 @@ class MessagesViewCell: UITableViewCell {
         return messageView
     }()
     var messageLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Книга преобразила мир. В ней память человеческого рода, она рупор человеческой мысли. Мир без книги – мир дикарей. Книги суть зерцало: хотя и не говорят, всякому вину и порок объявляют. Екатерина Великая."
-        label.font = UIFont(name: Constants.Font.font, size: 15)
+        let label = BaseLabel(textColor: .black, textAlignment: .left, text: "Книга преобразила мир. В ней память человеческого рода, она рупор человеческой мысли. Мир без книги – мир дикарей. Книги суть зерцало: хотя и не говорят, всякому вину и порок объявляют. Екатерина Великая.")
+        label.setLabelFont(with: 15)
         return label
     }()
     private lazy var horStackView = UIStackView(arrangedSubviews: [leftUserLabel, messageView, rightUserLabel], axis: .horizontal, spacing: 20)
@@ -51,6 +40,7 @@ class MessagesViewCell: UITableViewCell {
         messageView.addSubview(messageLabel)
         horStackView.distribution = .fill
     }
+    // MARK: - updateViewConstraints
     func updateViewConstraints() {
             horStackView.snp.makeConstraints { make in
                 make.left.right.equalTo(contentView).inset(10)

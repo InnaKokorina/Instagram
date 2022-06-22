@@ -10,8 +10,7 @@ import UIKit
 class ChatViewCell: UITableViewCell {
     static var identifier = "ChatViewCell"
     var userLabel: UILabel = {
-        let label = UILabel()
-        label.text = "user"
+        let label = BaseLabel(textColor: .black, textAlignment: .left, text: "User")
         label.font = UIFont.boldSystemFont(ofSize: 17)
         return label
     }()

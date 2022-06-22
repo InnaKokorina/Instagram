@@ -20,7 +20,7 @@ class SearchViewController: UIViewController {
     }()
     private let tableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(SearchViewCell.self, forCellReuseIdentifier: "SearchViewCell")
+        tableView.register(SearchViewCell.self, forCellReuseIdentifier: SearchViewCell.identifier)
         tableView.separatorStyle = .none
         return tableView
     }()
@@ -32,10 +32,9 @@ class SearchViewController: UIViewController {
         view.addSubview(tableView)
         tableView.dataSource = self
         tableView.delegate = self
-        view.setNeedsUpdateConstraints()
         searchBar.delegate = self
+        view.setNeedsUpdateConstraints()
         loadUsers()
-        setupNavItems()
         }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -72,7 +71,7 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
         return uniqueUsers.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "SearchViewCell", for: indexPath) as? SearchViewCell else { return UITableViewCell() }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchViewCell.identifier, for: indexPath) as? SearchViewCell else { return UITableViewCell() }
        if let usersNotEmpty = users {
         let uniqueUsers = DataManager.shared.uniqueArray(array: usersNotEmpty, authUserId: Auth.auth().currentUser?.uid)
            cell.userLabel.text = uniqueUsers[indexPath.row].userName

@@ -24,28 +24,19 @@ class HomeTableViewCell: UITableViewCell {
         return scrollView
     }()
     private var authorNameLabel: UILabel = {
-        let authorNameLabel = UILabel()
-        authorNameLabel.font = UIFont(name: Constants.Font.font, size: 17)
-        authorNameLabel.textAlignment = .left
-        authorNameLabel.isUserInteractionEnabled = true
+        let authorNameLabel = BaseLabel(textColor: .black, textAlignment: .left)
+        authorNameLabel.setLabelFont(with: 17)
         return authorNameLabel
     }()
     var locationButton: UIButton = {
         let locationButton = UIButton()
         locationButton.setTitleColor(.lightGray, for: .normal)
-        locationButton.setTitle("Location", for: .normal)
+        locationButton.setTitle("", for: .normal)
         locationButton.contentHorizontalAlignment = .left
         locationButton.titleLabel?.font = UIFont(name: Constants.Font.font, size: 14)
         return locationButton
     }()
-    private var bandImage: UIImageView = {
-        let bandImage = UIImageView()
-        bandImage.contentMode = .scaleAspectFill
-        bandImage.clipsToBounds = true
-        bandImage.layer.cornerRadius = 15
-        bandImage.isUserInteractionEnabled = true
-        return bandImage
-    }()
+    private var bandImage = BasePostImage()
     let likeButton: UIButton = {
         let likeButton = UIButton()
         likeButton.imageView?.tintColor = .systemPink
@@ -60,14 +51,13 @@ class HomeTableViewCell: UITableViewCell {
         return deleteButton
     }()
     var likesCountLabel: UILabel = {
-        var likesCountLabel = UILabel()
-        likesCountLabel.font = UIFont(name: Constants.Font.font, size: 15)
+        var likesCountLabel = BaseLabel(textColor: .black, textAlignment: .left)
+        likesCountLabel.setLabelFont(with: 15)
         return likesCountLabel
     }()
     private let descriptionLabel: UILabel = {
-        let descriptionLabel = UILabel()
-        descriptionLabel.numberOfLines = 0
-        descriptionLabel.font = UIFont(name: Constants.Font.font, size: 12)
+        let descriptionLabel = BaseLabel(textColor: .black, textAlignment: .left)
+        descriptionLabel.setLabelFont(with: 12)
         return descriptionLabel
     }()
     var heartView: BezierHeartView = {
@@ -91,10 +81,7 @@ class HomeTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         addViews()
         setConstraints()
-        likeButton.addTarget(self, action: #selector(likePressed), for: .touchUpInside)
-        commentsButton.addTarget(self, action: #selector(commentButtonpTap), for: .touchUpInside)
-        locationButton.addTarget(self, action: #selector(locationTap), for: .touchUpInside)
-        deleteButton.addTarget(self, action: #selector(deleteTap), for: .touchUpInside)
+        addTargets()
         doubleTapImage()
         tapUser()
         scrollViewSet()
@@ -103,7 +90,6 @@ class HomeTableViewCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
     // MARK: - cell setup and configure
     private func addViews() {
         contentView.addSubview(verStackView)
@@ -133,7 +119,12 @@ class HomeTableViewCell: UITableViewCell {
             likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
         }
     }
-
+    private func addTargets() {
+        likeButton.addTarget(self, action: #selector(likePressed), for: .touchUpInside)
+        commentsButton.addTarget(self, action: #selector(commentButtonpTap), for: .touchUpInside)
+        locationButton.addTarget(self, action: #selector(locationTap), for: .touchUpInside)
+        deleteButton.addTarget(self, action: #selector(deleteTap), for: .touchUpInside)
+    }
     // prepare for reuse
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -166,7 +157,47 @@ class HomeTableViewCell: UITableViewCell {
             bandImage.image = UIImage(data: image!)
         }
     }
-    // MARK: - constraints
+}
+
+// MARK: - viewForZooming
+extension HomeTableViewCell: UIScrollViewDelegate {
+    func scrollViewSet() {
+        scrollView.delegate = self
+        scrollView.minimumZoomScale = 1.0
+        scrollView.maximumZoomScale = 10.0
+        scrollView.bouncesZoom = false
+        bandImage.isUserInteractionEnabled = true
+    }
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return bandImage
+    }
+    func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
+        scrollView.zoomScale = 1.0
+    }
+}
+// MARK: - doubleTapImage
+extension HomeTableViewCell {
+    func doubleTapImage() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didDoubleTapImage))
+        tapGesture.numberOfTapsRequired = 2
+        bandImage.addGestureRecognizer(tapGesture)
+        tapGesture.delegate = self
+    }
+    @objc func didDoubleTapImage(sender: UITapGestureRecognizer) {
+        likePressed()
+    }
+
+    func tapUser() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapUser))
+        authorNameLabel.addGestureRecognizer(tapGesture)
+        tapGesture.delegate = self
+    }
+    @objc func didTapUser(sender: UITapGestureRecognizer) {
+        userPressed()
+    }
+}
+// MARK: - constraints
+extension HomeTableViewCell {
     private func setConstraints() {
         verStackView.snp.makeConstraints { make in
             make.left.right.equalTo(contentView).inset(8)
@@ -194,7 +225,7 @@ class HomeTableViewCell: UITableViewCell {
         }
         horStackView.snp.makeConstraints { make in
             make.left.right.equalTo(verStackView).inset(6)
-          //  make.width.equalTo(22)
+            //  make.width.equalTo(22)
         }
         likeButton.snp.makeConstraints { make in
             make.width.equalTo(22)
@@ -208,44 +239,5 @@ class HomeTableViewCell: UITableViewCell {
         descriptionLabel.snp.makeConstraints { make in
             make.left.right.equalTo(verStackView).inset(6)
         }
-    }
-}
-
-// MARK: - viewForZooming
-extension HomeTableViewCell: UIScrollViewDelegate {
-    func scrollViewSet() {
-        scrollView.delegate = self
-        scrollView.minimumZoomScale = 1.0
-        scrollView.maximumZoomScale = 10.0
-        scrollView.bouncesZoom = false
-        bandImage.isUserInteractionEnabled = true
-    }
-
-    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return bandImage
-    }
-    func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
-        scrollView.zoomScale = 1.0
-    }
-}
-// MARK: - doubleTapImage
-extension HomeTableViewCell {
-    func doubleTapImage() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didDoubleTapImage))
-        tapGesture.numberOfTapsRequired = 2
-        bandImage.addGestureRecognizer(tapGesture)
-        tapGesture.delegate = self
-    }
-    @objc func didDoubleTapImage(sender: UITapGestureRecognizer) {
-        likePressed()
-    }
-
-    func tapUser() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapUser))
-        authorNameLabel.addGestureRecognizer(tapGesture)
-        tapGesture.delegate = self
-    }
-    @objc func didTapUser(sender: UITapGestureRecognizer) {
-        userPressed()
     }
 }

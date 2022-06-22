@@ -13,20 +13,8 @@ class UserProfileHeaderCell: UICollectionViewCell {
     var didSetupConstraints = false
 
     // MARK: - View
-    let personImage: UIImageView = {
-        let personImage = UIImageView()
-        personImage.contentMode = .scaleAspectFill
-        personImage.layer.borderWidth = 1
-        personImage.layer.masksToBounds = false
-        personImage.layer.borderColor = UIColor.black.cgColor
-        personImage.layer.cornerRadius = 100/2
-        personImage.clipsToBounds = true
-        return personImage
-    }()
-    let userLabel: UILabel = {
-        let userLabel = UILabel()
-        return userLabel
-    }()
+    let personImage = BaseUserImage(cornerRadius: 100/2)
+    let userLabel = UILabel()
     // MARK: - init
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -39,11 +27,9 @@ class UserProfileHeaderCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 // MARK: - configure
-    func configure(user: PostsRealm ) {
-        if let image = user.image {
-        personImage.image = UIImage(data: image)
-        }
-        userLabel.text = user.user?.userName
+    func configure(user: UserRealm ) {
+        personImage.image = FirebaseManager.shared.setImage(data: user.userPhoto)
+        userLabel.text = user.userName
     }
 }
 // MARK: - updateViewConstraints

@@ -19,6 +19,7 @@ class MapViewController: UIViewController {
         let map = MKMapView()
         return map
     }()
+    // MARK: - lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(map)
@@ -40,6 +41,7 @@ class MapViewController: UIViewController {
             }
         }
     }
+    // MARK: - addMapPin
     func addMapPin(with location: CLLocation) {
         let pin = MKPointAnnotation()
         pin.coordinate = location.coordinate
@@ -49,24 +51,7 @@ class MapViewController: UIViewController {
             self?.title = locationName
         }
     }
-    func setupNavItems() {
-        let back = UIBarButtonItem(image: UIImage(systemName: "chevron.compact.left"), style: .plain, target: self, action: #selector(backPressed))
-        back.tintColor = .black
-        navigationItem.leftBarButtonItem = back
-        navigationItem.title = Constants.App.titleNewPhoto
-        let next = UIBarButtonItem(image: UIImage(systemName: "chevron.compact.right"), style: .plain, target: self, action: #selector(nextPressed))
-        next.tintColor = .black
-        navigationItem.rightBarButtonItem = next
-    }
-    @objc func backPressed() {
-        navigationController?.popViewController(animated: true)
-    }
-    @objc func nextPressed() {
-        let location = self.title
-        delegate?.saveLocation(with: location ?? "")
-        navigationController?.popViewController(animated: true)
-    }
-
+// MARK: - searchPoint
     func searchPoint(with searchPoint: String) {
         let request = MKLocalSearch.Request()
         request.naturalLanguageQuery = searchPoint
@@ -86,5 +71,25 @@ class MapViewController: UIViewController {
                     self.title = searchPoint
             }
         }
+    }
+}
+// MARK: - setupNavItems
+extension MapViewController {
+    func setupNavItems() {
+        let back = UIBarButtonItem(image: UIImage(systemName: "chevron.compact.left"), style: .plain, target: self, action: #selector(backPressed))
+        back.tintColor = .black
+        navigationItem.leftBarButtonItem = back
+        navigationItem.title = Constants.App.titleNewPhoto
+        let next = UIBarButtonItem(image: UIImage(systemName: "chevron.compact.right"), style: .plain, target: self, action: #selector(nextPressed))
+        next.tintColor = .black
+        navigationItem.rightBarButtonItem = next
+    }
+    @objc func backPressed() {
+        navigationController?.popViewController(animated: true)
+    }
+    @objc func nextPressed() {
+        let location = self.title
+        delegate?.saveLocation(with: location ?? "")
+        navigationController?.popViewController(animated: true)
     }
 }

@@ -15,7 +15,6 @@ import SnapKit
 
 class NewPhotoViewController: UIViewController {
     private var activeTextField: UITextView?
-    private let dataManager = DataManager()
     private let realm = try! Realm()
     private let spinner = SpinnerViewController()
     var didSetupConstraints = false
@@ -24,9 +23,8 @@ class NewPhotoViewController: UIViewController {
     var selectedItems = [YPMediaItem]()
     // MARK: - View
     private var userLabel: UILabel = {
-        let userLabel = UILabel()
-        userLabel.font = UIFont(name: Constants.Font.font, size: 17)
-        userLabel.textAlignment = .left
+        let userLabel = BaseLabel(textColor: .black, textAlignment: .left)
+        userLabel.setLabelFont(with: 17)
         return userLabel
     }()
     private var locationButton: UIButton = {
@@ -38,14 +36,8 @@ class NewPhotoViewController: UIViewController {
         return locationButton
     }()
     var newImage: UIImageView = {
-        let newImage = UIImageView()
-        newImage.contentMode = .scaleAspectFit
-        newImage.translatesAutoresizingMaskIntoConstraints = false
-        newImage.clipsToBounds = true
-        newImage.layer.cornerRadius = 15
+        let newImage = BaseUserImage(cornerRadius: 15)
         newImage.image = UIImage(named: "add")
-        newImage.contentMode = .scaleAspectFill
-        newImage.isUserInteractionEnabled = true
         newImage.tintColor = .gray
         return newImage
     }()
@@ -62,12 +54,9 @@ class NewPhotoViewController: UIViewController {
         return photoTextField
     }()
     private let addButton: UIButton = {
-        let addButton = UIButton()
-        addButton.backgroundColor = .black
+        let addButton = BaseButton(backgroundColor: .black)
         addButton.tintColor = .white
         addButton.setTitle("Поделиться", for: .normal)
-        addButton.layer.cornerRadius = 15
-        addButton.translatesAutoresizingMaskIntoConstraints = false
         return addButton
     }()
     private let spinnerImage: UIImageView = {
@@ -82,14 +71,17 @@ class NewPhotoViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemGray6
+        setViews()
+        setUser()
+        addNewPhoto()
+        setupNavItems()
+        view.setNeedsUpdateConstraints()
+        photoTextField.delegate = self
+    }
+    func setViews() {
         view.addSubview(verStackView)
         addButton.addSubview(spinnerImage)
         spinnerImage.frame = addButton.frame
-        setUser()
-        view.setNeedsUpdateConstraints()
-        photoTextField.delegate = self
-        addNewPhoto()
-        setupNavItems()
         addButton.addTarget(self, action: #selector(sharePressed), for: .touchUpInside)
         locationButton.addTarget(self, action: #selector(locationTap), for: .touchUpInside)
     }
@@ -99,33 +91,13 @@ class NewPhotoViewController: UIViewController {
             userLabel.text = eachUser.userName
         }
     }
-
-    // MARK: - navigationItems
-    func setupNavItems() {
-        let addPhoto = UIBarButtonItem(image: UIImage(systemName: "arrow.up.circle.fill"), style: .plain, target: self, action: #selector(sharePressed))
-        addPhoto.tintColor = .black
-        navigationItem.rightBarButtonItem = addPhoto
-        let back = UIBarButtonItem(image: UIImage(systemName: "chevron.compact.left"), style: .plain, target: self, action: #selector(backPressed))
-        back.tintColor = .black
-        navigationItem.leftBarButtonItem = back
-        navigationItem.title = Constants.App.titleNewPhoto
-    }
-    @objc func backPressed() {
-        navigationController?.popViewController(animated: true)
-    }
-    @objc func locationTap() {
-        let mapVC = MapViewController()
-        mapVC.searchPoint = locationButton.currentTitle!
-        self.navigationController?.pushViewController(mapVC, animated: true)
-        mapVC.delegate = self
-    }
     // MARK: - sharePressed
     @objc func sharePressed(_ sender: Any) {
         spinner.start(view: spinnerImage)
         addButton.setTitle("", for: .normal)
         // save image to FBStorage
         if let image = self.newImage.image {
-            let filePath = self.dataManager.dateFormatter()
+            let filePath = DataManager.shared.dateFormatter()
            let filePathStr = "\(filePath).jpg"
             DispatchQueue.global().async {
                 FirebaseManager.shared.uploadImage(for: image, path: filePathStr) { [self] (downloadURL) in
@@ -224,6 +196,27 @@ extension NewPhotoViewController {
             didSetupConstraints = true
         }
         super.updateViewConstraints()
+    }
+}
+// MARK: - navigationItems
+extension NewPhotoViewController {
+    func setupNavItems() {
+        let addPhoto = UIBarButtonItem(image: UIImage(systemName: "arrow.up.circle.fill"), style: .plain, target: self, action: #selector(sharePressed))
+        addPhoto.tintColor = .black
+        navigationItem.rightBarButtonItem = addPhoto
+        let back = UIBarButtonItem(image: UIImage(systemName: "chevron.compact.left"), style: .plain, target: self, action: #selector(backPressed))
+        back.tintColor = .black
+        navigationItem.leftBarButtonItem = back
+        navigationItem.title = Constants.App.titleNewPhoto
+    }
+    @objc func backPressed() {
+        navigationController?.popViewController(animated: true)
+    }
+    @objc func locationTap() {
+        let mapVC = MapViewController()
+        mapVC.searchPoint = locationButton.currentTitle!
+        self.navigationController?.pushViewController(mapVC, animated: true)
+        mapVC.delegate = self
     }
 }
 // MARK: - NewPhotoViewController

@@ -20,13 +20,7 @@ class UserProfileViewController: UIViewController {
 // MARK: - lifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
-        collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView?.register(UserProfileCollectionCell.self, forCellWithReuseIdentifier: UserProfileCollectionCell.cellId)
-        collectionView?.register(UserProfileNoPostsCell.self, forCellWithReuseIdentifier: UserProfileNoPostsCell.cellId)
-        collectionView?.register(UserProfileHeaderCell.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: UserProfileHeaderCell.headerCell)
-        view.addSubview(collectionView!)
+        setupCollectionView()
         view.setNeedsUpdateConstraints()
         collectionView?.delegate = self
         collectionView?.dataSource = self
@@ -36,7 +30,15 @@ class UserProfileViewController: UIViewController {
         collectionView?.refreshControl?.addTarget(self, action: #selector(callPullToRefresh), for: .valueChanged)
         loadPosts()
     }
-
+    func setupCollectionView() {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView?.register(UserProfileCollectionCell.self, forCellWithReuseIdentifier: UserProfileCollectionCell.cellId)
+        collectionView?.register(UserProfileNoPostsCell.self, forCellWithReuseIdentifier: UserProfileNoPostsCell.cellId)
+        collectionView?.register(UserProfileHeaderCell.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: UserProfileHeaderCell.headerCell)
+        view.addSubview(collectionView!)
+    }
     func loadPosts() {
         currentPosts = []
         posts = realm.objects(PostsRealm.self).sorted(byKeyPath: "id", ascending: false)
@@ -56,30 +58,6 @@ class UserProfileViewController: UIViewController {
             navigationItem.leftBarButtonItem?.tintColor = .clear
         }
     }
-
-    // MARK: - navigationItems
-    func setupNavItems() {
-        let logOutButton = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(logOutButtonPressed))
-        logOutButton.tintColor = .black
-        navigationItem.rightBarButtonItem  = logOutButton
-        navigationItem.title = user?.userName
-        let back = UIBarButtonItem(image: UIImage(systemName: "chevron.compact.left"), style: .plain, target: self, action: #selector(backPressed))
-        back.tintColor = .black
-        navigationItem.leftBarButtonItem = back
-    }
-
-    @objc func backPressed() {
-        navigationController?.popViewController(animated: true)
-    }
-
-    @objc func logOutButtonPressed(_ sender: Any) {
-        do {
-            navigationController?.popViewController(animated: true)
-            try Auth.auth().signOut()
-        } catch {
-            print(error)
-        }
-    }
     // MARK: - RefreshImages
     @objc func callPullToRefresh() {
         DispatchQueue.main.async { [self] in
@@ -89,18 +67,7 @@ class UserProfileViewController: UIViewController {
         }
     }
 }
-// MARK: - updateViewConstraints
-extension UserProfileViewController {
-    override func updateViewConstraints() {
-        if !didSetupConstraints {
-            collectionView?.snp.makeConstraints { make in
-                make.edges.equalTo(view)
-            }
-            didSetupConstraints = true
-        }
-        super.updateViewConstraints()
-    }
-}
+// MARK: - UICollectionViewDelegate, UICollectionViewDataSource
 extension UserProfileViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if currentPosts.count == 0 {
@@ -129,8 +96,9 @@ extension UserProfileViewController: UICollectionViewDelegate, UICollectionViewD
 
    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
        guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "HeaderCell", for: indexPath) as? UserProfileHeaderCell else { return UICollectionReusableView() }
-       header.personImage.image = FirebaseManager.shared.setImage(data: user?.userPhoto)
-       header.userLabel.text = user?.userName
+       if let headerUser = user {
+       header.configure(user: headerUser)
+       }
        return header
 
     }
@@ -147,5 +115,40 @@ extension UserProfileViewController: UICollectionViewDelegate, UICollectionViewD
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = (view.frame.width - 2) / 3
         return CGSize(width: width, height: width)
+    }
+}
+// MARK: - navigationItems
+extension UserProfileViewController {
+    func setupNavItems() {
+        let logOutButton = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(logOutButtonPressed))
+        logOutButton.tintColor = .black
+        navigationItem.rightBarButtonItem  = logOutButton
+        navigationItem.title = user?.userName
+        let back = UIBarButtonItem(image: UIImage(systemName: "chevron.compact.left"), style: .plain, target: self, action: #selector(backPressed))
+        back.tintColor = .black
+        navigationItem.leftBarButtonItem = back
+    }
+    @objc func backPressed() {
+        navigationController?.popViewController(animated: true)
+    }
+    @objc func logOutButtonPressed(_ sender: Any) {
+        do {
+            navigationController?.popViewController(animated: true)
+            try Auth.auth().signOut()
+        } catch {
+            print(error)
+        }
+    }
+}
+// MARK: - updateViewConstraints
+extension UserProfileViewController {
+    override func updateViewConstraints() {
+        if !didSetupConstraints {
+            collectionView?.snp.makeConstraints { make in
+                make.edges.equalTo(view)
+            }
+            didSetupConstraints = true
+        }
+        super.updateViewConstraints()
     }
 }

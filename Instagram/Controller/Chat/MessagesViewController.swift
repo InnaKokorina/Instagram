@@ -137,41 +137,10 @@ extension MessagesViewController: UITableViewDataSource, UITableViewDelegate {
             cell.rightUserLabel.isHidden = false
             cell.leftUserLabel.isHidden = true
             cell.messageView.backgroundColor = UIColor(red: 0.70, green: 0.81, blue: 1, alpha: 1)
-
         }
         return cell
     }
 }
-  // MARK: - updateViewConstraints()
-extension MessagesViewController {
-    override func updateViewConstraints() {
-        if !didSetupConstraints {
-            tableView.snp.makeConstraints { make in
-                make.left.right.top.equalTo(view)
-            }
-            horStackView.snp.makeConstraints { make in
-                make.right.equalTo(view)
-                make.left.equalTo(view).offset(10)
-                make.bottom.equalTo(view)
-                make.top.equalTo(tableView.snp.bottom)
-                make.height.equalTo(50)
-            }
-            addComment.snp.makeConstraints { make in
-                make.top.equalTo(horStackView).offset(1)
-                make.right.equalTo(horStackView).offset(1)
-                make.bottom.equalTo(horStackView.snp.bottom).offset(1)
-                make.width.equalTo(40)
-            }
-            textField.snp.makeConstraints { make in
-                make.top.left.equalTo(horStackView).inset(1)
-                make.bottom.equalTo(view.safeAreaLayoutGuide).inset(1)
-            }
-            didSetupConstraints = true
-        }
-        super.updateViewConstraints()
-    }
- }
-
 // MARK: - UITextFieldDelegate
 extension MessagesViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -195,7 +164,6 @@ extension MessagesViewController: UITextFieldDelegate {
                 }
             }
         }
-
     }
 }
 
@@ -215,4 +183,33 @@ extension MessagesViewController {
             }
         }
     }
+}
+// MARK: - updateViewConstraints()
+extension MessagesViewController {
+  override func updateViewConstraints() {
+      if !didSetupConstraints {
+          tableView.snp.makeConstraints { make in
+              make.left.right.top.equalTo(view)
+          }
+          horStackView.snp.makeConstraints { make in
+              make.right.equalTo(view)
+              make.left.equalTo(view).offset(10)
+              make.bottom.equalTo(view)
+              make.top.equalTo(tableView.snp.bottom)
+              make.height.equalTo(50)
+          }
+          addComment.snp.makeConstraints { make in
+              make.top.equalTo(horStackView).offset(1)
+              make.right.equalTo(horStackView).offset(1)
+              make.bottom.equalTo(horStackView.snp.bottom).offset(1)
+              make.width.equalTo(40)
+          }
+          textField.snp.makeConstraints { make in
+              make.top.left.equalTo(horStackView).inset(1)
+              make.bottom.equalTo(view.safeAreaLayoutGuide).inset(1)
+          }
+          didSetupConstraints = true
+      }
+      super.updateViewConstraints()
+  }
 }

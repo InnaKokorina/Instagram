@@ -143,6 +143,10 @@ class FirebaseManager {
          for eachUser in users where eachUser.userId == Auth.auth().currentUser!.uid {
             currentUser = eachUser
          }
+        var myLocation = location
+        if location == "Location" {
+            myLocation = ""
+        }
         let post = PostsRealm(
             comment: List<CommentsRealm>(),
             id: index,
@@ -152,7 +156,7 @@ class FirebaseManager {
             user: currentUser,
             liked: false,
             descriptionImage: descriptionTextField,
-            location: location,
+            location: myLocation,
             likedByUsers: List<LikedByUsers>())
         FirebaseManager.shared.getImage(picName: filePathStr) { data in
             post.image = data
@@ -181,5 +185,27 @@ class FirebaseManager {
                 print("Error saving Data context \(error)")
             }
         }
+    }
+    // MARK: - saveLikedByUser
+    func  saveLikedByUser(newLikedUser: LikedByUsers, postId: Int, index: Int) {
+        self.ref = Database.database().reference().child("photos/\(postId)/likedByUsers/\(index)")
+        let  dictUser = ["userId": newLikedUser.userId]
+        as [String: Any]
+        self.ref.updateChildValues(dictUser)
+    }
+    // MARK: - saveLikes
+    func saveLikes(post: PostsRealm) {
+        self.ref = Database.database().reference().child("photos/\(post.id)")
+        let  dict = [
+            "liked": post.liked,
+            "likes": post.likes
+        ]
+        as [String: Any]
+        self.ref.updateChildValues(dict)
+    }
+    // MARK: - deletePost
+    func deletePost(postId: Int) {
+        self.ref = Database.database().reference().child("photos/\(postId)")
+        self.ref.removeValue()
     }
 }

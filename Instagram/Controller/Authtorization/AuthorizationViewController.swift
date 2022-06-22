@@ -46,93 +46,31 @@ class AuthorizationViewController: UIViewController {
         return backImage
     }()
     private var titleLabel: UILabel = {
-        let titleLabel = UILabel()
-        titleLabel.font = UIFont(name: Constants.Font.font, size: 30)
-        titleLabel.numberOfLines = 0
-        titleLabel.textColor = .white
-        titleLabel.textAlignment = .center
-        titleLabel.text = Constants.Auth.createUser
+        let titleLabel = BaseLabel(textColor: .white, textAlignment: .center, text: Constants.Auth.createUser)
+        titleLabel.setLabelFont(with: 30)
         return titleLabel
     }()
     private var infoLabel: UILabel = {
-        let infoLabel = UILabel()
-        infoLabel.font = UIFont(name: Constants.Font.font, size: 14)
-        infoLabel.textAlignment = .center
-        infoLabel.text = Constants.Auth.infoCreate
-        infoLabel.numberOfLines = 0
-        infoLabel.textColor = .white
+        let infoLabel = BaseLabel(textColor: .white, textAlignment: .center, text: Constants.Auth.infoCreate)
+        infoLabel.setLabelFont(with: 14)
         return infoLabel
     }()
     private var photoView: UIView = {
         let photoView = UIView()
         return photoView
     }()
-    let personImage: UIImageView = {
-        let personImage = UIImageView()
-        personImage.contentMode = .scaleAspectFill
-        personImage.image = UIImage(named: "add")
-        personImage.layer.borderWidth = 1
-        personImage.layer.masksToBounds = false
-        personImage.layer.borderColor = UIColor.black.cgColor
-        personImage.layer.cornerRadius = 100/2
-        personImage.clipsToBounds = true
-        personImage.isUserInteractionEnabled = true
-        return personImage
-    }()
-    private var nameField: UITextField = {
-        let nameField = UITextField()
-        nameField.font = UIFont(name: Constants.Font.font, size: 17)
-        nameField.textAlignment = .left
-        nameField.placeholder = Constants.Auth.placeholderName
-        nameField.borderStyle = .roundedRect
-        nameField.textContentType = .name
-        nameField.autocorrectionType = .yes
-        return nameField
-    }()
-    private var emailField: UITextField = {
-        let emailField = UITextField()
-        emailField.font = UIFont(name: Constants.Font.font, size: 17)
-        emailField.textAlignment = .left
-        emailField.placeholder = Constants.Auth.placeholderEmail
-        emailField.borderStyle = .roundedRect
-        emailField.textContentType = .emailAddress
-        emailField.keyboardType = .emailAddress
-        emailField.autocorrectionType = .yes
-        return emailField
-    }()
-    private var passwordField: UITextField = {
-        let passwordField = UITextField()
-        passwordField.font = UIFont(name: Constants.Font.font, size: 17)
-        passwordField.textAlignment = .left
-        passwordField.placeholder = Constants.Auth.placeholderPassword
-        passwordField.borderStyle = .roundedRect
-        passwordField.textContentType = .password
-        passwordField.isSecureTextEntry = true
-        return passwordField
-    }()
+    let personImage = BaseUserImage(cornerRadius: 100/2)
+
     private var switchButton: UIButton = {
-        let switchButton = UIButton()
-        switchButton.backgroundColor = .gray
+        let switchButton = BaseButton(backgroundColor: .gray)
         switchButton.setTitle(Constants.Auth.switchButtonCreate, for: .normal)
         switchButton.setTitleColor(.black, for: .normal)
-        if #available(iOS 15.0, *) {
-            switchButton.configuration?.cornerStyle = .dynamic
-            switchButton.layer.cornerRadius = 5
-        }
-        switchButton.translatesAutoresizingMaskIntoConstraints = false
         return switchButton
     }()
     private var signInButton: UIButton = {
-        let signInButton = UIButton()
-        signInButton.backgroundColor = .white
+        let signInButton = BaseButton(backgroundColor: .white)
         signInButton.setTitle(Constants.Auth.buttonTitle, for: .normal)
         signInButton.setTitleColor(.black, for: .normal)
-        signInButton.layer.borderWidth = 1.5
-        signInButton.layer.borderColor = UIColor.black.cgColor
-        if #available(iOS 15.0, *) {
-            signInButton.configuration?.cornerStyle = .dynamic
-            signInButton.layer.cornerRadius = 5
-        }
         return signInButton
     }()
     private let spinnerImage: UIImageView = {
@@ -141,12 +79,22 @@ class AuthorizationViewController: UIViewController {
         spinnerImage.translatesAutoresizingMaskIntoConstraints = false
         return spinnerImage
     }()
+    private lazy var nameField = BaseTextField(placeholder: Constants.Auth.placeholderName, textContentType: .name, keyboardType: .default)
+    private lazy var emailField = BaseTextField(placeholder: Constants.Auth.placeholderEmail, textContentType: .emailAddress, keyboardType: .emailAddress)
+    private lazy var passwordField = BaseTextField(placeholder: Constants.Auth.placeholderPassword, textContentType: .password, keyboardType: .default)
     private lazy var verStackView = UIStackView(arrangedSubviews: [titleLabel, infoLabel, photoView, nameField, emailField, passwordField, signInButton, switchButton], axis: .vertical, spacing: 10)
 
     // MARK: - lifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
+        setViews()
+        emailField.delegate = self
+        passwordField.delegate = self
+        signIn = true
+        tapImage()
+    }
+    func setViews() {
         view.addSubview(backImage)
         view.addSubview(verStackView)
         verStackView.contentMode = .center
@@ -156,63 +104,8 @@ class AuthorizationViewController: UIViewController {
         view.setNeedsUpdateConstraints()
         switchButton.addTarget(self, action: #selector(switchPressed), for: .touchUpInside)
         signInButton.addTarget(self, action: #selector(signInPressed), for: .touchUpInside)
-        emailField.delegate = self
-        passwordField.delegate = self
-        signIn = true
-        tapImage()
     }
 }
-// MARK: - setConstraints
-extension AuthorizationViewController {
-    override func updateViewConstraints() {
-        if !didSetupConstraints {
-            verStackView.snp.makeConstraints { make in
-                make.top.equalTo(view).inset(70)
-                make.leading.equalTo(view).inset(20)
-                make.trailing.equalTo(view).inset(20)
-            }
-            backImage.snp.makeConstraints { make in
-                make.edges.equalTo(view).inset(UIEdgeInsets.zero)
-            }
-            titleLabel.snp.makeConstraints { make in
-                make.leading.equalTo(verStackView)
-                make.trailing.equalTo(verStackView)
-            }
-            infoLabel.snp.makeConstraints { make in
-                make.leading.equalTo(verStackView)
-                make.trailing.equalTo(verStackView)
-            }
-            photoView.snp.makeConstraints { make in
-                make.height.equalTo(100)
-            }
-            personImage.snp.makeConstraints { make in
-                make.centerX.equalTo(photoView)
-                make.width.height.equalTo(100)
-            }
-            nameField.snp.makeConstraints { make in
-                make.height.equalTo(40)
-            }
-            emailField.snp.makeConstraints { make in
-                make.height.equalTo(40)
-            }
-            passwordField.snp.makeConstraints { make in
-                make.height.equalTo(40)
-            }
-            signInButton.snp.makeConstraints { make in
-                make.height.equalTo(40)
-            }
-            switchButton.snp.makeConstraints { make in
-                make.height.equalTo(40)
-            }
-            spinnerImage.snp.makeConstraints { make in
-                make.center.equalTo(signInButton)
-            }
-            didSetupConstraints = true
-        }
-        super.updateViewConstraints()
-    }
-}
-
 // MARK: - UITextFieldDelegate
 extension AuthorizationViewController: UITextFieldDelegate {
     @objc func switchPressed() {
@@ -350,7 +243,56 @@ extension AuthorizationViewController: YPImagePickerDelegate {
         return true
     }
 }
-
+// MARK: - setConstraints
+extension AuthorizationViewController {
+    override func updateViewConstraints() {
+        if !didSetupConstraints {
+            verStackView.snp.makeConstraints { make in
+                make.top.equalTo(view).inset(70)
+                make.leading.equalTo(view).inset(20)
+                make.trailing.equalTo(view).inset(20)
+            }
+            backImage.snp.makeConstraints { make in
+                make.edges.equalTo(view).inset(UIEdgeInsets.zero)
+            }
+            titleLabel.snp.makeConstraints { make in
+                make.leading.equalTo(verStackView)
+                make.trailing.equalTo(verStackView)
+            }
+            infoLabel.snp.makeConstraints { make in
+                make.leading.equalTo(verStackView)
+                make.trailing.equalTo(verStackView)
+            }
+            photoView.snp.makeConstraints { make in
+                make.height.equalTo(100)
+            }
+            personImage.snp.makeConstraints { make in
+                make.centerX.equalTo(photoView)
+                make.width.height.equalTo(100)
+            }
+            nameField.snp.makeConstraints { make in
+                make.height.equalTo(40)
+            }
+            emailField.snp.makeConstraints { make in
+                make.height.equalTo(40)
+            }
+            passwordField.snp.makeConstraints { make in
+                make.height.equalTo(40)
+            }
+            signInButton.snp.makeConstraints { make in
+                make.height.equalTo(40)
+            }
+            switchButton.snp.makeConstraints { make in
+                make.height.equalTo(40)
+            }
+            spinnerImage.snp.makeConstraints { make in
+                make.center.equalTo(signInButton)
+            }
+            didSetupConstraints = true
+        }
+        super.updateViewConstraints()
+    }
+}
 // MARK: - ErrorReason
 enum ErrorReason {
     case emptyFields

@@ -14,7 +14,7 @@ import RealmSwift
 
 class HomeViewController: UIViewController {
     private var dataModel: Results<PostsRealm>?
-    private var activityController: UIActivityViewController?
+   // private var activityController: UIActivityViewController?
     private var ref: DatabaseReference!
     private let realm = try! Realm()
     private let spinner = SpinnerViewController()
@@ -37,10 +37,13 @@ class HomeViewController: UIViewController {
         setupNavItems()
         view.addSubview(spinnerImage)
         spinnerImage.frame = view.bounds
-        spinnerImage.isHidden = true
+        checkRealmDB()
+    }
+    // MARK: - checkRealmDB
+    func checkRealmDB() {
+        spinnerImage.isHidden = false
         spinner.start(view: spinnerImage)
         if realm.isEmpty {
-            spinnerImage.isHidden = false
             FirebaseManager.shared.fetchData { post in
                 do {
                     try self.realm.write({
@@ -54,12 +57,12 @@ class HomeViewController: UIViewController {
                     self.spinner.stop()
                     self.tableViewsSetup()
                     self.spinnerImage.isHidden = true
-                    print("loadPosts \(post)")
                     self.loadPosts()
                 }
             }
         } else {
             DispatchQueue.main.async {
+                self.spinner.stop()
                 self.spinnerImage.isHidden = true
                 self.tableViewsSetup()
                 self.loadPosts()
@@ -76,28 +79,12 @@ class HomeViewController: UIViewController {
             make.edges.equalTo(view.safeAreaLayoutGuide)
         }
     }
-    // MARK: - navigationItems
-    func setupNavItems() {
-        let logOutButton = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(logOutButtonPressed))
-        logOutButton.tintColor = .black
-        let addPhoto = UIBarButtonItem(image: UIImage(systemName: "plus.app"), style: .plain, target: self, action: #selector(addNewPost))
-        addPhoto.tintColor = .black
-        navigationItem.rightBarButtonItem  = logOutButton
-        navigationItem.leftBarButtonItem = addPhoto
-        navigationItem.title = Constants.App.title
-    }
-    @objc func logOutButtonPressed(_ sender: Any) {
-        do {
-            navigationController?.popViewController(animated: true)
-            try Auth.auth().signOut()
-        } catch {
-            print(error)
-        }
-    }
-    @objc func addNewPost(_ sender: Any) {
-        let viewController = NewPhotoViewController()
-        viewController.dataModel = self.dataModel
-        navigationController?.pushViewController(viewController, animated: true)
+    // MARK: - loadPosts from Realm
+    func loadPosts () {
+        dataModel = realm.objects(PostsRealm.self).sorted(byKeyPath: "id", ascending: false)
+      //  DispatchQueue.main.async {
+            tableView.reloadData()
+      //  }
     }
     // MARK: - RefreshImages
     @objc func callPullToRefresh() {
@@ -105,13 +92,6 @@ class HomeViewController: UIViewController {
             self.tableView.refreshControl?.endRefreshing()
             self.loadPosts()
         }
-    }
-    // MARK: - loadPosts from Realm
-    func loadPosts () {
-        dataModel = realm.objects(PostsRealm.self).sorted(byKeyPath: "id", ascending: false)
-      //  DispatchQueue.main.async {
-            tableView.reloadData()
-      //  }
     }
 }
 // MARK: - UITableViewDataSource
@@ -134,44 +114,32 @@ extension HomeViewController: UITableViewDataSource {
                             try self.realm.write {
                                 posts[indexPath.row].liked.toggle()
                                 if DataManager.shared.likedByUser(currentUserId: Auth.auth().currentUser!.uid, usersArray: posts[indexPath.row].likedByUsers) == false {
-                                    posts[indexPath.row].liked = true
                                     cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+                                    posts[indexPath.row].liked = true
                                     posts[indexPath.row].likes += 1
                                     newLikedUser = LikedByUsers(userId: Auth.auth().currentUser!.uid)
                                     posts[indexPath.row].likedByUsers.append(newLikedUser)
                                     cell.heartView.alpha = 0.5
-                                    let seconds = 0.3
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                                         cell.heartView.alpha = 0
                                     }
-                                    self.ref = Database.database().reference().child("photos/\(posts[indexPath.row].id)/likedByUsers/\(posts[indexPath.row].likedByUsers.count - 1)")
-                                    let  dictUser = ["userId": newLikedUser.userId]
-                                    as [String: Any]
-                                    self.ref.updateChildValues(dictUser)
+                                    FirebaseManager.shared.saveLikedByUser(newLikedUser: newLikedUser, postId: posts[indexPath.row].id, index: posts[indexPath.row].likedByUsers.count - 1 )
                                 } else {
                                     cell.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
                                     posts[indexPath.row].liked = false
                                     posts[indexPath.row].likes -= 1
                                     self.realm.delete(posts[indexPath.row].likedByUsers.filter("userId=%@", Auth.auth().currentUser!.uid))
-                                    self.ref = Database.database().reference().child("photos/\(posts[indexPath.row].id)/likedByUsers/\(posts[indexPath.row].likedByUsers.count)")
-                                    let  dictUser = ["userId": newLikedUser.userId]
-                                    as [String: Any]
-                                    self.ref.updateChildValues(dictUser) }
+                                    FirebaseManager.shared.saveLikedByUser(newLikedUser: newLikedUser, postId: posts[indexPath.row].id, index: posts[indexPath.row].likedByUsers.count)
+                                }
                                 cell.likesCountLabel.text = DataManager.shared.likeLabelConvert(counter: posts[indexPath.row].likes)
-                                self.ref = Database.database().reference().child("photos/\(posts[indexPath.row].id)")
-                                let  dict = [
-                                    "liked": posts[indexPath.row].liked,
-                                    "likes": posts[indexPath.row].likes
-                                ]
-                                as [String: Any]
-                                self.ref.updateChildValues(dict)
+                                FirebaseManager.shared.saveLikes(post: posts[indexPath.row])
                             }
                         } catch {
                             print("Error saving Data context \(error)")
                         }
                 }
                 cell.deleteButton.isHidden = true
-                // navigation to comments
+
                 cell.commentButtonPressed = { [unowned self] in
                     let viewController = CommentsViewController()
                     viewController.selectedImage = dataModel![indexPath.row]
@@ -195,5 +163,30 @@ extension HomeViewController: UITableViewDataSource {
                 }
             }
         return cell
+    }
+}
+// MARK: - navigationItems
+extension HomeViewController {
+    func setupNavItems() {
+        let logOutButton = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(logOutButtonPressed))
+        logOutButton.tintColor = .black
+        let addPhoto = UIBarButtonItem(image: UIImage(systemName: "plus.app"), style: .plain, target: self, action: #selector(addNewPost))
+        addPhoto.tintColor = .black
+        navigationItem.rightBarButtonItem  = logOutButton
+        navigationItem.leftBarButtonItem = addPhoto
+        navigationItem.title = Constants.App.title
+    }
+    @objc func logOutButtonPressed(_ sender: Any) {
+        do {
+            navigationController?.popViewController(animated: true)
+            try Auth.auth().signOut()
+        } catch {
+            print(error)
+        }
+    }
+    @objc func addNewPost(_ sender: Any) {
+        let viewController = NewPhotoViewController()
+        viewController.dataModel = self.dataModel
+        navigationController?.pushViewController(viewController, animated: true)
     }
 }

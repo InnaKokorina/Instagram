@@ -21,7 +21,7 @@ class ChatViewController: UIViewController {
     }()
     private let tableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(ChatViewCell.self, forCellReuseIdentifier: "ChatViewCell")
+        tableView.register(ChatViewCell.self, forCellReuseIdentifier: ChatViewCell.identifier)
         tableView.separatorStyle = .none
         return tableView
     }()
@@ -33,10 +33,9 @@ class ChatViewController: UIViewController {
         view.addSubview(tableView)
         tableView.dataSource = self
         tableView.delegate = self
-        view.setNeedsUpdateConstraints()
         searchBar.delegate = self
+        view.setNeedsUpdateConstraints()
         loadUsers()
-        setupNavItems()
         }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -45,22 +44,6 @@ class ChatViewController: UIViewController {
     // MARK: - loadArray
     func loadUsers() {
             users = realm.objects(UserRealm.self).sorted(byKeyPath: "userName", ascending: true)
-    }
-    // MARK: - navigationItems
-    func setupNavItems() {
-        let logOutButton = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(logOutButtonPressed))
-        logOutButton.tintColor = .black
-        navigationItem.rightBarButtonItem  = logOutButton
-        navigationItem.title = Constants.App.titleMessages
-    }
-
-    @objc func logOutButtonPressed(_ sender: Any) {
-        do {
-            navigationController?.popViewController(animated: true)
-            try Auth.auth().signOut()
-        } catch {
-            print(error)
-        }
     }
 }
 // MARK: - UITableViewDataSource, UITableViewDelegate
@@ -122,6 +105,23 @@ extension ChatViewController: UISearchBarDelegate {
             DispatchQueue.main.async {
                 searchBar.resignFirstResponder()
             }
+        }
+    }
+}
+// MARK: - navigationItems
+extension ChatViewController {
+    func setupNavItems() {
+        let logOutButton = UIBarButtonItem(title: "Log out", style: .plain, target: self, action: #selector(logOutButtonPressed))
+        logOutButton.tintColor = .black
+        navigationItem.rightBarButtonItem  = logOutButton
+        navigationItem.title = Constants.App.titleMessages
+    }
+    @objc func logOutButtonPressed(_ sender: Any) {
+        do {
+            navigationController?.popViewController(animated: true)
+            try Auth.auth().signOut()
+        } catch {
+            print(error)
         }
     }
 }
