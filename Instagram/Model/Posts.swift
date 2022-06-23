@@ -7,22 +7,10 @@
 
 import Foundation
 import UIKit
+import RealmSwift
 
-struct Posts {
-    var comment: [Comments]
-    var descriptionImage: String = ""
-    var id: Int = 0
-    var imageName: String = ""
-    var image: UIImage?
-    var likes: Int = 0
-  //  var link: String = ""
-    var user: String = ""
-    var liked: Bool = false
-}
-
-struct Comments {
-    var body: String = ""
-    var email: String = ""
-    var id: Int = 0
-    var postId: Int = 0
+struct Messages {
+    var userId: String
+    var partnerId: String
+    var body: String
 }
