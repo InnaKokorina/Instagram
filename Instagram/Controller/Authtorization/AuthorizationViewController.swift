@@ -99,6 +99,7 @@ class AuthorizationViewController: UIViewController {
         view.addSubview(verStackView)
         verStackView.contentMode = .center
         verStackView.distribution = .fillProportionally
+        passwordField.isSecureTextEntry = true
         photoView.addSubview(personImage)
         signInButton.addSubview(spinnerImage)
         view.setNeedsUpdateConstraints()
